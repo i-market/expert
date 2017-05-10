@@ -1,0 +1,17 @@
+# intellij idea
+.idea/
+
+# bitrix
+/public/bitrix/*
+/public/upload/
+
+# composer
+/public/local/vendor/
+
+node_modules/
+.sass-cache/
+
+/public/local/reports/
+/public/local/templates/*/build/
+
+*.log

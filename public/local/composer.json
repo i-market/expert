@@ -3,10 +3,11 @@
         "anahkiasen/underscore-php": "^2.0",
         "klein/klein": "^2.1",
         "sentry/sentry": "^1.6",
-        "bitrix-expert/tools": "^1.5"
+        "bitrix-expert/tools": "^1.5",
+        "robmorgan/phinx": "^0.8.0"
     },
     "autoload": {
-        "files": ["src/app.php", "src/core.php"],
+        "files": ["src/core.php", "src/app.php"],
         "psr-4": {
           "App\\": "src/",
           "Core\\": "src/Core/"

@@ -1,0 +1,3 @@
+[submodule "public/local/mockup"]
+	path = public/local/mockup
+	url = https://github.com/i-market/expert-mockup.git

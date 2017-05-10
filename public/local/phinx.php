@@ -1,6 +1,6 @@
 <?php
 
-// http://epages.su/blog/migratsii-bazy-dannykh-v-1s-bitirks-proektakh-s-ispolzovaniem-phinx.html
+// modified http://epages.su/blog/migratsii-bazy-dannykh-v-1s-bitirks-proektakh-s-ispolzovaniem-phinx.html
 
 define('NOT_CHECK_PERMISSIONS', true);
 define('NO_AGENT_CHECK', true);
@@ -17,21 +17,22 @@ $_SESSION['SESS_AUTH']['USER_ID'] = 1;
 
 
 $config = include realpath(__DIR__.'/../bitrix/.settings.php');
+$default = $config['connections']['value']['default'];
 
 return [
     'paths' => [
-        'migrations' => 'migrations',
-        'seeds' => 'seeds'
+        'migrations' => 'db/migrations',
+        'seeds' => 'db/seeds'
     ],
     'environments' => [
         'default_migration_table' => 'phinxlog',
-        'default_database' => 'expert',
-        'expert' => [
+        'default_database' => 'dev',
+        'dev' => [
             'adapter' => 'mysql',
-            'host' => $config['connections']['value']['default']['host'],
-            'name' => $config['connections']['value']['default']['database'],
-            'user' => $config['connections']['value']['default']['login'],
-            'pass' => $config['connections']['value']['default']['password']
+            'host' => $default['host'] === 'localhost' ? '127.0.0.1' : $default['host'],
+            'name' => $default['database'],
+            'user' => $default['login'],
+            'pass' => $default['password']
         ]
     ]
 ];

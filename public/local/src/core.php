@@ -142,6 +142,12 @@ class App {
         $app = Nullable::get(Configuration::getValue('app'), []);
         return _::get($app, 'env', Env::PROD);
     }
+
+    static function useBitrixAsset() {
+        // use bitrix asset pipeline for non-dev environments
+        return self::env() !== Env::DEV;
+    }
+
 }
 
 class View {

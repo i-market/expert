@@ -1,7 +1,5 @@
 <?php
 
-// modified http://epages.su/blog/migratsii-bazy-dannykh-v-1s-bitirks-proektakh-s-ispolzovaniem-phinx.html
-
 define('NOT_CHECK_PERMISSIONS', true);
 define('NO_AGENT_CHECK', true);
 $GLOBALS['DBType'] = 'mysql';

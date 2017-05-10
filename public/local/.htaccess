@@ -1,2 +1,4 @@
 RewriteEngine On
-RewriteRule !^templates/ - [F,NC]
+# expose templates/**, but not *.php
+RewriteRule !^templates/ - [F,L,NC]
+RewriteRule ^templates/.*\.(php)$ - [F,L,NC]

@@ -15,7 +15,6 @@ $DB->db_Conn = $con->getResource();
 // 'authorizing' as admin
 $_SESSION['SESS_AUTH']['USER_ID'] = 1;
 
-
 $config = include realpath(__DIR__.'/../bitrix/.settings.php');
 $default = $config['connections']['value']['default'];
 

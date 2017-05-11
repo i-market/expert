@@ -61,19 +61,38 @@ def backup_filename(filename):
     return '{}.{}~'.format(filename, time.strftime('%Y-%m-%d@%H:%M:%S'))
 
 
-# path relative to the document root
+def backup_file(path):
+    # TODO implement remote/ftp
+    if os.path.exists(path):
+        [directory, filename] = os.path.split(path)
+        dest = os.path.join(directory, backup_filename(filename))
+        shutil.copy(path, dest)
+        fab.puts('backup created: {}'.format(dest))
+
+
 def write_file(env, path, contents, backup=True):
     # TODO implement remote/ftp
-    assert env['local'] and env['document_root']
-    abs_path = os.path.join(env['document_root'], path)
-    if backup and os.path.exists(abs_path):
-        [directory, filename] = os.path.split(abs_path)
-        dest = os.path.join(directory, backup_filename(filename))
-        shutil.copy(abs_path, dest)
-        fab.puts('backup created: {}'.format(dest))
-    console.confirm('write to {}?'.format(abs_path))
-    with open(abs_path, 'w') as file:
+    assert env['local']
+    if backup:
+        backup_file(path)
+    console.confirm('write to {}?'.format(path))
+    with open(path, 'w') as file:
         file.write(contents)
+
+
+def copy_file(env, src, dest, backup=True):
+    # TODO implement remote/ftp
+    assert env['local'] and os.path.exists(src)
+    if backup:
+        backup_file(dest)
+    console.confirm('write to {}?'.format(dest))
+    shutil.copy2(src, dest)
+
+
+# TODO refactor
+def docroot_path(env, rel_path):
+    # TODO remote/ftp
+    return os.path.join(env['document_root'], rel_path)
 
 
 @fab.task
@@ -84,11 +103,13 @@ def print_env():
 @fab.task
 def push_configs():
     env = environment()
+    # TODO local only for now
+    assert env['document_root']
     # TODO diff with existing and print
     for name, rel_path in templates.items():
         # TODO contents formatting is messed up right now
         contents = j2env.get_template(name).render(env)
-        write_file(env, rel_path, contents)
+        write_file(env, docroot_path(env, rel_path), contents)
 
 
 @fab.task(alias='gitftp')
@@ -99,11 +120,24 @@ def git_ftp(args):
 
 
 @fab.task
+def push_robots():
+    env = environment()
+    if 'stage' in fab.env.roles:
+        fab.puts('copying staging robots.txt')
+        copy_file(env, 'files/stage/robots.txt', docroot_path(env, 'robots.txt'))
+
+
+@fab.task
 def deploy():
+    env = environment()
+    if env['local']:
+        fab.abort('you are trying to deploy to local environment')
     # TODO
     # maintenance mode on
     # push configs
+    fab.execute(push_configs)
     # push staging robots.txt
+    fab.execute(push_robots)
     # local composer install
     # local npm install
     # local build assets

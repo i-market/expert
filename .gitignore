@@ -1,5 +1,6 @@
 # intellij idea
 .idea/
+*.iml
 
 # bitrix
 /public/bitrix/*
@@ -15,3 +16,7 @@ node_modules/
 /public/local/templates/*/build/
 
 *.log
+
+# fabric/deploy
+
+__pycache__

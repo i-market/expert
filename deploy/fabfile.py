@@ -8,11 +8,13 @@ import jinja2 as j2
 import yaml
 import fabric.api as fab
 import fabric.contrib.console as console
+from fabric.context_managers import lcd
 
 templates = {
     'settings.php.j2': 'bitrix/.settings.php',
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
+asset_build_command = './build.sh'
 
 
 def config():
@@ -130,8 +132,9 @@ def push_robots():
 @fab.task
 def deploy():
     env = environment()
-    if env['local']:
-        fab.abort('you are trying to deploy to local environment')
+    remote = not env['local']
+    # if env['local']:
+    #     fab.abort('you are trying to deploy to local environment')
     # TODO
     # maintenance mode on
     # push configs
@@ -140,10 +143,14 @@ def deploy():
     fab.execute(push_robots)
     # local composer install
     # local npm install
+    with lcd('../public/local'):
+        fab.local(asset_build_command)
     # local build assets
-    # sync directories: build, composer vendor, mockup
-    # git-ftp push
+    if remote:
+        # sync directories: build, composer vendor, mockup
+        # git-ftp push
+        fab.execute(git_ftp, 'push')
     # clear bitrix cache
-    # notify in slack
+    # notify in slack if remote
     # maintenance mode off
     pass

@@ -1,0 +1,12 @@
+<?php
+
+use $useClassName;
+
+class $className extends $baseClassName {
+    function up() {
+    }
+
+    function down() {
+        // TODO implement down migration
+    }
+}

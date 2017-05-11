@@ -147,7 +147,6 @@ class App {
         // use bitrix asset pipeline for non-dev environments
         return self::env() !== Env::DEV;
     }
-
 }
 
 class View {

@@ -1,10 +1,18 @@
 import os
+import time
+import shutil
 from util import merge, remove, pprint
 from functools import reduce
 # third-party
 import jinja2 as j2
 import yaml
 import fabric.api as fab
+import fabric.contrib.console as console
+
+templates = {
+    'settings.php.j2': 'bitrix/.settings.php',
+    'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
+}
 
 
 def config():
@@ -49,8 +57,23 @@ def environment(roles=None, host=None):
     return reduce(merge, [global_vars, cfg['hosts'][host] if host else [], cfg['roles']['all']] + role_configs)
 
 
-def render_templates(env, names):
-    return {name: j2env.get_template(name).render(env) for name in names}
+def backup_filename(filename):
+    return '{}.{}~'.format(filename, time.strftime('%Y-%m-%d@%H:%M:%S'))
+
+
+# path relative to the document root
+def write_file(env, path, contents, backup=True):
+    # TODO implement remote/ftp
+    assert env['local'] and env['document_root']
+    abs_path = os.path.join(env['document_root'], path)
+    if backup and os.path.exists(abs_path):
+        [directory, filename] = os.path.split(abs_path)
+        dest = os.path.join(directory, backup_filename(filename))
+        shutil.copy(abs_path, dest)
+        fab.puts('backup created: {}'.format(dest))
+    console.confirm('write to {}?'.format(abs_path))
+    with open(abs_path, 'w') as file:
+        file.write(contents)
 
 
 @fab.task
@@ -60,11 +83,12 @@ def print_env():
 
 @fab.task
 def push_configs():
-    # TODO diff, confirm (wrap potentially dangerous operations)
-    result = render_templates(environment(), ['settings.php.j2', 'dbconn.php.j2'])
-    for tpl in result:
-        with open('/tmp/{}'.format(tpl), 'w') as file:
-            file.write(result[tpl])
+    env = environment()
+    # TODO diff with existing and print
+    for name, rel_path in templates.items():
+        # TODO contents formatting is messed up right now
+        contents = j2env.get_template(name).render(env)
+        write_file(env, rel_path, contents)
 
 
 @fab.task(alias='gitftp')
@@ -72,6 +96,7 @@ def git_ftp(args):
     ftp = environment()['ftp']
     git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url']]
     fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
+
 
 @fab.task
 def deploy():

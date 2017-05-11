@@ -23,8 +23,8 @@ return [
     ],
     'environments' => [
         'default_migration_table' => 'phinxlog',
-        'default_database' => 'dev',
-        'dev' => [
+        'default_database' => 'default',
+        'default' => [
             'adapter' => 'mysql',
             'host' => $default['host'] === 'localhost' ? '127.0.0.1' : $default['host'],
             'name' => $default['database'],

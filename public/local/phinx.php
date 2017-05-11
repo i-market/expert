@@ -21,6 +21,9 @@ return [
         'migrations' => 'db/migrations',
         'seeds' => 'db/seeds'
     ],
+    'templates' => [
+        'file' => 'db/migration_template.php.txt'
+    ],
     'environments' => [
         'default_migration_table' => 'phinxlog',
         'default_database' => 'default',

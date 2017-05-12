@@ -42,7 +42,8 @@ cfg = config()
 templates_path = os.path.join(os.path.dirname(__file__), 'templates')
 j2env = j2.Environment(loader=j2.FileSystemLoader(templates_path),
                        undefined=j2.StrictUndefined,
-                       trim_blocks=True)
+                       trim_blocks=True,
+                       lstrip_blocks=True)
 # fabric setup
 init()
 
@@ -76,6 +77,7 @@ def write_file(env, path, contents, backup=True):
     # TODO implement remote/ftp
     assert env['local']
     if backup:
+        # TODO only if it's changed
         backup_file(path)
     console.confirm('write to {}?'.format(path))
     with open(path, 'w') as file:
@@ -86,6 +88,7 @@ def copy_file(env, src, dest, backup=True):
     # TODO implement remote/ftp
     assert env['local'] and os.path.exists(src)
     if backup:
+        # TODO only if it's changed
         backup_file(dest)
     console.confirm('write to {}?'.format(dest))
     shutil.copy2(src, dest)
@@ -129,7 +132,7 @@ def push_robots():
         copy_file(env, 'files/stage/robots.txt', docroot_path(env, 'robots.txt'))
 
 
-@fab.task
+@fab.task(default=True)
 def deploy():
     env = environment()
     remote = not env['local']
@@ -141,16 +144,20 @@ def deploy():
     fab.execute(push_configs)
     # push staging robots.txt
     fab.execute(push_robots)
-    # local composer install
-    # local npm install
-    with lcd('../public/local'):
+    # TODO refactor cwd
+    cwd = '../public/local'
+    with lcd(cwd):
+        # local composer install
+        if os.path.exists(os.path.join(cwd, 'composer.json')):
+            fab.local('composer install')
+        # local npm install and build assets
         fab.local(asset_build_command)
-    # local build assets
     if remote:
         # sync directories: build, composer vendor, mockup
         # git-ftp push
         fab.execute(git_ftp, 'push')
-    # clear bitrix cache
+    # clear bitrix cache?
+    # migrate db
     # notify in slack if remote
     # maintenance mode off
     pass

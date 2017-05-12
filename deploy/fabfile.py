@@ -1,9 +1,11 @@
 import os
 import time
 import shutil
+import json
 from util import merge, remove, pprint
 from functools import reduce
 # third-party
+import requests
 import jinja2 as j2
 import yaml
 import ftputil
@@ -143,6 +145,10 @@ def ftp_host(env):
     return ret
 
 
+def last_commit_sha():
+    return fab.local('git log -1 --format="%h"', capture=True)
+
+
 @fab.task
 def print_env():
     pprint(environment())
@@ -220,6 +226,20 @@ def verbose():
     state['verbose'] = True
 
 
+@fab.task
+def slack(text):
+    env = environment()
+    response = requests.post(env['slack']['webhook_url'], data={
+        'payload': json.dumps({
+            'channel': '#dev-bots',
+            'username': 'webhookbot',
+            'text': text,
+            'icon_emoji': ':robot_face:'
+        })
+    })
+    fab.puts(response.text)
+
+
 @fab.task(default=True)
 def deploy():
     env = environment()
@@ -240,6 +260,7 @@ def deploy():
     if not env['local']:
         # sync directories: build, composer vendor, mockup
         for rel_path in ['templates/main/build', 'vendor']:
+            # TODO optimize composer's vendor sync: look for changes in composer.json?
             fab.execute(upload_dir('../public/local/' + rel_path, 'local/' + rel_path))
         # TODO `git-ftp init` for initial deployment?
         # git-ftp push
@@ -247,4 +268,6 @@ def deploy():
         # clear bitrix cache?
         # migrate db
         # notify in slack if remote
+        name = ', '.join(fab.env.roles)
+        fab.execute(slack, 'Deployed to *{}* at {}, commit: {}'.format(name, env['ftp']['url'], last_commit_sha()))
         # maintenance mode off

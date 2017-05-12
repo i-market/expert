@@ -4,6 +4,7 @@ import shutil
 import json
 from util import merge, remove, pprint
 from functools import reduce
+from urllib.parse import urlparse
 # third-party
 import requests
 import jinja2 as j2
@@ -12,7 +13,6 @@ import ftputil
 from ftpsync.synchronizers import UploadSynchronizer
 from ftpsync.targets import FsTarget
 from ftpsync.ftp_target import FtpTarget
-from urllib.parse import urlparse
 import fabric.api as fab
 import fabric.contrib.console as console
 from fabric.context_managers import lcd

@@ -1,10 +1,9 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\App;
-use App\AppController;
 use App\View as v;
 
-extract(AppController::layoutContext(), EXTR_SKIP)
+extract(App::layoutContext(), EXTR_SKIP)
 ?>
 </main>
 <!-- FOOTER START -->
@@ -42,6 +41,9 @@ extract(AppController::layoutContext(), EXTR_SKIP)
         </div>
     </div>
 </footer>
+<? if ($sentry['enabled']): ?>
+    <?= v::render('partials/sentry_js', array_merge($sentry, ['user' => $USER])) ?>
+<? endif ?>
 <? if (!App::useBitrixAsset()): ?>
     <? foreach (App::assets()['scripts'] as $path): ?>
         <script type="text/javascript" src="<?= $path ?>"></script>

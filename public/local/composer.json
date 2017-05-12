@@ -4,7 +4,8 @@
         "klein/klein": "^2.1",
         "sentry/sentry": "^1.6",
         "bitrix-expert/tools": "^1.5",
-        "robmorgan/phinx": "^0.8.0"
+        "robmorgan/phinx": "^0.8.0",
+        "league/plates": "^3.3"
     },
     "autoload": {
         "files": ["src/core.php", "src/app.php"],

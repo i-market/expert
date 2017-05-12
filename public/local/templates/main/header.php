@@ -1,11 +1,10 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\App;
-use App\AppController;
 use Bitrix\Main\Page\Asset;
 use App\View as v;
 
-extract(AppController::layoutContext(), EXTR_SKIP);
+extract(App::layoutContext(), EXTR_SKIP);
 
 $assets = App::assets();
 $asset = Asset::getInstance();

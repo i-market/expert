@@ -43,9 +43,7 @@ return array (
       {% else %}
       'log' => array(
         'class_name' => '\\App\\ExceptionHandlerLog',
-        'settings' => array(
-          'sentry_dsn' => '{{ sentry.dsn }}'
-        )
+        'settings' => array()
       ),
       {% endif %}
     ),
@@ -71,6 +69,8 @@ return array (
     'value' => array(
       'env' => '{{ app_env }}',
       'sentry' => array(
+        'enabled' => {{ 'false' if app_env == 'dev' else 'true' }},
+        'dsn' => '{{ sentry.dsn }}',
         'public_dsn' => '{{ sentry.public_dsn }}'
       )
     )

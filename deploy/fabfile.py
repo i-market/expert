@@ -15,6 +15,7 @@ templates = {
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
 asset_build_command = './build.sh'
+git_ftp_syncroot = 'public'
 
 
 def config():
@@ -120,7 +121,7 @@ def push_configs():
 @fab.task(alias='gitftp')
 def git_ftp(args):
     ftp = environment()['ftp']
-    git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url']]
+    git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url'], '--syncroot', git_ftp_syncroot]
     fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
 
 

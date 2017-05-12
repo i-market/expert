@@ -1,9 +1,18 @@
 <?php
 
+use Bitrix\Main\Application;
 use $useClassName;
 
 class $className extends $baseClassName {
     function up() {
+        $conn = Application::getConnection();
+        $conn->startTransaction();
+        try {
+            $conn->commitTransaction();
+        } catch (Exception $e) {
+            $conn->rollbackTransaction();
+            throw $e;
+        }
     }
 
     function down() {

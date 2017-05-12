@@ -125,7 +125,6 @@ def push_file(env, local, remote, backup=True):
                     host.copyfileobj(source, target)
 
 
-
 # TODO refactor
 def docroot_path(env, rel_path):
     return os.path.join(env['document_root'], rel_path)

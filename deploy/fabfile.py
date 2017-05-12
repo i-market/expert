@@ -175,14 +175,22 @@ def push_robots():
 
 @fab.task
 def upload_dir(local, remote, dry_run=False):
-    ftp = environment()['ftp']
+    env = environment()
+    ftp = env['ftp']
+    # TODO optimize
+    host = ftp_host(env)
     extra_opts = {'ftp_debug': 1 if state['verbose'] else 0}
     url = urlparse(ftp['url'])
     if url.scheme != 'ftp':
         fab.warn('non-ftp url scheme, may not be supported')
+    abs_remote = os.path.join(url.path, remote)
+    if not host.path.exists(abs_remote):
+        fab.warn('remote path is missing: {}'.format(abs_remote))
+        if console.confirm('create missing directories?'):
+            host.makedirs(abs_remote)
     local_target = FsTarget(local, extra_opts=extra_opts)
     remote_target = FtpTarget(
-        path=os.path.join(url.path, remote),
+        path=abs_remote,
         host=url.netloc,
         username=ftp['user'],
         password=ftp['password'],

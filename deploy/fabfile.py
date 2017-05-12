@@ -122,6 +122,7 @@ def push_configs():
 def git_ftp(args):
     ftp = environment()['ftp']
     git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url'], '--syncroot', git_ftp_syncroot]
+    with lcd('..'):
     fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
 
 

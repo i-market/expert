@@ -2,8 +2,36 @@
 
 namespace App;
 
+use League\Plates\Engine;
+use Bitrix\Main\Config\Configuration;
+use Core\Underscore as _;
+
 class App extends \Core\App {
     const SITE_ID = 's1';
+
+    /**
+     * @var Engine
+     */
+    private static $templates;
+
+    static function templates() {
+        if (!self::$templates) {
+            self::$templates = new Engine($_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH);
+        }
+        return self::$templates;
+    }
+
+    static function layoutContext() {
+        $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
+        return [
+            'sentry' => [
+                'enabled' => $sentryConfig['enabled'],
+                'env' => self::env(),
+                'publicDsn' => $sentryConfig['public_dsn']
+            ],
+            'copyrightYear' => date('Y')
+        ];
+    }
 
     static function assets() {
         $styles = array_map(function($path) {
@@ -33,4 +61,8 @@ class App extends \Core\App {
     }
 }
 
-class View extends \Core\View {}
+class View extends \Core\View {
+    static function render($name, $data = array()) {
+        return App::templates()->render($name, $data);
+    }
+}

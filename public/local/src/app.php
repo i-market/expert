@@ -10,7 +10,7 @@ class App extends \Core\App {
             return View::asset($path);
         }, [
             'css/lib/normalize.min.css',
-            'css/lib/jquery.fancybox.css',
+            'css/lib/jquery.fancybox.min.css',
             'css/lib/slick.css',
             'css/main.css'
         ]);

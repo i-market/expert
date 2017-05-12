@@ -99,15 +99,15 @@ def write_file(env, path, contents, backup=True):
     if backup:
         # TODO only if it's changed
         backup_file(env, path)
-    console.confirm('write to {}?'.format(path))
-    if env['local']:
-        with open(path, 'w') as file:
-            file.write(contents)
-    else:
-        # TODO optimize
-        host = ftp_host(env)
-        with host.open(path, 'w') as file:
-            file.write(contents)
+    if console.confirm('write to {}?'.format(path)):
+        if env['local']:
+            with open(path, 'w') as file:
+                file.write(contents)
+        else:
+            # TODO optimize
+            host = ftp_host(env)
+            with host.open(path, 'w') as file:
+                file.write(contents)
 
 
 # TODO this and `write_file` feel generalizable
@@ -116,15 +116,15 @@ def push_file(env, local, remote, backup=True):
         if backup:
             # TODO only if it's changed
             backup_file(env, remote)
-        console.confirm('write to {}?'.format(remote))
-        if env['local']:
-            shutil.copy2(local, remote)
-        else:
-            # TODO optimize
-            host = ftp_host(env)
-            with open(local) as source:
-                with host.open(remote, 'w') as target:
-                    host.copyfileobj(source, target)
+        if console.confirm('write to {}?'.format(remote)):
+            if env['local']:
+                shutil.copy2(local, remote)
+            else:
+                # TODO optimize
+                host = ftp_host(env)
+                with open(local) as source:
+                    with host.open(remote, 'w') as target:
+                        host.copyfileobj(source, target)
 
 
 # TODO refactor

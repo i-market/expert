@@ -1,4 +1,5 @@
 import json
+import fabric.api as fab
 
 def merge(a, b, path=None, update=True):
     "http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge"
@@ -27,5 +28,5 @@ def remove(d, keys):
     return {k: v for k, v in d.items() if k not in keys}
 
 
-def pprint(x):
-    print(json.dumps(x, indent=2))
+def pprint(x, print_fn=fab.puts):
+    print_fn(json.dumps(x, indent=2))

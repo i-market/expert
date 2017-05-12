@@ -6,6 +6,11 @@ from functools import reduce
 # third-party
 import jinja2 as j2
 import yaml
+import ftputil
+from ftpsync.synchronizers import UploadSynchronizer
+from ftpsync.targets import FsTarget
+from ftpsync.ftp_target import FtpTarget
+from urllib.parse import urlparse
 import fabric.api as fab
 import fabric.contrib.console as console
 from fabric.context_managers import lcd
@@ -101,6 +106,18 @@ def docroot_path(env, rel_path):
     return os.path.join(env['document_root'], rel_path)
 
 
+# TODO memoize?
+def ftp_host(env):
+    ftp = env['ftp']
+    url = urlparse(ftp['url'])
+    if url.scheme != 'ftp':
+        fab.warn('non-ftp url scheme, may not be supported')
+    ret = ftputil.FTPHost(url.netloc, ftp['user'], ftp['password'])
+    ret.chdir(url.path)
+    assert ret.path.exists('.git-ftp.log')
+    return ret
+
+
 @fab.task
 def print_env():
     pprint(environment())
@@ -113,7 +130,6 @@ def push_configs():
     assert env['document_root']
     # TODO diff with existing and print
     for name, rel_path in templates.items():
-        # TODO contents formatting is messed up right now
         contents = j2env.get_template(name).render(env)
         write_file(env, docroot_path(env, rel_path), contents)
 
@@ -123,7 +139,7 @@ def git_ftp(args):
     ftp = environment()['ftp']
     git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url'], '--syncroot', git_ftp_syncroot]
     with lcd('..'):
-    fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
+        fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
 
 
 @fab.task
@@ -132,6 +148,40 @@ def push_robots():
     if 'stage' in fab.env.roles:
         fab.puts('copying staging robots.txt')
         copy_file(env, 'files/stage/robots.txt', docroot_path(env, 'robots.txt'))
+
+
+@fab.task
+def upload_dir(local, remote, dry_run=False, ftp_debug=0):
+    ftp = environment()['ftp']
+    extra_opts = {'ftp_debug': ftp_debug}
+    url = urlparse(ftp['url'])
+    if url.scheme != 'ftp':
+        fab.warn('non-ftp url scheme, may not be supported')
+    local_target = FsTarget(local, extra_opts=extra_opts)
+    remote_target = FtpTarget(
+        path=os.path.join(url.path, remote),
+        host=url.netloc,
+        username=ftp['user'],
+        password=ftp['password'],
+        extra_opts=extra_opts)
+    opts = {
+        'force': False,
+        'delete_unmatched': False,
+        'verbose': 3,
+        'execute': True,
+        'dry_run': dry_run
+    }
+    s = UploadSynchronizer(local_target, remote_target, opts)
+    try:
+        s.run()
+    except KeyboardInterrupt:
+        fab.warn('aborted by user')
+    finally:
+        # prevent sporadic exceptions in ftplib, when closing in __del__
+        s.local.close()
+        s.remote.close()
+    stats = s.get_stats()
+    pprint(stats)
 
 
 @fab.task(default=True)
@@ -156,6 +206,7 @@ def deploy():
         fab.local(asset_build_command)
     if remote:
         # sync directories: build, composer vendor, mockup
+        # TODO git-ftp init for initial deployment?
         # git-ftp push
         fab.execute(git_ftp, 'push')
     # clear bitrix cache?

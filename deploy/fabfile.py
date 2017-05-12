@@ -2,6 +2,7 @@ import os
 import time
 import shutil
 import json
+import atexit
 from util import merge, remove, pprint
 from functools import reduce
 from urllib.parse import urlparse
@@ -48,7 +49,8 @@ def init():
 # global state
 
 state = {
-    'verbose': False
+    'verbose': False,
+    'connections': {}
 }
 cfg = config()
 templates_path = os.path.join(os.path.dirname(__file__), 'templates')
@@ -58,6 +60,7 @@ j2env = j2.Environment(loader=j2.FileSystemLoader(templates_path),
                        lstrip_blocks=True)
 # fabric setup
 init()
+atexit.register(lambda: [conn.close() for conn in state['connections'].values()])
 
 
 def environment(roles=None, host=None):
@@ -86,7 +89,6 @@ def backup_file(env, path):
     if env['local'] and os.path.exists(path):
         shutil.copy(path, dest)
     else:
-        # TODO optimize
         host = ftp_host(env)
         if host.path.exists(path):
             with host.open(path) as source:
@@ -104,7 +106,6 @@ def write_file(env, path, contents, backup=True):
             with open(path, 'w') as file:
                 file.write(contents)
         else:
-            # TODO optimize
             host = ftp_host(env)
             with host.open(path, 'w') as file:
                 file.write(contents)
@@ -120,7 +121,6 @@ def push_file(env, local, remote, backup=True):
             if env['local']:
                 shutil.copy2(local, remote)
             else:
-                # TODO optimize
                 host = ftp_host(env)
                 with open(local) as source:
                     with host.open(remote, 'w') as target:
@@ -133,15 +133,20 @@ def docroot_path(env, rel_path):
 
 
 # TODO verbose output
-# TODO memoize?
 def ftp_host(env):
     ftp = env['ftp']
+    # TODO refactor: pick a better id
+    conn_id = ftp['url']
+    if conn_id in state['connections']:
+        return state['connections'][conn_id]
     url = urlparse(ftp['url'])
     if url.scheme != 'ftp':
         fab.warn('non-ftp url scheme, may not be supported')
+    fab.puts('opening a new connection to {}'.format(url.netloc))
     ret = ftputil.FTPHost(url.netloc, ftp['user'], ftp['password'])
     ret.chdir(url.path)
     assert ret.path.exists('.git-ftp.log')
+    state['connections'][conn_id] = ret
     return ret
 
 
@@ -183,7 +188,6 @@ def push_robots():
 def upload_dir(local, remote, dry_run=False):
     env = environment()
     ftp = env['ftp']
-    # TODO optimize
     host = ftp_host(env)
     extra_opts = {'ftp_debug': 1 if state['verbose'] else 0}
     url = urlparse(ftp['url'])

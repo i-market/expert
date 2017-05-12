@@ -265,7 +265,7 @@ def deploy():
         # sync directories: build, composer vendor, mockup
         for rel_path in ['templates/main/build', 'vendor']:
             # TODO optimize composer's vendor sync: look for changes in composer.json?
-            fab.execute(upload_dir('../public/local/' + rel_path, 'local/' + rel_path))
+            fab.execute(upload_dir, '../public/local/' + rel_path, 'local/' + rel_path)
         # TODO `git-ftp init` for initial deployment?
         # git-ftp push
         fab.execute(git_ftp, 'push')

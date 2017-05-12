@@ -273,5 +273,5 @@ def deploy():
         # migrate db
         # notify in slack if remote
         name = ', '.join(fab.env.roles)
-        fab.execute(slack, 'Deployed to *{}* at {}, commit: {}'.format(name, env['ftp']['url'], last_commit_sha()))
+        fab.execute(slack, 'Deployed to `{}` at {}, commit: {}'.format(name, env['ftp']['url'], last_commit_sha()))
         # maintenance mode off

@@ -76,4 +76,5 @@ class Iblock {
     const CONTENT_TYPE = 'content';
     const SLIDER = 'slider';
     const HOMEPAGE_BANNERS = 'homepage_banners';
+    const OUR_SITES = 'our_sites';
 }

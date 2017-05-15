@@ -2,7 +2,6 @@
 
 use App\View as v;
 ?>
-
 <nav class="main_menu">
     <div class="menu_hamburger">
         <span></span>

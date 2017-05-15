@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Core\NewsListLike;
 use League\Plates\Engine;
 use Bitrix\Main\Config\Configuration;
 use Core\Underscore as _;
@@ -64,7 +65,14 @@ class App extends \Core\App {
 }
 
 class View extends \Core\View {
+    use NewsListLike;
+
     static function render($name, $data = array()) {
         return App::templates()->render($name, $data);
     }
+}
+
+class Iblock {
+    const CONTENT_TYPE = 'content';
+    const SLIDER = 'slider';
 }

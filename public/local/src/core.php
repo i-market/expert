@@ -177,7 +177,7 @@ class View {
     }
 }
 
-class NewsListLike {
+trait NewsListLike {
     /**
      * @param array $element
      * @param CBitrixComponentTemplate $template

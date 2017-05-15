@@ -175,6 +175,14 @@ class View {
     static function includedArea($path) {
         return SITE_DIR.'include/'.$path;
     }
+
+    static function isEmpty($x) {
+        return
+            $x === null
+            || $x === false
+            || (is_array($x) && _::isEmpty($x))
+            || (is_string($x) && Strings::isEmpty($x));
+    }
 }
 
 trait NewsListLike {

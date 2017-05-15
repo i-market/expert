@@ -8,10 +8,11 @@ use Core\Underscore as _;
 
 class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
     private $client = null;
+    private $enabled = false;
 
     public function write($exception, $logType) {
         global $USER;
-        if (function_exists('curl_init')) {
+        if ($this->enabled && function_exists('curl_init') && $this->client !== null) {
             if (is_object($USER)) {
                 $this->client->user_context([
                     'id' => $USER->GetID(),
@@ -20,16 +21,20 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
                 ]);
             }
             $this->client->captureException($exception, [
-                'logType' => $logType
+                'logType' => self::logTypeToString($logType)
             ]);
         }
     }
 
     public function initialize(array $options) {
-        $dsn = _::get(Configuration::getValue('app'), 'sentry.dsn');
-        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-        $this->client = new Raven_Client($dsn, [
-            'environment' => \App\App::env()
-        ]);
+        $appConfig = Configuration::getValue('app');
+        $this->enabled = _::get($appConfig, 'sentry.enabled', false);
+        if ($this->enabled) {
+            $dsn = _::get($appConfig, 'sentry.dsn');
+            /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+            $this->client = new Raven_Client($dsn, [
+                'environment' => \App\App::env()
+            ]);
+        }
     }
 }

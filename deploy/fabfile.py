@@ -168,7 +168,7 @@ def push_configs():
         write_file(env, docroot_path(env, rel_path), contents)
 
 
-@fab.task(alias='gitftp')
+@fab.task
 def git_ftp(args):
     ftp = environment()['ftp']
     git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url'], '--syncroot', git_ftp_syncroot]
@@ -244,7 +244,7 @@ def slack(text):
     fab.puts(response.text)
 
 
-@fab.task(default=True)
+@fab.task
 def deploy():
     env = environment()
     # TODO

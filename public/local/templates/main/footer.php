@@ -42,7 +42,7 @@ extract(App::layoutContext(), EXTR_SKIP)
     </div>
 </footer>
 <? if ($sentry['enabled']): ?>
-    <?= v::render('partials/sentry_js', array_merge($sentry, ['user' => $USER])) ?>
+    <?= v::render('partials/sentry_js', $sentry) ?>
 <? endif ?>
 <? if (!App::useBitrixAsset()): ?>
     <? foreach (App::assets()['scripts'] as $path): ?>

@@ -15,8 +15,10 @@ class App extends \Core\App {
     private static $templates;
 
     static function templates() {
-        if (!self::$templates) {
+        global $APPLICATION, $USER;
+        if (!isset(self::$templates)) {
             self::$templates = new Engine($_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH);
+            self::$templates->addData(['APPLICATION' => $APPLICATION, 'USER' => $USER]);
         }
         return self::$templates;
     }

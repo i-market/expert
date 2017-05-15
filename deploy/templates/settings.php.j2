@@ -38,7 +38,7 @@ return array (
       'ignore_silence' => false,
       'assertion_throws_exception' => true,
       'assertion_error_type' => 256,
-      {% if app_env == 'dev' %}
+      {% if not sentry.enabled %}
       'log' => null,
       {% else %}
       'log' => array(
@@ -69,7 +69,7 @@ return array (
     'value' => array(
       'env' => '{{ app_env }}',
       'sentry' => array(
-        'enabled' => {{ 'false' if app_env == 'dev' else 'true' }},
+        'enabled' => {{ 'true' if sentry.enabled else 'false' }},
         'dsn' => '{{ sentry.dsn }}',
         'public_dsn' => '{{ sentry.public_dsn }}'
       )

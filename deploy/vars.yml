@@ -1,4 +1,7 @@
 roles:
+  all:
+    sentry:
+      enabled: false
   dev:
     local: true
     app_env: dev

@@ -1,0 +1,7 @@
+roles:
+  dev:
+    app_env: dev
+    hosts: [localvm]
+  stage:
+    app_env: prod
+    hosts: [imarket]

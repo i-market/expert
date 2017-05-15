@@ -1,0 +1,78 @@
+<?php
+// {{ generated_message }}
+return array (
+  'utf_mode' => 
+  array (
+    'value' => true,
+    'readonly' => true,
+  ),
+  'cache_flags' => 
+  array (
+    'value' => 
+    array (
+      'config_options' => 3600,
+      'site_domain' => 3600,
+    ),
+    'readonly' => false,
+  ),
+  'cookies' => 
+  array (
+    'value' => 
+    array (
+      'secure' => false,
+      'http_only' => true,
+    ),
+    'readonly' => false,
+  ),
+  'exception_handling' => 
+  array (
+    'value' => 
+    array (
+      {% if app_env == 'dev' %}
+      'debug' => true,
+      {% else %}
+      'debug' => false,
+      {% endif %}
+      'handled_errors_types' => 4437 | E_USER_WARNING,
+      'exception_errors_types' => 4437,
+      'ignore_silence' => false,
+      'assertion_throws_exception' => true,
+      'assertion_error_type' => 256,
+      {% if app_env == 'dev' %}
+      'log' => null,
+      {% else %}
+      'log' => array(
+        'class_name' => '\\App\\ExceptionHandlerLog',
+        'settings' => array()
+      ),
+      {% endif %}
+    ),
+    'readonly' => false,
+  ),
+  'connections' => 
+  array (
+    'value' => 
+    array (
+      'default' => 
+      array (
+        'className' => '\\Bitrix\\Main\\DB\\MysqlConnection',
+        'host' => '{{ db.host }}',
+        'database' => '{{ db.name }}',
+        'login' => '{{ db.user }}',
+        'password' => '{{ db.password }}',
+        'options' => 2,
+      ),
+    ),
+    'readonly' => true,
+  ),
+  'app' => array(
+    'value' => array(
+      'env' => '{{ app_env }}',
+      'sentry' => array(
+        'enabled' => {{ 'false' if app_env == 'dev' else 'true' }},
+        'dsn' => '{{ sentry.dsn }}',
+        'public_dsn' => '{{ sentry.public_dsn }}'
+      )
+    )
+  ),
+);

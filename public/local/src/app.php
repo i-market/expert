@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Bitrix\Iblock\SectionTable;
+use Bitrix\Main\Loader;
 use Core\NewsListLike;
 use Core\ShareButtons;
 use League\Plates\Engine;
@@ -78,6 +80,8 @@ class View extends \Core\View {
     }
 }
 
+Loader::includeModule('iblock');
+
 class Iblock {
     const CONTENT_TYPE = 'content';
     const SLIDER = 'slider';
@@ -85,4 +89,18 @@ class Iblock {
     const OUR_SITES = 'our_sites';
     const OUR_CLIENTS = 'our_clients';
     const TESTIMONIALS = 'testimonials';
+    const RESOURCE_LINKS = 'resource_links';
+
+    static function groupBySection($elements, $iblockId) {
+        $sections = _::keyBy('ID', SectionTable::query()
+            ->setSelect(['ID', 'NAME'])
+            ->setFilter(['IBLOCK_ID' => $iblockId])
+            ->exec()->fetchAll());
+        $grouped = _::groupBy($elements, 'IBLOCK_SECTION_ID');
+        return _::reduce($grouped, function($acc, $items, $sectionId) use ($sections) {
+            return _::append($acc, array_merge($sections[$sectionId], [
+                'ITEMS' => $items
+            ]));
+        }, []);
+    }
 }

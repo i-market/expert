@@ -1,7 +1,9 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\App;
+use App\Iblock;
 use App\View as v;
+use Bex\Tools\Iblock\IblockTools;
 
 extract(App::layoutContext(), EXTR_SKIP)
 ?>
@@ -23,68 +25,62 @@ extract(App::layoutContext(), EXTR_SKIP)
     )
 ); ?>
 <section class="pre_footer">
-    <div class="wrap">
-        <div class="accordeon grid">
-            <div class="accordeon_item col col_4">
-                <div class="accordeon_title">Консультация специалиста</div>
-                <div class="accordeon_inner">
-                    <p><a href="#">Административное право</a></p>
-                    <p><a href="#">Арбитражное процессуальное право</a></p>
-                    <p><a href="#">Военное право</a></p>
-                    <p><a href="#">Гражданское право</a></p>
-                    <p><a href="#">Жилищное право</a></p>
-                    <p><a href="#">Исполнительное производство</a></p>
-                    <p><a href="#">Коммерческое право</a></p>
-                    <p><a href="#">Международное право</a></p>
-                    <p><a href="#">Наследственное право </a></p>
-                </div>
-            </div>
-            <div class="accordeon_item col col_4">
-                <div class="accordeon_title">Наши партнёры</div>
-                <div class="accordeon_inner">
-                    <p><a href="#">«Российские Железные Дороги» http://www.rzd.ru</a></p>
-                    <p><a href="#">«Фирма «Трансгарант» http://www.transgarant.com</a></p>
-                    <p><a href="#">«Редакция журнала «РЖД-Партнер» http://www.rzd-partner.ru</a></p>
-                    <p><a href="#">«Брансвик Рейл Лизинг» http://www.brunswick-capital.com</a></p>
-                    <p><a href="#">"Системный транспортный сервис" http://ststrans.ru</a></p>
-                </div>
-            </div>
-            <div class="accordeon_item col col_4">
-                <div class="accordeon_title">Полезные ссылки</div>
-                <div class="accordeon_inner">
-                    <p><a href="#">Информация о проекте</a></p>
-                    <p><a href="#">Аналитические возможности</a></p>
-                    <p><a href="#">Архивы судебных решений</a></p>
-                    <p><a href="#">Размещение рекламы</a></p>
-                    <p><a href="#">Статистические карточки</a></p>
-                    <p><a href="#">Добавление дел</a></p>
-                    <p><a href="#">Юристы онлайн</a></p>
-                    <p><a href="#">Видеозвонки</a></p>
-                    <p>
-                        <a href="#"></a>
-                    </p>
-                    <p>
-                        <a href="#"></a>
-                    </p>
-                </div>
-            </div>
-            <div class="accordeon_item col col_4">
-                <div class="accordeon_title">Нормативно-законодательная база</div>
-                <div class="accordeon_inner">
-                    <p><a href="#">Нормативно-законодательная база</a></p>
-                    <p><a href="#">Административное право</a></p>
-                    <p><a href="#">Арбитражное процессуальное право</a></p>
-                    <p><a href="#">Военное право</a></p>
-                    <p><a href="#">Гражданское право</a></p>
-                    <p><a href="#">Жилищное право</a></p>
-                    <p><a href="#">Исполнительное производство</a></p>
-                    <p><a href="#">Коммерческое право</a></p>
-                    <p><a href="#">Международное право</a></p>
-                    <p><a href="#">Наследственное право </a></p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:news.list",
+        "resource_links",
+        Array(
+            "ACTIVE_DATE_FORMAT" => "j F Y",
+            "ADD_SECTIONS_CHAIN" => "N",
+            "AJAX_MODE" => "N",
+            "AJAX_OPTION_ADDITIONAL" => "",
+            "AJAX_OPTION_HISTORY" => "N",
+            "AJAX_OPTION_JUMP" => "N",
+            "AJAX_OPTION_STYLE" => "Y",
+            "CACHE_FILTER" => "N",
+            "CACHE_GROUPS" => "Y",
+            "CACHE_TIME" => "36000000",
+            "CACHE_TYPE" => "A",
+            "CHECK_DATES" => "Y",
+            "DETAIL_URL" => "",
+            "DISPLAY_BOTTOM_PAGER" => "Y",
+            "DISPLAY_DATE" => "Y",
+            "DISPLAY_NAME" => "Y",
+            "DISPLAY_PICTURE" => "Y",
+            "DISPLAY_PREVIEW_TEXT" => "Y",
+            "DISPLAY_TOP_PAGER" => "N",
+            "FIELD_CODE" => array("", ""),
+            "FILTER_NAME" => "",
+            "HIDE_LINK_WHEN_NO_DETAIL" => "N",
+            "IBLOCK_ID" => IblockTools::find(Iblock::CONTENT_TYPE, Iblock::RESOURCE_LINKS)->id(),
+            "IBLOCK_TYPE" => Iblock::CONTENT_TYPE,
+            "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+            "INCLUDE_SUBSECTIONS" => "Y",
+            "MESSAGE_404" => "",
+            "NEWS_COUNT" => PHP_INT_MAX,
+            "PAGER_BASE_LINK_ENABLE" => "N",
+            "PAGER_DESC_NUMBERING" => "N",
+            "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+            "PAGER_SHOW_ALL" => "N",
+            "PAGER_SHOW_ALWAYS" => "N",
+            "PAGER_TEMPLATE" => ".default",
+            "PAGER_TITLE" => '',
+            "PARENT_SECTION" => "",
+            "PARENT_SECTION_CODE" => "",
+            "PREVIEW_TRUNCATE_LEN" => "",
+            "PROPERTY_CODE" => array('LINK'),
+            "SET_BROWSER_TITLE" => "N",
+            "SET_LAST_MODIFIED" => "N",
+            "SET_META_DESCRIPTION" => "N",
+            "SET_META_KEYWORDS" => "N",
+            "SET_STATUS_404" => "N",
+            "SET_TITLE" => "N",
+            "SHOW_404" => "N",
+            "SORT_BY1" => "ACTIVE_FROM",
+            "SORT_BY2" => "SORT",
+            "SORT_ORDER1" => "DESC",
+            "SORT_ORDER2" => "ASC"
+        )
+    ); ?>
     <div class="some_section some_section--hidden">
         <div class="wrap">
             <div class="grid">

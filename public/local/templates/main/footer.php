@@ -97,7 +97,7 @@ extract(App::layoutContext(), EXTR_SKIP)
                 </p>
             </a>
             <? // TODO link ?>
-            <a class="advertisers_hidden" href="#">Рекламодателям</a>
+            <a class="advertisers_hidden" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
             <div class="adress">
                 <? // TODO <p> tag messes up editing ?>
                 <p>
@@ -126,7 +126,7 @@ extract(App::layoutContext(), EXTR_SKIP)
             <? // TODO includize copyright? ?>
             <span><?= '© 2015–'.$copyrightYear ?></span> <span>ООО «Техническая строительная экспертиза»</span> <a href="https://i-market.ru/" target="_blank" class="create">Создание и продвижение сайта I-Market</a>
             <? // TODO link ?>
-            <a class="advertisers" href="#">Рекламодателям</a>
+            <a class="advertisers" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
         </div>
     </div>
 </footer>

@@ -43,25 +43,9 @@ if (App::useBitrixAsset()) {
 </head>
 <body>
 <? $APPLICATION->ShowPanel() ?>
-<!--социалки-->
-<ul class="social">
-    <? // TODO ?>
-    <li>
-        <a href="#" class="vk"></a>
-    </li>
-    <li>
-        <a href="#" class="fb"></a>
-    </li>
-    <li>
-        <a href="#" class="od"></a>
-    </li>
-    <li>
-        <a href="#" class="tw"></a>
-    </li>
-    <li>
-        <a href="#" class="gp"></a>
-    </li>
-</ul>
+<? $APPLICATION->AddBufferContent(function() use ($shareUrlsFn) {
+    return v::render('partials/share_buttons', $shareUrlsFn());
+}) ?>
 <!--прокрутка вверх-->
 <a class="scroll_top" href="#"></a>
 <!-- HEADER START -->

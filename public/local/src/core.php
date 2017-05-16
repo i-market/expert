@@ -147,6 +147,13 @@ class App {
         // use bitrix asset pipeline for non-dev environments
         return self::env() !== Env::DEV;
     }
+
+    static function requestUrl() {
+        global $APPLICATION;
+        $host = _::first(explode(':', $_SERVER['HTTP_HOST']));
+        $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443;
+        return ($isHttps ? 'https' : 'http').'://'.$host.$APPLICATION->GetCurUri();
+    }
 }
 
 class View {

@@ -3,6 +3,7 @@
 namespace App;
 
 use Core\NewsListLike;
+use Core\ShareButtons;
 use League\Plates\Engine;
 use Bitrix\Main\Config\Configuration;
 use Core\Underscore as _;
@@ -25,8 +26,13 @@ class App extends \Core\App {
     }
 
     static function layoutContext() {
+        global $APPLICATION;
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
         return [
+            'shareUrlsFn' => function() use (&$APPLICATION) {
+                // defer to get the title
+                return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());
+            },
             'sentry' => [
                 'enabled' => $sentryConfig['enabled'],
                 'env' => self::env(),

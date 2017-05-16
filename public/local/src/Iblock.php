@@ -16,6 +16,7 @@ class Iblock {
     const OUR_CLIENTS = 'our_clients';
     const TESTIMONIALS = 'testimonials';
     const RESOURCE_LINKS = 'resource_links';
+    const BANNERS = 'banners';
 
     static function groupBySection($elements, $iblockId) {
         $sections = _::keyBy('ID', SectionTable::query()

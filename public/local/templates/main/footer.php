@@ -1,6 +1,7 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\App;
+use App\Components;
 use App\Iblock;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
@@ -81,16 +82,7 @@ extract(App::layoutContext(), EXTR_SKIP)
             "SORT_ORDER2" => "ASC"
         )
     ); ?>
-    <div class="some_section some_section--hidden">
-        <div class="wrap">
-            <div class="grid">
-                <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_4.jpg') ?>')no-repeat center center / cover"></a>
-                <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_5.jpg') ?>')no-repeat center center / cover"></a>
-                <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_6.jpg') ?>')no-repeat center center / cover"></a>
-                <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_7.jpg') ?>')no-repeat center center / cover"></a>
-            </div>
-        </div>
-    </div>
+    <? Components::showBannersSection('footer') ?>
 </section>
 </main>
 <!-- FOOTER START -->

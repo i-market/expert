@@ -1,4 +1,5 @@
 <?
+use App\Components;
 use App\Iblock;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
@@ -75,16 +76,7 @@ $APPLICATION->SetTitle("Техническая строительная эксп
         ); ?>
     </div>
 </section>
-<section class="some_section">
-    <div class="wrap">
-        <div class="grid">
-            <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_4.jpg') ?>')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_5.jpg') ?>')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_6.jpg') ?>')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('<?= v::asset('images/pic_7.jpg') ?>')no-repeat center center / cover"></a>
-        </div>
-    </div>
-</section>
+<? Components::showBannersSection('homepage') ?>
 <? // (construction) sites ?>
 <section class="our_objects_section">
     <div class="wrap">

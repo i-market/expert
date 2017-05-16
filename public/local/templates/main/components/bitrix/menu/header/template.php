@@ -8,15 +8,10 @@ use App\View as v;
         <span></span>
     </div>
     <ul>
-        <? // TODO menu items ?>
-        <li><a class="active" href="#">Главная</a></li>
-        <li><a href="#">О компании</a></li>
-        <li><a href="#">Наши деятельность</a></li>
-        <li><a href="#">Примеры работ </a></li>
-        <li><a href="#">Аттестаты и допуски СРО</a></li>
-        <li><a href="#">Техническая база</a></li>
-        <li><a href="#">Инфоблок</a></li>
-        <li><a href="#">Контакты</a></li>
+        <? foreach ($arResult as $item): ?>
+            <? $class = $item['SELECTED'] ? 'active' : '' ?>
+            <li><a class="<?= $class ?>" href="<?= $item['LINK'] ?>"><?= $item['TEXT'] ?></a></li>
+        <? endforeach ?>
         <li class="hidden">
             <? // TODO link ?>
             <a href="#" class="big_btn">

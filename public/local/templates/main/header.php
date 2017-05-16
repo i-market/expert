@@ -184,3 +184,12 @@ if (App::useBitrixAsset()) {
             "SORT_ORDER2" => "ASC"
         )
     ); ?>
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:breadcrumb",
+        "top",
+        array(
+            "PATH" => "",
+            "SITE_ID" => App::SITE_ID,
+            "START_FROM" => "0"
+        )
+    ); ?>

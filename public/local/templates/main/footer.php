@@ -99,7 +99,17 @@ extract(App::layoutContext(), EXTR_SKIP)
             <? // TODO link ?>
             <a class="advertisers_hidden" href="#">Рекламодателям</a>
             <div class="adress">
-                <p>111141 г. Москва, 3-й проезд Перова Поля, <br> дом 8, строение 11, офис 402 <br> Станция метро "Перово", <br> последний вагон из центра (10 мин. пешком)</p>
+                <? // TODO <p> tag messes up editing ?>
+                <p>
+                    <? $APPLICATION->IncludeComponent(
+                        "bitrix:main.include",
+                        "",
+                        Array(
+                            "AREA_FILE_SHOW" => "file",
+                            "PATH" => v::includedArea('layout/address.php')
+                        )
+                    ); ?>
+                </p>
             </div>
             <div class="info">
                 <p><a href="tel:+7 (495) 641-70-69">+7 (495) 641-70-69</a></p>

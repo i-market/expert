@@ -15,7 +15,7 @@ use App\View as v;
         <li class="hidden">
             <? // TODO link ?>
             <a href="#" class="big_btn">
-                <span class="text">Отправить заявку</span>
+                <span class="text"><span>Отправить заявку</span></span>
                 <span class="img">
                 <img src="<?= v::asset('images/calc.png') ?>">
               </span>

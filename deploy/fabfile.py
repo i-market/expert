@@ -6,7 +6,6 @@ import atexit
 from util import merge, remove, pprint
 from functools import reduce
 from urllib.parse import urlparse
-# third-party
 import requests
 import jinja2 as j2
 import yaml

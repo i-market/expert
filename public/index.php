@@ -64,7 +64,7 @@ $APPLICATION->SetTitle("Техническая строительная эксп
         "SORT_ORDER2" => "ASC"
     )
 ); ?>
-<section class="hello">
+<section class="text_section">
     <div class="wrap">
         <? $APPLICATION->IncludeComponent(
             "bitrix:main.include",

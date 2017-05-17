@@ -111,6 +111,7 @@ extract(App::layoutContext(), EXTR_SKIP)
                     ); ?>
                 </p>
             </div>
+            <? // TODO contact details ?>
             <div class="info">
                 <p><a href="tel:+7 (495) 641-70-69">+7 (495) 641-70-69</a></p>
                 <p><a href="tel:+7 (499) 340-34-73">+7 (499) 340-34-73</a></p>
@@ -118,6 +119,7 @@ extract(App::layoutContext(), EXTR_SKIP)
                 <p><span>E-mail:</span><a href="mailto:6417069@bk.ru">6417069@bk.ru</a></p>
             </div>
             <div class="btns">
+                <? // TODO modals ?>
                 <div class="blue_btn re_call">Заказать <span class="hidden">обратный</span> звонок</div>
                 <div class="blue_btn calculate_cost">Рассчитать стоимость</div>
             </div>
@@ -125,7 +127,6 @@ extract(App::layoutContext(), EXTR_SKIP)
         <div class="bottom">
             <? // TODO includize copyright? ?>
             <span><?= '© 2015–'.$copyrightYear ?></span> <span>ООО «Техническая строительная экспертиза»</span> <a href="https://i-market.ru/" target="_blank" class="create">Создание и продвижение сайта I-Market</a>
-            <? // TODO link ?>
             <a class="advertisers" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
         </div>
     </div>

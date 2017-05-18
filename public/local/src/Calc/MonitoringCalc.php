@@ -27,6 +27,9 @@ class MonitoringCalc extends AbstractCalc {
         ];
     }
 
+    /**
+     * @return array structured data with minimal transformations
+     */
     static function parseCsv($path) {
         // TODO report unexpected file "format" (e.g. missing/extra sections)
         $isEmptyRow = function($row) {
@@ -129,28 +132,50 @@ class MonitoringCalc extends AbstractCalc {
                 return !str::isEmpty($cell);
             });
         };
+        // $parseNumericPredicate doesn't belong in the parsing phase
+//        $parseNumericPredicate = function($str) {
+//            if (is_numeric($str)) {
+//                return function($x) use ($str) {
+//                    return $x == $str;
+//                };
+//            } else {
+//                $matchesRef = [];
+//                return preg_match('/(\d+)[-—](\d+)/', $str, $matchesRef)
+//                    ? function($x) use ($matchesRef) {
+//                        list($_, $min, $max) = $matchesRef;
+//                        return $min <= $x && $x <= $max;
+//                    }
+//                    : null;
+//            }
+//        };
         $ret = _::map($sectionKey2Rows, function($rows, $sectionKey) use ($parseFloat, $nonEmptyCells) {
             if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
                 $map = [];
+                $inSection = null;
                 $state = ['default'];
                 foreach ($rows as $idx => $cells) {
                     $stateName = _::first($state);
-                    if ($stateName === 'default') {
+                    if ($stateName === 'default' || $stateName === 'in_subsection') {
                         $isAllCaps = str::upper(_::first($cells)) === _::first($cells);
                         $isSubsectionName = $isAllCaps;
                         if (_::first($cells) === 'ВЫБОРОЧНЫЙ МОНИТОРИНГ') {
                             $header = _::drop($nonEmptyCells($cells), 1);
-                            $state = ['in_conditional_multipliers', $header];
+                            $state = ['in_conditional_multipliers', _::first($cells), $header];
                         } elseif ($isSubsectionName) {
-                            // TODO keep subsections for form rendering
-                            continue;
+                            $state = ['in_subsection', _::first($cells)];
                         } else {
                             // simple case
                             list($k, $v) = $cells;
-                            $map[$k] = $parseFloat($v);
+                            $value = $parseFloat($v);
+                            if ($stateName === 'in_subsection') {
+                                list($_, $subsection) = $state;
+                                $map[$subsection][$k] = $value;
+                            } else {
+                                $map[$k] = $value;
+                            }
                         }
                     } elseif ($stateName === 'in_conditional_multipliers') {
-                        list($_, $header) = $state;
+                        list($_, $subsection, $header) = $state;
                         $filteredCells = $nonEmptyCells($cells);
                         $isConditionalMultiplier = function($cells) use ($header) {
                             return count($cells) === count($header) + 1;
@@ -158,7 +183,7 @@ class MonitoringCalc extends AbstractCalc {
                         if ($isConditionalMultiplier($filteredCells)) {
                             $key = _::first($cells);
                             $multipliers = array_map($parseFloat, _::drop($filteredCells, 1));
-                            $map[$key] = array_combine($header, $multipliers);
+                            $map[$subsection][$key] = array_combine($header, $multipliers);
                         }
                         // peek the next row
                         if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($nonEmptyCells($rows[$idx + 1]))) {

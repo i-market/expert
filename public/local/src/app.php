@@ -28,7 +28,9 @@ class App extends \Core\App {
     static function layoutContext() {
         global $APPLICATION;
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
+        $isHomepage = $APPLICATION->GetCurPage() === '/';
         return [
+            'showTitle' => !$isHomepage,
             'shareUrlsFn' => function() use (&$APPLICATION) {
                 // defer to get the title
                 return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());

@@ -115,6 +115,7 @@ class MonitoringCalc extends AbstractCalc {
                 list($_, $section) = $state;
                 // TODO если проверять только первую ячейку можно потерять (плохо составленные) данные,
                 // лучше чтобы вся строка была пустой
+                // TODO extract function
                 if (str::isEmpty(_::first($cells))) {
                     $state = ['find_section'];
                 } else {
@@ -149,6 +150,7 @@ class MonitoringCalc extends AbstractCalc {
 //            }
 //        };
         $ret = _::map($sectionKey2Rows, function($rows, $sectionKey) use ($parseFloat, $nonEmptyCells) {
+            // TODO extract function
             if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
                 $map = [];
                 $inSection = null;
@@ -157,6 +159,7 @@ class MonitoringCalc extends AbstractCalc {
                     $stateName = _::first($state);
                     if ($stateName === 'default' || $stateName === 'in_subsection') {
                         $isAllCaps = str::upper(_::first($cells)) === _::first($cells);
+                        // TODO extract function
                         $isSubsectionName = $isAllCaps;
                         if (_::first($cells) === 'ВЫБОРОЧНЫЙ МОНИТОРИНГ') {
                             $header = _::drop($nonEmptyCells($cells), 1);

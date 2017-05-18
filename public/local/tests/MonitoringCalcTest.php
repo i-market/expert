@@ -49,4 +49,11 @@ class MonitoringCalcTest extends TestCase {
         $result = $calc->calculate($this->validState);
         $this->assertEquals(33, $result['TOTAL_PRICE']);
     }
+
+    function testParseCsv() {
+        $path = getcwd().'/fixtures/calc/monitoring-single-building.tsv';
+        $result = MonitoringCalc::parseCsv($path);
+        // TODO csv parsing assertions
+        $this->assertNotNull($result);
+    }
 }

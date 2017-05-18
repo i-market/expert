@@ -89,6 +89,15 @@ class Underscore extends ArraysMethods {
         return [self::take($array, $n), self::drop($array, $n)];
     }
 
+    static function findKey($array, $pred) {
+        foreach ($array as $key => $value) {
+            if ($pred($value, $key)) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
     static function identity($x) {
         return $x;
     }

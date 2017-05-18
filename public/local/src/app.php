@@ -25,12 +25,16 @@ class App extends \Core\App {
         return self::$templates;
     }
 
+    static function renderLayout($content) {
+        global $APPLICATION;
+        $layout = $APPLICATION->GetProperty('layout', 'default');
+        return self::templates()->render('layouts/'.$layout, ['content' => $content]);
+    }
+
     static function layoutContext() {
         global $APPLICATION;
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
-        $isHomepage = $APPLICATION->GetCurPage() === '/';
         return [
-            'showTitle' => !$isHomepage,
             'shareUrlsFn' => function() use (&$APPLICATION) {
                 // defer to get the title
                 return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());

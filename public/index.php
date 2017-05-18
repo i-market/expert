@@ -6,6 +6,7 @@ use Bex\Tools\Iblock\IblockTools;
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Техническая строительная экспертиза");
+$APPLICATION->SetPageProperty('layout', 'bare');
 ?>
 
 <? $APPLICATION->IncludeComponent(

@@ -193,7 +193,4 @@ if (App::useBitrixAsset()) {
             "START_FROM" => "0"
         )
     ); ?>
-    <? // TODO show banners section by default ?>
-    <? if ($showTitle): ?>
-        <h1><? $APPLICATION->ShowTitle(false) ?></h1>
-    <? endif ?>
+    <? ob_start() ?>

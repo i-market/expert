@@ -8,7 +8,7 @@ use Bex\Tools\Iblock\IblockTools;
 
 extract(App::layoutContext(), EXTR_SKIP)
 ?>
-
+<?= App::renderLayout(ob_get_clean()) ?>
 <? $APPLICATION->IncludeComponent(
     "bitrix:menu",
     "footer",

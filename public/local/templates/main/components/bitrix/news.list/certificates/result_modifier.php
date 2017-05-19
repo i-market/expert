@@ -4,13 +4,21 @@ use App\Iblock;
 use Core\Util;
 use Core\Underscore as _;
 
-$items = array_map(function($item) {
-    $file = $item['DISPLAY_PROPERTIES']['FILE']['FILE_VALUE'];
+$transformFile = function($file) {
     $path = $_SERVER['DOCUMENT_ROOT'].CFile::GetPath($file['ID']);
     $humanSize = Util::humanFileSize(filesize($path));
-    return _::set($item, 'FILE', array_merge($file, [
+    return array_merge($file, [
         'HUMAN_SIZE' => $humanSize,
         'EXTENSION' => Util::fileExtension($path)
-    ]));
+    ]);
+};
+$items = array_map(function($item) use ($transformFile) {
+    $file = $item['DISPLAY_PROPERTIES']['FILE']['FILE_VALUE'];
+    return _::set($item, 'FILE', $transformFile($file));
 }, $arResult['ITEMS']);
-$arResult['SECTIONS'] = Iblock::groupBySection($items, $arResult['ID']);
+$result = CIBlockSection::GetList([], ['IBLOCK_ID' => $arResult['ID']], false, ['ID', 'NAME', 'UF_FILE']);
+$sections = array_map(function($section) use ($transformFile) {
+    $file = CFile::GetFileArray($section['UF_FILE']);
+    return _::set($section, 'FILE', $transformFile($file));
+}, Iblock::collect($result));
+$arResult['SECTIONS'] = Iblock::groupBySection($items, $arResult['ID'], $sections);

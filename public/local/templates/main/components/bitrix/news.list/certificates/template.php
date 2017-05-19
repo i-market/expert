@@ -6,8 +6,11 @@ use App\View as v;
     <div class="certificates_item">
         <div class="wrap_title">
             <h4><?= $section['NAME'] ?></h4>
-            <? // TODO download archive ?>
-<!--            <a class="download_doc" href="#">Скачать PDF, 75850 Кб</a>-->
+            <? if (!v::isEmpty($section['FILE'])): ?>
+                <? $extension = v::upper($section['FILE']['EXTENSION']) ?>
+                <? $downloadText = 'Скачать '.$extension.', '.$section['FILE']['HUMAN_SIZE'] ?>
+                <a class="download_doc" href="<?= $section['FILE']['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
+            <? endif ?>
         </div>
         <div class="grid">
             <? foreach ($section['ITEMS'] as $item): ?>

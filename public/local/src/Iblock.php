@@ -4,6 +4,7 @@ namespace App;
 
 use Bitrix\Iblock\SectionTable;
 use Bitrix\Main\Loader;
+use CIBlockResult;
 use Core\Underscore as _;
 
 Loader::includeModule('iblock');
@@ -19,16 +20,37 @@ class Iblock {
     const BANNERS = 'banners';
     const CERTIFICATES = 'certificates';
 
-    static function groupBySection($elements, $iblockId) {
-        $sections = _::keyBy('ID', SectionTable::query()
-            ->setSelect(['ID', 'NAME'])
-            ->setFilter(['IBLOCK_ID' => $iblockId])
-            ->exec()->fetchAll());
+    static function groupBySection($elements, $iblockId, $sections = null) {
+        if ($sections === null) {
+            $sections = SectionTable::query()
+                ->setSelect(['ID', 'NAME'])
+                ->setFilter(['IBLOCK_ID' => $iblockId])
+                ->exec()->fetchAll();
+        }
+        $sections = _::keyBy('ID', $sections);
         $grouped = _::groupBy($elements, 'IBLOCK_SECTION_ID');
-        return _::reduce($grouped, function($acc, $items, $sectionId) use ($sections) {
-            return _::append($acc, array_merge($sections[$sectionId], [
+        return _::map($grouped, function($items, $sectionId) use ($sections) {
+            return array_merge($sections[$sectionId], [
                 'ITEMS' => $items
-            ]));
-        }, []);
+            ]);
+        });
+    }
+
+    static function collect(CIBlockResult $result) {
+        $ret = [];
+        while($x = $result->GetNext()) {
+            $ret[] = $x;
+        }
+        return $ret;
+    }
+
+    static function collectElements(CIBlockResult $result) {
+        $ret = [];
+        while($x = $result->GetNextElement()) {
+            $ret[] = array_merge($x->GetFields(), [
+                'PROPERTIES' => $x->GetProperties()
+            ]);
+        }
+        return $ret;
     }
 }

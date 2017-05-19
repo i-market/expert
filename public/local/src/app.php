@@ -66,6 +66,9 @@ class App extends \Core\App {
             }, [
                 'js/vendor/jquery.fancybox.min.js',
                 'js/vendor/slick.min.js',
+                'js/vendor/tooltipster.bundle.min.js',
+                'js/vendor/core.js',
+                'js/vendor/dropdown.js', // dropdown.js depends on core.js
                 'js/script.js',
             ])
         );

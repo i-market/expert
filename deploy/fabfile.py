@@ -184,7 +184,7 @@ def push_robots():
 
 
 @fab.task
-def upload_dir(local, remote, dry_run=False):
+def upload_dir(local, remote, dry_run=False, opts=None):
     env = environment()
     if 'ssh' in env:
         ssh = env['ssh']
@@ -196,7 +196,7 @@ def upload_dir(local, remote, dry_run=False):
         # trailing slash is important, see rsync documentation
         src = local + '/'
         dest = '{}@{}:{}/{}'.format(ssh['user'], ssh['host'], ssh['document_root'], remote)
-        args = rsync_opts + [src, dest]
+        args = rsync_opts + ([] if opts is None else opts) + [src, dest]
         # TODO rsync still prompts for the password
         with shell_env(RSYNC_PASSWORD=ssh['password']):
             fab.local('rsync {}'.format(' '.join(args)))
@@ -280,6 +280,7 @@ def deploy():
         for rel_path in ['templates/main/build', 'vendor']:
             # TODO optimize composer's vendor sync: look for changes in composer.json?
             fab.execute(upload_dir, '../public/local/' + rel_path, 'local/' + rel_path)
+        fab.execute(upload_dir, '../public/upload', 'upload', opts=['--ignore-existing'])
         # TODO `git-ftp init` for initial deployment?
         # git-ftp push
         fab.execute(git_ftp, 'push')

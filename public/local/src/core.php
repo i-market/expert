@@ -190,6 +190,10 @@ class View {
             || (is_array($x) && _::isEmpty($x))
             || (is_string($x) && Strings::isEmpty($x));
     }
+    
+    static function upper($str) {
+        return Strings::upper($str);
+    }
 }
 
 trait NewsListLike {

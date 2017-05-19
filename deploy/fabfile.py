@@ -195,7 +195,8 @@ def upload_dir(local, remote, dry_run=False, opts=None):
             rsync_opts.append('--verbose')
         # trailing slash is important, see rsync documentation
         src = local + '/'
-        dest = '{}@{}:{}/{}'.format(ssh['user'], ssh['host'], ssh['document_root'], remote)
+        abs_remote = os.path.join(ssh['document_root'], remote)
+        dest = '{}@{}:{}'.format(ssh['user'], ssh['host'], abs_remote)
         args = rsync_opts + ([] if opts is None else opts) + [src, dest]
         # TODO rsync still prompts for the password
         with shell_env(RSYNC_PASSWORD=ssh['password']):

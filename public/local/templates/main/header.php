@@ -1,6 +1,7 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\App;
+use App\Components;
 use App\Iblock;
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Main\Page\Asset;
@@ -193,4 +194,7 @@ if (App::useBitrixAsset()) {
             "START_FROM" => "0"
         )
     ); ?>
+    <? if ($showTopBanners): ?>
+        <? Components::showBannersSection('top') ?>
+    <? endif ?>
     <? ob_start() ?>

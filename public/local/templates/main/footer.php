@@ -9,6 +9,9 @@ use Bex\Tools\Iblock\IblockTools;
 extract(App::layoutContext(), EXTR_SKIP)
 ?>
 <?= App::renderLayout(ob_get_clean()) ?>
+<? if ($showBottomBanners): ?>
+    <? Components::showBannersSection('bottom') ?>
+<? endif ?>
 <? $APPLICATION->IncludeComponent(
     "bitrix:menu",
     "footer",

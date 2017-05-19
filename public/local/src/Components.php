@@ -3,11 +3,16 @@
 namespace App;
 
 use Bex\Tools\Iblock\IblockTools;
+use Core\Underscore as _;
 
 class Components {
     static function showBannersSection($iblockSection) {
         global $APPLICATION;
-        $classList = $iblockSection === 'footer' ? ['some_section--hidden'] : [];
+        $classLists = [
+            'bottom' => ['some_section--last'],
+            'footer' => ['some_section--hidden']
+        ];
+        $classList = _::get($classLists, $iblockSection, []);
         $APPLICATION->IncludeComponent(
             "bitrix:news.list",
             "banners_section",

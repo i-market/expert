@@ -34,7 +34,11 @@ class App extends \Core\App {
     static function layoutContext() {
         global $APPLICATION;
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
+        $isHomepage = $APPLICATION->GetCurPage() === '/';
         return [
+            // TODO add page properties to hide top/bottom banners
+            'showTopBanners' => !$isHomepage,
+            'showBottomBanners' => !$isHomepage,
             'shareUrlsFn' => function() use (&$APPLICATION) {
                 // defer to get the title
                 return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());

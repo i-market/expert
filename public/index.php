@@ -77,7 +77,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
         ); ?>
     </div>
 </section>
-<? Components::showBannersSection('homepage') ?>
+<? Components::showBannersSection('top') ?>
 <? // (construction) sites ?>
 <section class="our_objects_section">
     <div class="wrap">

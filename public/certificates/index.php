@@ -1,5 +1,4 @@
 <?
-use App\Components;
 use App\View as v;
 use App\Iblock;
 use Bex\Tools\Iblock\IblockTools;
@@ -9,7 +8,6 @@ $APPLICATION->SetTitle("Аттестаты и допуски СРО");
 $APPLICATION->SetPageProperty('layout', 'bare');
 ?>
 
-<? Components::showBannersSection('certificates') ?>
 <section class="certificates_section">
     <div class="wrap">
         <div class="wrap_title">
@@ -78,17 +76,6 @@ $APPLICATION->SetPageProperty('layout', 'bare');
                 "SORT_ORDER2" => "ASC"
             )
         ); ?>
-    </div>
-</section>
-<? // TODO ?>
-<section class="some_section some_section--last">
-    <div class="wrap">
-        <div class="grid">
-            <a href="#" class="col col_4" style="background: url('images/pic_4.jpg')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('images/pic_5.jpg')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('images/pic_6.jpg')no-repeat center center / cover"></a>
-            <a href="#" class="col col_4" style="background: url('images/pic_7.jpg')no-repeat center center / cover"></a>
-        </div>
     </div>
 </section>
 

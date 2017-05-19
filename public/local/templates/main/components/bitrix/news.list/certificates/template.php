@@ -15,7 +15,7 @@ use App\View as v;
         <div class="grid">
             <? foreach ($section['ITEMS'] as $item): ?>
                 <? $file = $item['FILE'] ?>
-                <div class="item col col_3">
+                <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
                     <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
                         <span class="wrap_img">
                             <img src="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">

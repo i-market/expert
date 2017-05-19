@@ -77,11 +77,20 @@ class MonitoringCalc extends AbstractCalc {
                 'KEY' => 'STRUCTURES_TO_MONITOR',
                 'STARTS_WITH' => 'Конструкции подлежащие мониторингу',
             ],
-//            'Продолжетельность мониторинга (мес.)',
+            [
+                'KEY' => 'DURATION',
+                'STARTS_WITH' => 'Продолжетельность мониторинга (мес.)',
+            ],
             // TODO Удаленность объектов друг от друга?
 //            'Удаленность объектов друг от друга',
-//            'Транспортная доуступность',
-//            'Наличие документов'
+            [
+                'KEY' => 'TRANSPORT_ACCESSIBILITY',
+                'STARTS_WITH' => 'Транспортная доуступность',
+            ],
+            [
+                'KEY' => 'DOCUMENTS',
+                'STARTS_WITH' => 'Наличие документов',
+            ]
         ];
         // Help PHP detect line ending in Mac OS X.
         // http://csv.thephpleague.com/8.0/instantiation/#csv-and-macintosh
@@ -126,7 +135,8 @@ class MonitoringCalc extends AbstractCalc {
         $parseFloat = function($str) {
             // TODO validate
             $normalized = str::replace($str, ',', '.');
-            return floatval($normalized);
+            $val = floatval($normalized);
+            return $val == 0 ? 1 : $val;
         };
         $nonEmptyCells = function($cells) {
             return array_filter($cells, function($cell) {
@@ -149,11 +159,21 @@ class MonitoringCalc extends AbstractCalc {
 //                    : null;
 //            }
 //        };
-        $ret = _::map($sectionKey2Rows, function($rows, $sectionKey) use ($parseFloat, $nonEmptyCells) {
+        $parseBoolean = function($str) {
+            $truthy = ['Имеется', 'ЕСТЬ'];
+            $falsy = ['Не имеется', 'НЕТ'];
+            if (in_array($str, $truthy)) {
+                return true;
+            } elseif(in_array($str, $falsy)) {
+                return false;
+            } else {
+                return null;
+            }
+        };
+        $ret = _::map($sectionKey2Rows, function($rows, $sectionKey) use ($parseFloat, $parseBoolean, $nonEmptyCells) {
             // TODO extract function
             if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
                 $map = [];
-                $inSection = null;
                 $state = ['default'];
                 foreach ($rows as $idx => $cells) {
                     $stateName = _::first($state);
@@ -191,6 +211,31 @@ class MonitoringCalc extends AbstractCalc {
                         // peek the next row
                         if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($nonEmptyCells($rows[$idx + 1]))) {
                             $state = ['default'];
+                        }
+                    }
+                }
+                return $map;
+            } elseif ($sectionKey === 'DOCUMENTS') {
+                $map = [];
+                $state = ['find_document'];
+                foreach ($rows as $idx => $cells) {
+                    $stateName = _::first($state);
+                    if ($stateName === 'find_document') {
+                        if ($parseBoolean(_::first($cells)) === null) {
+                            $state = ['in_document', _::first($cells)];
+                        }
+                    } elseif ($stateName === 'in_document') {
+                        list($_, $document) = $state;
+                        list($k, $v) = $cells;
+                        $booleanMaybe = $parseBoolean($k);
+                        if ($booleanMaybe !== null) {
+                            $map[$document][$booleanMaybe] = $parseFloat($v);
+                        } else {
+                            // TODO handle the unexpected
+                        }
+                        // peek the next row
+                        if (isset($rows[$idx + 1]) && !$parseBoolean(_::first($rows[$idx + 1]))) {
+                            $state = ['find_document'];
                         }
                     }
                 }

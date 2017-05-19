@@ -15,7 +15,7 @@ from ftpsync.targets import FsTarget
 from ftpsync.ftp_target import FtpTarget
 import fabric.api as fab
 import fabric.contrib.console as console
-from fabric.context_managers import lcd
+from fabric.context_managers import lcd, shell_env
 
 templates = {
     'settings.php.j2': 'bitrix/.settings.php',
@@ -186,42 +186,57 @@ def push_robots():
 @fab.task
 def upload_dir(local, remote, dry_run=False):
     env = environment()
-    ftp = env['ftp']
-    host = ftp_host(env)
-    extra_opts = {'ftp_debug': 1 if state['verbose'] else 0}
-    url = urlparse(ftp['url'])
-    if url.scheme != 'ftp':
-        fab.warn('non-ftp url scheme, may not be supported')
-    abs_remote = os.path.join(url.path, remote)
-    if not host.path.exists(abs_remote):
-        fab.warn('remote path is missing: {}'.format(abs_remote))
-        if console.confirm('create missing directories?'):
-            host.makedirs(abs_remote)
-    local_target = FsTarget(local, extra_opts=extra_opts)
-    remote_target = FtpTarget(
-        path=abs_remote,
-        host=url.netloc,
-        username=ftp['user'],
-        password=ftp['password'],
-        extra_opts=extra_opts)
-    opts = {
-        'force': False,
-        # TODO
-        'delete_unmatched': False,
-        'verbose': 3,
-        'execute': True,
-        'dry_run': dry_run
-    }
-    s = UploadSynchronizer(local_target, remote_target, opts)
-    try:
-        s.run()
-    except KeyboardInterrupt:
-        fab.warn('aborted by user')
-    finally:
-        s.local.close()
-        s.remote.close()
-    stats = s.get_stats()
-    pprint(stats)
+    if 'ssh' in env:
+        ssh = env['ssh']
+        rsync_opts = ['--recursive', '--archive', '--compress', '--itemize-changes']
+        if dry_run:
+            rsync_opts.append('--dry-run')
+        if state['verbose']:
+            rsync_opts.append('--verbose')
+        # trailing slash is important, see rsync documentation
+        src = local + '/'
+        dest = '{}@{}:{}/{}'.format(ssh['user'], ssh['host'], ssh['document_root'], remote)
+        args = rsync_opts + [src, dest]
+        # TODO rsync still prompts for the password
+        with shell_env(RSYNC_PASSWORD=ssh['password']):
+            fab.local('rsync {}'.format(' '.join(args)))
+    else:
+        ftp = env['ftp']
+        host = ftp_host(env)
+        extra_opts = {'ftp_debug': 1 if state['verbose'] else 0}
+        url = urlparse(ftp['url'])
+        if url.scheme != 'ftp':
+            fab.warn('non-ftp url scheme, may not be supported')
+        abs_remote = os.path.join(url.path, remote)
+        if not host.path.exists(abs_remote):
+            fab.warn('remote path is missing: {}'.format(abs_remote))
+            if console.confirm('create missing directories?'):
+                host.makedirs(abs_remote)
+        local_target = FsTarget(local, extra_opts=extra_opts)
+        remote_target = FtpTarget(
+            path=abs_remote,
+            host=url.netloc,
+            username=ftp['user'],
+            password=ftp['password'],
+            extra_opts=extra_opts)
+        opts = {
+            'force': False,
+            # TODO
+            'delete_unmatched': False,
+            'verbose': 3,
+            'execute': True,
+            'dry_run': dry_run
+        }
+        s = UploadSynchronizer(local_target, remote_target, opts)
+        try:
+            s.run()
+        except KeyboardInterrupt:
+            fab.warn('aborted by user')
+        finally:
+            s.local.close()
+            s.remote.close()
+        stats = s.get_stats()
+        pprint(stats)
 
 
 @fab.task

@@ -19,6 +19,8 @@ class Iblock {
     const RESOURCE_LINKS = 'resource_links';
     const BANNERS = 'banners';
     const CERTIFICATES = 'certificates';
+    const CONTACT_GALLERY = 'contact_gallery';
+    const IMAGES = 'images';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

@@ -1,0 +1,181 @@
+<?
+use App\View as v;
+use Bex\Tools\Iblock\IblockTools;
+use App\Iblock;
+
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetTitle("Контакты");
+$APPLICATION->SetPageProperty('layout', 'bare');
+?>
+
+<section class="contacts_section">
+    <div class="wrap">
+        <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+    </div>
+    <div class="wrap wrap--small">
+        <div class="contacts_info">
+            <div class="top">
+                <h4>адрес</h4>
+                <div>
+                    <p class="text">Станция метро "Перово", последний вагон из центра (10 мин. пешком)</p>
+                </div>
+                <div>
+                    <p class="text ico">111141 г. Москва, 3-й проезд Перова Поля, дом 8, строение 11, офис 402</p>
+                </div>
+            </div>
+            <div class="bottom">
+                <div class="item">
+                    <h4>Телефоны</h4>
+                    <div>
+                        <p class="text ico">+7 (495) 641-70-69</p>
+                    </div>
+                    <div>
+                        <p class="text ico">+7 (499) 340-34-73</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <h4>Электронный адрес</h4>
+                    <div>
+                        <p class="text ico">E-mail: 6417069@bk.ru</p>
+                    </div>
+                    <div>
+                        <p class="text ico">E-mail: 6417069@bk.ru</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <h4>Режим работы</h4>
+                    <div>
+                        <p class="text">Пн-Пт 10.00-19.00</p>
+                    </div>
+                    <div>
+                        <p class="text">Сб-Вс Выходные дни</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="wrap_map">
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:main.include",
+            "",
+            Array(
+                "AREA_FILE_SHOW" => "file",
+                "PATH" => v::includedArea('contact/map.php')
+            ),
+            null,
+            array('HIDE_ICONS' => 'Y')
+        ); ?>
+    </div>
+    <div class="wrap">
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:main.include",
+            "",
+            Array(
+                "AREA_FILE_SHOW" => "file",
+                "PATH" => v::includedArea('contact/gallery_heading.php')
+            )
+        ); ?>
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:news.list",
+            "contact_gallery",
+            Array(
+                "ACTIVE_DATE_FORMAT" => "j F Y",
+                "ADD_SECTIONS_CHAIN" => "N",
+                "AJAX_MODE" => "N",
+                "AJAX_OPTION_ADDITIONAL" => "",
+                "AJAX_OPTION_HISTORY" => "N",
+                "AJAX_OPTION_JUMP" => "N",
+                "AJAX_OPTION_STYLE" => "Y",
+                "CACHE_FILTER" => "N",
+                "CACHE_GROUPS" => "Y",
+                "CACHE_TIME" => "36000000",
+                "CACHE_TYPE" => "A",
+                "CHECK_DATES" => "Y",
+                "DETAIL_URL" => "",
+                "DISPLAY_BOTTOM_PAGER" => "Y",
+                "DISPLAY_DATE" => "Y",
+                "DISPLAY_NAME" => "Y",
+                "DISPLAY_PICTURE" => "Y",
+                "DISPLAY_PREVIEW_TEXT" => "Y",
+                "DISPLAY_TOP_PAGER" => "N",
+                "FIELD_CODE" => array('DETAIL_PICTURE'),
+                "FILTER_NAME" => "",
+                "HIDE_LINK_WHEN_NO_DETAIL" => "N",
+                "IBLOCK_ID" => IblockTools::find(Iblock::CONTENT_TYPE, Iblock::CONTACT_GALLERY)->id(),
+                "IBLOCK_TYPE" => Iblock::CONTENT_TYPE,
+                "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+                "INCLUDE_SUBSECTIONS" => "Y",
+                "MESSAGE_404" => "",
+                "NEWS_COUNT" => PHP_INT_MAX,
+                "PAGER_BASE_LINK_ENABLE" => "N",
+                "PAGER_DESC_NUMBERING" => "N",
+                "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+                "PAGER_SHOW_ALL" => "N",
+                "PAGER_SHOW_ALWAYS" => "N",
+                "PAGER_TEMPLATE" => ".default",
+                "PAGER_TITLE" => '',
+                "PARENT_SECTION" => "",
+                "PARENT_SECTION_CODE" => "",
+                "PREVIEW_TRUNCATE_LEN" => "",
+                "PROPERTY_CODE" => array("", ""),
+                "SET_BROWSER_TITLE" => "N",
+                "SET_LAST_MODIFIED" => "N",
+                "SET_META_DESCRIPTION" => "N",
+                "SET_META_KEYWORDS" => "N",
+                "SET_STATUS_404" => "N",
+                "SET_TITLE" => "N",
+                "SHOW_404" => "N",
+                "SORT_BY1" => "ACTIVE_FROM",
+                "SORT_BY2" => "SORT",
+                "SORT_ORDER1" => "DESC",
+                "SORT_ORDER2" => "ASC"
+            )
+        ); ?>
+    </div>
+    <div class="wrap">
+        <? $APPLICATION->IncludeComponent(
+            "bitrix:main.include",
+            "",
+            Array(
+                "AREA_FILE_SHOW" => "file",
+                "PATH" => v::includedArea('contact/directions_heading.php')
+            )
+        ); ?>
+    </div>
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:photo.detail",
+        "contact_directions",
+        Array(
+            "AJAX_MODE" => "N",
+            "AJAX_OPTION_ADDITIONAL" => "",
+            "AJAX_OPTION_HISTORY" => "N",
+            "AJAX_OPTION_JUMP" => "N",
+            "AJAX_OPTION_STYLE" => "Y",
+            "BROWSER_TITLE" => "-",
+            "CACHE_GROUPS" => "Y",
+            "CACHE_TIME" => "36000000",
+            "CACHE_TYPE" => "A",
+            "DETAIL_URL" => "",
+            "ELEMENT_CODE" => 'contact_directions',
+            "ELEMENT_ID" => "",
+            "ELEMENT_SORT_FIELD" => "sort",
+            "ELEMENT_SORT_ORDER" => "asc",
+            "FIELD_CODE" => array(),
+            "IBLOCK_ID" => IblockTools::find(Iblock::CONTENT_TYPE, Iblock::IMAGES)->id(),
+            "IBLOCK_TYPE" => Iblock::CONTENT_TYPE,
+            "MESSAGE_404" => "",
+            "META_DESCRIPTION" => "-",
+            "META_KEYWORDS" => "-",
+            "PROPERTY_CODE" => array(),
+            "SECTION_CODE" => "",
+            "SECTION_ID" => "",
+            "SECTION_URL" => "",
+            "SET_LAST_MODIFIED" => "N",
+            "SET_STATUS_404" => "N",
+            "SET_TITLE" => "N",
+            "SHOW_404" => "N"
+        )
+    ); ?>
+</section>
+
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

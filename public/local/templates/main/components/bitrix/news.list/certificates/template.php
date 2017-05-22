@@ -3,7 +3,7 @@
 use App\View as v;
 ?>
 <? foreach ($arResult['SECTIONS'] as $section): ?>
-    <div class="certificates_item">
+    <div class="certificates_item" id="<?= $section['CODE'] ?>">
         <div class="wrap_title">
             <h4><?= $section['NAME'] ?></h4>
             <? if (!v::isEmpty($section['FILE'])): ?>

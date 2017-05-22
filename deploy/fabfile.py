@@ -15,7 +15,8 @@ from ftpsync.targets import FsTarget
 from ftpsync.ftp_target import FtpTarget
 import fabric.api as fab
 import fabric.contrib.console as console
-from fabric.context_managers import lcd, shell_env
+import fabric.contrib.files as files
+from fabric.context_managers import cd, lcd, shell_env
 
 templates = {
     'settings.php.j2': 'bitrix/.settings.php',
@@ -241,6 +242,30 @@ def upload_dir(local, remote, dry_run=False, opts=None):
 
 
 @fab.task
+def clear_cache(dry_run=False):
+    env = environment()
+    if 'ssh' in env:
+        # TODO plug host vars into fabric in the global manner
+        path = os.path.join(env['ssh']['document_root'], 'bitrix/cache')
+        ssh = env['ssh']
+        fab.env.host_string = '{}@{}'.format(ssh['user'], ssh['host'])
+        fab.env.password = ssh['password']
+        if console.confirm('remove everything in directory {}?'.format(path), False):
+            with cd(path):
+                # removing stuff is spooky, you can't be too paranoid
+                if not files.exists('css'):
+                    fab.warn('no "css" in cache directory. double-check the path.')
+                    if not console.confirm('remove anyway?', False):
+                        fab.abort('aborted by user')
+                if dry_run:
+                    fab.run('echo *')
+                else:
+                    fab.run('rm -rf *')
+    else:
+        fab.abort('no implementation for non-ssh hosts yet. sorry.')
+
+
+@fab.task
 def verbose():
     state['verbose'] = True
 
@@ -285,7 +310,8 @@ def deploy():
         # TODO `git-ftp init` for initial deployment?
         # git-ftp push
         fab.execute(git_ftp, 'push')
-        # clear bitrix cache?
+        # clear bitrix cache
+        fab.execute(clear_cache)
         # migrate db
         # notify in slack if remote
         name = ', '.join(fab.env.roles)

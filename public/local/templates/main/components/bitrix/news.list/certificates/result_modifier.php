@@ -21,4 +21,5 @@ $sections = array_map(function($section) use ($transformFile) {
     $file = CFile::GetFileArray($section['UF_FILE']);
     return _::set($section, 'FILE', $transformFile($file));
 }, Iblock::collect($result));
-$arResult['SECTIONS'] = Iblock::groupBySection($items, $arResult['ID'], $sections);
+$groups = Iblock::groupBySection($items, $arResult['ID'], $sections);
+$arResult['SECTIONS'] = _::sort($groups, 'SORT');

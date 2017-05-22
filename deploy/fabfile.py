@@ -273,7 +273,7 @@ def deploy():
     with lcd(cwd):
         # local composer install
         if os.path.exists(os.path.join(cwd, 'composer.json')):
-            fab.local('composer install --no-dev')
+            fab.local('composer install')
         # local npm install and build assets
         fab.local(asset_build_command)
     if not env['local']:

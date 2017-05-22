@@ -37,7 +37,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Техническая база", 
-		"/our-tools/", 
+		"/equipment/",
 		Array(), 
 		Array(), 
 		"" 

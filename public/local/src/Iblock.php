@@ -21,6 +21,7 @@ class Iblock {
     const CERTIFICATES = 'certificates';
     const CONTACT_GALLERY = 'contact_gallery';
     const IMAGES = 'images';
+    const EQUIPMENT = 'equipment';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

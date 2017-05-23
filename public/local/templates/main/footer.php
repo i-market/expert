@@ -134,6 +134,7 @@ extract(App::layoutContext(), EXTR_SKIP)
         </div>
     </div>
 </footer>
+<? $APPLICATION->ShowViewContent('modals') ?>
 <? if ($sentry['enabled']): ?>
     <?= v::render('partials/sentry_js', $sentry) ?>
 <? endif ?>

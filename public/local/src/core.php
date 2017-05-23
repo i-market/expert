@@ -194,6 +194,11 @@ class View {
     static function upper($str) {
         return Strings::upper($str);
     }
+
+    static function appendToView($view, $content) {
+        global $APPLICATION;
+        $APPLICATION->AddViewContent($view, $APPLICATION->GetViewContent($view).$content);
+    }
 }
 
 trait NewsListLike {

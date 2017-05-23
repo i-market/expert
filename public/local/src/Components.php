@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
 
@@ -70,5 +71,47 @@ class Components {
                 "CLASS_LIST" => $classList
             )
         );
+    }
+
+    static function renderServicesSection() {
+        // TODO editable services
+        // TODO fill in modal subheadings
+        $servicesBase = [
+            [
+                'name' => 'Обследование конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования.',
+                'modalSubheading' => 'На выполнение обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
+                'slug' => 'inspection'
+            ],
+            [
+                'name' => 'Строительно-техническая экспертиза конструкций, помещений, зданий, сооружений, помещений, инженерных сетей и оборудования. Судебная экспертиза.',
+                'slug' => 'examination'
+            ],
+            [
+                'name' => 'Выполнение отдельных видов работ по экспертизе и обследованию. Экспертиза отдельных материалов, деталей, изделий, узлов, конструкций, элементов конструкций и пр.',
+                'slug' => 'individual'
+            ],
+            [
+                'name' => 'Мониторинг технического состояния зданий и сооружений',
+                'slug' => 'monitoring'
+            ],
+            [
+                'name' => 'Разработка проектных решений',
+                'slug' => 'design'
+            ],
+            [
+                'name' => 'Технический надзор. Строительный контроль',
+                'slug' => 'oversight'
+            ]
+        ];
+        $pathRoot = 'what-we-do';
+        $services = array_map(function($service) use ($pathRoot) {
+            $detail = $pathRoot.'/'.$service['slug'];
+            return array_merge($service, [
+                'detailLink' => v::path($detail),
+                'calcLink' => v::path($detail.'/calculator'),
+                'requestModalId' => 'request-'.$service['slug']
+            ]);
+        }, $servicesBase);
+        return v::render('partials/services_section', ['services' => $services]);
     }
 }

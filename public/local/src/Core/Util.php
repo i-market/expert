@@ -5,6 +5,13 @@ namespace Core;
 use Core\Underscore as _;
 
 class Util {
+    static private $lastId = 0;
+
+    static function uniqueId($prefix='') {
+        self::$lastId += 1;
+        return self::$lastId;
+    }
+
     static function humanFileSize($size, $precision = 0) {
         $units = array('Б','КБ','МБ','ГБ','ТБ','ПБ','EB','ZB','YB');
         $step = 1024;

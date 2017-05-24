@@ -1,0 +1,26 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "intercooler": "^1.1.2"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.12",
+    "node-sass": "^4.5.3"
+  },
+  "config": {
+    "dist": "templates/main/build/assets"
+  },
+  "scripts": {
+    "build:mockup": "./build-mockup.sh",
+    "build": "npm run build:mockup",
+    "browsersync": "browser-sync start --proxy $PROXY --files ${npm_package_config_dist}/css/*.css --no-open",
+    "sass": "node-sass --output ${npm_package_config_dist}/css mockup/css/*.scss",
+    "watch:sass": "npm run sass && node-sass --watch --output ${npm_package_config_dist}/css mockup/css/*.scss",
+    "watch": "npm run watch:sass & npm run browsersync"
+  },
+  "author": "",
+  "license": "ISC"
+}

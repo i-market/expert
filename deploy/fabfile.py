@@ -22,7 +22,7 @@ templates = {
     'settings.php.j2': 'bitrix/.settings.php',
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
-asset_build_command = './build.sh'
+asset_build_command = 'npm run build'
 git_ftp_syncroot = 'public'
 
 

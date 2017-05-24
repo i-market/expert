@@ -52,7 +52,12 @@ use App\View as v;
     <div class="modal" id="<?= $service['requestModalId'] ?>">
         <div class="block">
             <span class="close">×</span>
-            <?= v::render('partials/service_request_form', ['service' => $service]) ?>
+            <?
+            // TODO refactor: this was supposed to be done using template inheritance,
+            // but plate's `section` function causes a decoding error for some reason (gzip enabled)
+            ?>
+            <? $inputs = v::render('partials/service_forms/monitoring_form', ['service' => $service]) ?>
+            <?= v::render('partials/service_forms/form', ['service' => $service, 'inputs' => $inputs]) ?>
         </div>
     </div>
 <? endforeach ?>

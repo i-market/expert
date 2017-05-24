@@ -23,6 +23,9 @@ class Iblock {
     const IMAGES = 'images';
     const EQUIPMENT = 'equipment';
 
+    const SERVICES_TYPE = 'services';
+    const SERVICES = 'services';
+
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {
             $sections = SectionTable::query()

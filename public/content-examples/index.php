@@ -130,7 +130,7 @@ $APPLICATION->SetTitle("Примеры контента");
 <p style="text-align: center;">
     <img src="/content-examples/placeholder.png" width="100" height="100">
 </p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac consectetur ex, et accumsan sapien. Morbi sit amet ex eu mi laoreet gravida non eu nibh. Nulla euismod eleifend orci in facilisis. Nulla velit sem, facilisis lacinia facilisis sed, sodales aliquam massa. Cras sem libero, fringilla eget luctus sed, euismod placerat sapien. Praesent sed ullamcorper nisi. Morbi ut lorem ac ex blandit tincidunt vel non orci. Proin ullamcorper efficitur viverra. Praesent id augue vitae nunc varius egestas. Nulla nec ornare eros, sit amet pellentesque nunc. Donec tincidunt neque velit, vel semper purus consectetur ac. Sed hendrerit urna tortor, at lacinia dolor finibus vitae. Donec consequat libero vitae mauris aliquet egestas.</p>
+<p>Lorem ipsum dolor sit amet, <a href="#">consectetur adipiscing</a> elit. Aenean ac consectetur ex, et accumsan sapien. Morbi sit amet ex eu mi laoreet gravida non eu nibh. Nulla euismod eleifend orci in facilisis. Nulla velit sem, facilisis lacinia facilisis sed, sodales aliquam massa. Cras sem libero, fringilla eget luctus sed, euismod placerat sapien. Praesent sed ullamcorper nisi. Morbi ut lorem ac ex blandit tincidunt vel non orci. Proin ullamcorper efficitur viverra. Praesent id augue vitae nunc varius egestas. Nulla nec ornare eros, sit amet pellentesque nunc. Donec tincidunt neque velit, vel semper purus consectetur ac. Sed hendrerit urna tortor, at lacinia dolor finibus vitae. Donec consequat libero vitae mauris aliquet egestas.</p>
 
 <h3>Выравнивание справа</h3>
 

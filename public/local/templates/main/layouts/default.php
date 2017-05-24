@@ -1,4 +1,4 @@
-<section>
+<section class="editable-section">
     <div class="wrap">
         <div class="wrap_title">
             <h2><?= $APPLICATION->GetTitle(false) ?></h2>

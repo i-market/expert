@@ -3,10 +3,13 @@
 namespace App;
 
 use Bex\Tools\Iblock\IblockTools;
+use Bitrix\Main\Loader;
 use CIBlockElement;
 use Respect\Validation\Validator as val;
 use App\View as v;
 use Core\Underscore as _;
+
+Loader::includeModule('iblock');
 
 class Services {
     static function services() {

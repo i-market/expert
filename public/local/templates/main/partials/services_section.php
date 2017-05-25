@@ -1,4 +1,5 @@
 <?
+use App\Components;
 use App\View as v;
 ?>
 <section class="activites_section">
@@ -52,12 +53,12 @@ use App\View as v;
     <div class="modal" id="<?= $service['requestModalId'] ?>">
         <div class="block">
             <span class="close">×</span>
-            <?
-            // TODO refactor: this was supposed to be done using template inheritance,
-            // but plate's `section` function causes a decoding error for some reason (gzip enabled)
-            ?>
-            <? $inputs = v::render('partials/service_forms/monitoring_form', ['service' => $service]) ?>
-            <?= v::render('partials/service_forms/form', ['service' => $service, 'inputs' => $inputs]) ?>
+            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>" class="service-request">
+                <?= Components::renderServiceForm('partials/service_forms/monitoring_form', [
+                    'service' => $service,
+                    'params' => []
+                ]) ?>
+            </form>
         </div>
     </div>
 <? endforeach ?>

@@ -3,6 +3,7 @@
 namespace Core;
 
 use Core\Underscore as _;
+use Core\Strings as str;
 
 class Util {
     static private $lastId = 0;
@@ -10,6 +11,20 @@ class Util {
     static function uniqueId($prefix='') {
         self::$lastId += 1;
         return self::$lastId;
+    }
+    
+    static function joinPath($paths) {
+        $trimmed = _::clean(array_map(function($path) {
+            return trim($path, DIRECTORY_SEPARATOR);
+        }, $paths));
+        $prefix = str::startsWith(_::first($paths), DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '';
+        return $prefix.join(DIRECTORY_SEPARATOR, $trimmed);
+    }
+    
+    static function formInputNamePath($name) {
+        return array_map(function($segment) {
+            return trim($segment, ']');
+        }, explode('[', $name));
     }
 
     static function humanFileSize($size, $precision = 0) {
@@ -24,7 +39,8 @@ class Util {
     }
 
     static function fileExtension($path) {
-        return _::last(explode('.', $path));
+        $ret = _::last(explode('.', $path));
+        return $ret === $path ? null : $ret;
     }
 
     /**

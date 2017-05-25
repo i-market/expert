@@ -5,6 +5,7 @@ namespace App;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
+use Core\Util;
 
 class Components {
     static function showBannersSection($iblockSection) {
@@ -73,7 +74,18 @@ class Components {
         );
     }
 
+    static function renderServiceForm($templateName, $context) {
+        $getValue = function($params, $name) {
+            $path = Util::formInputNamePath($name);
+            return _::get($params, join('.', $path));
+        };
+        // TODO refactor: this was supposed to be done using template inheritance,
+        // but plate's `section` function causes a decoding error for some reason (gzip enabled)
+        $inputs = v::render($templateName, array_merge($context, ['getValue' => $getValue]));
+        return v::render('partials/service_forms/form', array_merge($context, ['inputs' => $inputs]));
+    }
+
     static function renderServicesSection() {
-        return v::render('partials/services_section', ['services' => Services::services()]);
+        return v::render('partials/services_section', ['services' => array_values(Services::services())]);
     }
 }

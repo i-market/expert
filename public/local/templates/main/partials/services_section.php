@@ -54,10 +54,7 @@ use App\View as v;
         <div class="block">
             <span class="close">×</span>
             <form data-api-endpoint="<?= $service['apiEndpoint'] ?>" class="service-request">
-                <?= Components::renderServiceForm('partials/service_forms/monitoring_form', [
-                    'service' => $service,
-                    'params' => []
-                ]) ?>
+                <?= $service['form'] ?>
             </form>
         </div>
     </div>

@@ -1,21 +1,25 @@
 <?
 use App\View as v;
 
-$showInput = function($params, $name, $label, $opts) use ($getValue) {
-    $value = $getValue($params, $name);
+$showInput = function($state, $name, $label, $opts) use ($getValue) {
+    $value = $getValue($state['params'], $name);
+    $error = $state['errors'][$name];
     ?>
-    <div class="wrap_input">
+    <div class="wrap_input<?= !v::isEmpty($error) ? ' error' : '' ?>">
         <input name="<?= $name ?>" type="text" value="<?= $value ?>">
         <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? '<span class="red">*</span>' : '') ?></span>
+        <div class="error-message"><?= $error ?></div>
     </div>
     <?
 };
-$showTextarea = function($params, $name, $label, $opts) use ($getValue) {
-    $value = $getValue($params, $name);
+$showTextarea = function($state, $name, $label, $opts) use ($getValue) {
+    $value = $getValue($state['params'], $name);
+    $error = $state['errors'][$name];
     ?>
-    <div class="wrap_input">
-        <textarea name="<?= $name ?>"><?= $params[$name] ?></textarea>
+    <div class="wrap_input<?= !v::isEmpty($error) ? ' error' : '' ?>">
+        <textarea name="<?= $name ?>"><?= $value ?></textarea>
         <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? '<span class="red">*</span>' : '') ?></span>
+        <div class="error-message"><?= $error ?></div>
     </div>
     <?
 };

@@ -12,16 +12,23 @@ use Core\Underscore as _;
 use Core\Strings as str;
 
 class Api {
+    static function fileuploadDir() {
+        // TODO ok tmp dir?
+        return ini_get('upload_tmp_dir')
+            ? ini_get('upload_tmp_dir')
+            : sys_get_temp_dir();
+    }
+
     static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params
                 $params = $request->params();
-//                $state = Services::requestMonitoring();
+                $state = Services::requestMonitoring($params);
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', [
                     'service' => Services::services()['monitoring'],
-                    'params' => $params
+                    'state' => $state
                 ]);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {
@@ -35,9 +42,7 @@ class Api {
                 }
                 // `basename` sort of sanitizes user input
                 $session = basename($session);
-                // TODO ok tmp dir?
-                $tmpDir = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
-                $uploadDir = Util::joinPath([$tmpDir, $session]);
+                $uploadDir = Util::joinPath([self::fileuploadDir(), $session]);
                 mkdir($uploadDir);
                 $filesystem = new FileSystem\Simple($uploadDir);
                 $pathResolver = new PathResolver\Simple($uploadDir);
@@ -48,7 +53,8 @@ class Api {
                 foreach($headers as $header => $value) {
                     header($header.': '.$value);
                 }
-                $fileArrays = array_map(function(/** @var \FileUpload\File $file */ $file) {
+                $fileArrays = array_map(function($file) {
+                    /** @var \FileUpload\File $file */
                     $absPath = $file->getRealPath();
                     $filename = $file->getFilename();
                     $extensionMaybe = Util::fileExtension($absPath);
@@ -66,7 +72,6 @@ class Api {
                     'session' => $session,
                     'files' => $fileArrays
                 ]);
-//                \CFile::SaveFile();
             });
         });
         return $router;

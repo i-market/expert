@@ -14,8 +14,10 @@
     var apiEndpoint = $form.attr('data-api-endpoint');
     $form.on('submit', function(e) {
       e.preventDefault();
+      var $loader = $form.find('.form-loader');
+      // TODO wait for files to upload
+      $loader.show();
       var data = $form.serialize();
-      // TODO form spinner
       $.ajax({
         url: apiEndpoint,
         method: 'POST',
@@ -37,10 +39,10 @@
         },
         error: function() {
           // TODO handle errors
-          assert(false);
         },
         complete: function() {
           Mockup.initForms($form);
+          $loader.hide();
         }
       });
     });

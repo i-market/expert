@@ -1,13 +1,12 @@
-<?
-require __DIR__.'/macros.php';
-?>
+<? require __DIR__.'/macros.php' ?>
+
 <div class="wrap_input_block">
-    <? $showInput($params, 'NAME', 'Наименование объекта(ов) мониторинга', ['required' => true]) ?>
-    <? $showInput($params, 'LOCATION', 'Местонахождение объекта(ов)') ?>
-    <? $showTextarea($params, 'MONITORING_GOAL', 'Каковы цели проведения мониторинга', ['required' => true]) ?>
-    <? $showTextarea($params, 'DESCRIPTION', 'Описание объекта(ов) мониторинга (назначение, этажность, наличие подвала, площадь, год постройки и пр.)',
+    <? $showInput($state, 'NAME', 'Наименование объекта(ов) мониторинга', ['required' => true]) ?>
+    <? $showInput($state, 'LOCATION', 'Местонахождение объекта(ов)') ?>
+    <? $showTextarea($state, 'MONITORING_GOAL', 'Каковы цели проведения мониторинга', ['required' => true]) ?>
+    <? $showTextarea($state, 'DESCRIPTION', 'Описание объекта(ов) мониторинга (назначение, этажность, наличие подвала, площадь, год постройки и пр.)',
         ['required' => true]) ?>
-    <? $showTextarea($params, 'ADDITIONAL_INFO', 'Дополнительная информация по мониторингу') ?>
+    <? $showTextarea($state, 'ADDITIONAL_INFO', 'Дополнительная информация по мониторингу') ?>
 </div>
 <div class="wrap_checkbox_block">
     <h4>Наличие документов:</h4>
@@ -17,9 +16,9 @@ require __DIR__.'/macros.php';
 <? $showFilesBlock('<b>Документы</b> по объекту(ам) мониторинга (к заявке можно прикрепить не более 10-и файлов)') ?>
 <h3 class="h3_mb">Контактная информация для ответа</h3>
 <div class="wrap_input_block">
-    <? $showInput($params, 'CONTACT[ORGANIZATION]', 'Наименование организации') ?>
-    <? $showInput($params, 'CONTACT[PERSON]', 'Контактное лицо', ['required' => true]) ?>
-    <? $showInput($params, 'CONTACT[PHONE_1]', 'Телефон 1') ?>
-    <? $showInput($params, 'CONTACT[PHONE_2]', 'Телефон 2') ?>
-    <? $showInput($params, 'CONTACT[EMAIL]', 'Электронная почта', ['required' => true]) ?>
+    <? $showInput($state, 'CONTACT[ORGANIZATION]', 'Наименование организации') ?>
+    <? $showInput($state, 'CONTACT[PERSON]', 'Контактное лицо', ['required' => true]) ?>
+    <? $showInput($state, 'CONTACT[PHONE_1]', 'Телефон 1') ?>
+    <? $showInput($state, 'CONTACT[PHONE_2]', 'Телефон 2') ?>
+    <? $showInput($state, 'CONTACT[EMAIL]', 'Электронная почта', ['required' => true]) ?>
 </div>

@@ -86,6 +86,14 @@ class Components {
     }
 
     static function renderServicesSection() {
-        return v::render('partials/services_section', ['services' => array_values(Services::services())]);
+        $services = array_map(function($service) {
+            return array_merge($service, [
+                'form' => Components::renderServiceForm('partials/service_forms/monitoring_form', [
+                    'service' => $service,
+                    'state' => Services::initialState()
+                ])
+            ]);
+        }, array_values(Services::services()));
+        return v::render('partials/services_section', ['services' => $services]);
     }
 }

@@ -73,7 +73,13 @@ class App extends \Core\App {
                 'js/vendor/tooltipster.bundle.min.js',
                 'js/vendor/core.js',
                 'js/vendor/dropdown.js', // dropdown.js depends on core.js
+                'js/vendor/jquery.ui.widget.js',
+                'js/vendor/jquery.iframe-transport.js',
+                'js/vendor/jquery.fileupload.js',
+                'js/vendor/lodash.js',
+                'js/vendor/intercooler.js',
                 'js/script.js',
+                'js/main.js',
             ])
         );
         return [

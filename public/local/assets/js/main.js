@@ -16,7 +16,16 @@
       // TODO wait for files to upload
       e.preventDefault();
       var $loader = $form.find('.form-loader');
-      $loader.show();
+      var $formMsg = $form.find('.form-message');
+      function showLoader() {
+        $formMsg.hide();
+        $loader.show();
+      }
+      function hideLoader() {
+        $loader.hide();
+        $formMsg.show();
+      }
+      showLoader();
       var data = $form.serialize();
       $.ajax({
         url: apiEndpoint,
@@ -30,20 +39,25 @@
           var $next = $(data);
           // don't swap stateful components
           var filterSel = ':not(.keep)';
-          var pairs = _.zip($form.find('> *' + filterSel), $next.filter(filterSel));
-          _.forEach(pairs, function(pair) {
-            var prev = pair[0];
-            var next = pair[1];
-            prev.replaceWith(next);
-          });
+          var $prevSwap = $form.find('> *' + filterSel);
+          var $nextSwap = $next.filter(filterSel);
+          // TODO refactor: brittle
+          if ($prevSwap.length === $nextSwap.length) {
+            _.forEach(_.zip($prevSwap, $nextSwap), function(pair) {
+              var prev = pair[0];
+              var next = pair[1];
+              prev.replaceWith(next);
+            });
+          } else {
+            $form.replaceWith($next);
+          }
         },
         error: function() {
           // TODO handle errors
         },
         complete: function() {
           Mockup.initForms($form);
-          // should probably re-init itself here
-          $loader.hide();
+          hideLoader();
         }
       });
     });
@@ -111,7 +125,7 @@
     $('.wrap_add_file').each(function() {
       initFileBlock($(this));
     });
-    $('form.service-request').each(function() {
+    $('.service-request form').each(function() {
       initServiceRequestForm($(this));
     });
   });

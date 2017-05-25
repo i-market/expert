@@ -4,7 +4,9 @@ namespace App;
 
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Main\Loader;
+use CFile;
 use CIBlockElement;
+use Core\Util;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 use Core\Underscore as _;
@@ -93,6 +95,18 @@ class Services {
             'params' => $params,
             'errors' => $errors
         ];
+        $isValid = _::isEmpty($errors);
+        if ($isValid) {
+            // TODO handle errors
+            $results = array_map(function($fileId) {
+                $absPath = Util::joinPath([Api::fileuploadDir(), $fileId]);
+                $file = CFile::MakeFileArray($absPath);
+                // TODO validate files
+                $moduleId = 'main';
+                return CFile::SaveFile($file, $moduleId);
+            }, $params['fileIds']);
+            $state['screen'] = 'success';
+        }
         return $state;
     }
 }

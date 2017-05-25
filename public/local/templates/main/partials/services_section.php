@@ -50,10 +50,10 @@ use App\View as v;
 </section>
 <? ob_start() ?>
 <? foreach ($services as $service): ?>
-    <div class="modal" id="<?= $service['requestModalId'] ?>">
+    <div class="modal service-request" id="<?= $service['requestModalId'] ?>">
         <div class="block">
             <span class="close">×</span>
-            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>" class="service-request">
+            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>">
                 <?= $service['form'] ?>
             </form>
         </div>

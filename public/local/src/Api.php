@@ -38,7 +38,7 @@ class Api {
                 $state = json_decode($params['state'], true);
                 $session = $state['session'];
                 if ($session === null) {
-                    $session = uniqid('fileupload-', true);
+                    $session = str::replace(uniqid('fileupload-', true), '.', '');
                 }
                 // `basename` sort of sanitizes user input
                 $session = basename($session);

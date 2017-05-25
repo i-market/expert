@@ -13,9 +13,9 @@
   function initServiceRequestForm($form) {
     var apiEndpoint = $form.attr('data-api-endpoint');
     $form.on('submit', function(e) {
+      // TODO wait for files to upload
       e.preventDefault();
       var $loader = $form.find('.form-loader');
-      // TODO wait for files to upload
       $loader.show();
       var data = $form.serialize();
       $.ajax({
@@ -42,6 +42,7 @@
         },
         complete: function() {
           Mockup.initForms($form);
+          // should probably re-init itself here
           $loader.hide();
         }
       });
@@ -49,13 +50,25 @@
   }
 
   function initFileBlock($component) {
-    // same as php template
+    var iconSvgTpl = $('#file-icon').text();
+    function iconSvg(extension) {
+      var ext = extension === null ? '' : extension;
+      var $svg = $(iconSvgTpl);
+      $svg.find('text tspan')[0].textContent = ext.toUpperCase();
+      // TODO how is browser support for innerHTML on svg elements?
+      return $svg[0].outerHTML;
+    }
     function renderFile(file, session) {
       var fileId = session + '/' + file.filename;
-      return '<div class="file pdf">'
+      return '<div class="file">'
         + '<input type="hidden" name="fileIds[]" value="' + fileId + '"/>'
+        + '<div class="left">'
+        + iconSvg(file.extension)
+        + '</div>'
+        + '<div class="right">'
         + '<p class="info">' + (file.extension !== null ? file.extension.toUpperCase() + ', ' : '') + file.humanSize + ' <span class="remove red">Удалить</span></p>'
         + '<p class="title">' + file.name + '</p>'
+        + '</div>'
         + '</div>';
     }
     function hideProgress($progress) {

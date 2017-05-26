@@ -40,7 +40,7 @@ class Util {
 
     static function splitFileExtension($path) {
         $filename = str::contains($path, DIRECTORY_SEPARATOR)
-            ? basename($path)
+            ? self::basename($path)
             : $path;
         $parts = explode('.', $filename);
         if (str::startsWith($filename, '.')) {
@@ -56,6 +56,11 @@ class Util {
     static function fileExtension($path) {
         $ext = _::last(self::splitFileExtension($path));
         return $ext === '' ? null : $ext;
+    }
+
+    // cyrillic characters break standard library `basename`
+    static function basename($path) {
+        return _::last(explode(DIRECTORY_SEPARATOR, $path));
     }
 
     /**

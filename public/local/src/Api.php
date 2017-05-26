@@ -5,7 +5,7 @@ namespace App;
 use Core\Util;
 use Klein\Klein;
 use App\View as v;
-use FileUpload\FileUpload;
+use Core\FileUpload;
 use FileUpload\FileSystem;
 use FileUpload\PathResolver;
 use Core\Underscore as _;
@@ -58,14 +58,12 @@ class Api {
                     /** @var \FileUpload\File $file */
                     $absPath = $file->getRealPath();
                     $filename = $file->getFilename();
-                    $extensionMaybe = Util::fileExtension($absPath);
+                    list($name, $ext) = Util::splitFileExtension($absPath);
                     return array_merge((array) $file, [
-                        'name' => $extensionMaybe === null
-                            ? $filename
-                            : _::first(str::slice($filename, '.'.$extensionMaybe)),
+                        'name' => $name,
                         'filename' => $filename,
                         // TODO refactor: combine this and news.list/certificates/result_modifier.php
-                        'extension' => $extensionMaybe,
+                        'extension' => $ext,
                         'humanSize' => Util::humanFileSize(filesize($absPath))
                     ]);
                 }, $files);

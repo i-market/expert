@@ -1,0 +1,1 @@
+<div class="loader form-loader ic-indicator" style="display: none"></div>

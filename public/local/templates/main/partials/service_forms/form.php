@@ -41,10 +41,10 @@ use App\View as v;
             <? $msgErrors = \Core\Util::units($errorCount, 'ошибка', 'ошибки', 'ошибок') ?>
             <? $msgAllowed = \Core\Util::units($errorCount, 'позволила', 'позволили', 'позволили') ?>
             <div class="form-message error">
-                <span><?= "{$errorCount} {$msgErrors} не {$msgAllowed} отправить эту заявку." ?></span>
+                <span><?= "{$errorCount} {$msgErrors} выше не {$msgAllowed} отправить заявку." ?></span>
             </div>
         <? endif ?>
-        <div class="loader form-loader" style="display: none"></div>
+        <?= v::render('partials/form_loader') ?>
         <button type="submit" class="big_btn">
             <span class="text"><span>Отправить заявку</span></span>
             <span class="img">

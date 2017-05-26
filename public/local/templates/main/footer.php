@@ -134,9 +134,6 @@ extract(App::layoutContext(), EXTR_SKIP)
         </div>
     </div>
 </footer>
-<script id="file-icon" type="image/svg+xml">
-    <?= file_get_contents(\Core\Util::joinPath([$_SERVER['DOCUMENT_ROOT'], v::asset('images/pdf.svg')])) ?>
-</script>
 <? $APPLICATION->ShowViewContent('modals') ?>
 <? if ($sentry['enabled']): ?>
     <?= v::render('partials/sentry_js', $sentry) ?>

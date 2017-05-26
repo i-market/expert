@@ -74,20 +74,16 @@
   }
 
   function initFileBlock($component) {
-    var iconSvgTpl = $('#file-icon').text();
-    function iconSvg(extension) {
+    function iconImg(extension) {
       var ext = extension === null ? '' : extension;
-      var $svg = $(iconSvgTpl);
-      $svg.find('text tspan')[0].textContent = ext.toUpperCase();
-      // TODO how is browser support for innerHTML on svg elements?
-      return $svg[0].outerHTML;
+      return '<img src="/images/file-icon.svg.php?extension=' + ext + '">';
     }
     function renderFile(file, session) {
       var fileId = session + '/' + file.filename;
       return '<div class="file">'
         + '<input type="hidden" name="fileIds[]" value="' + fileId + '"/>'
         + '<div class="left">'
-        + iconSvg(file.extension)
+        + iconImg(file.extension)
         + '</div>'
         + '<div class="right">'
         + '<p class="info">' + (file.extension !== null ? file.extension.toUpperCase() + ', ' : '') + file.humanSize + ' <span class="remove red">Удалить</span></p>'

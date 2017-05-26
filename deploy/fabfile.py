@@ -92,6 +92,8 @@ def backup_file(env, path):
     dest = os.path.join(directory, backup_filename(filename))
     if env['local'] and os.path.exists(path):
         shutil.copy(path, dest)
+    elif 'ssh' in env:
+        fab.run('cp {} {}'.format(path, dest))
     else:
         host = ftp_host(env)
         if host.path.exists(path):

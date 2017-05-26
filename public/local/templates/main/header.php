@@ -86,7 +86,7 @@ if (App::useBitrixAsset()) {
                 <div class="btns">
                     <? // TODO modals ?>
                     <div class="blue_btn re_call">Заказать <span class="hidden">обратный</span> звонок</div>
-                    <div class="blue_btn calculate_cost">Рассчитать стоимость</div>
+                    <a href="<?= v::path('what-we-do') ?>" class="blue_btn calculate_cost">Рассчитать стоимость</a>
                 </div>
                 <? // TODO contact details ?>
                 <div class="info">

@@ -13,8 +13,7 @@ use App\View as v;
             <li><a class="<?= $class ?>" href="<?= $item['LINK'] ?>"><?= $item['TEXT'] ?></a></li>
         <? endforeach ?>
         <li class="hidden">
-            <? // TODO link ?>
-            <a href="#" class="big_btn">
+            <a href="<?= v::path('what-we-do') ?>" class="big_btn">
                 <span class="text"><span>Отправить заявку</span></span>
                 <span class="img">
                 <img src="<?= v::asset('images/calc.png') ?>">

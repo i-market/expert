@@ -7,6 +7,8 @@ use Core\ShareButtons;
 use League\Plates\Engine;
 use Bitrix\Main\Config\Configuration;
 use Core\Underscore as _;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as v;
 
 class App extends \Core\App {
     const SITE_ID = 's1';
@@ -50,6 +52,27 @@ class App extends \Core\App {
             ],
             'copyrightYear' => date('Y')
         ];
+    }
+
+    static function requestCallback($params) {
+        $validator = v::key('CONTACT_PERSON', v::stringType()->notEmpty());
+        $errors = [];
+        try {
+            $validator->assert($params);
+        } catch (NestedValidationException $exception) {
+            // TODO refactor: extract validation stuff
+            $errors = Services::getMessages($exception);
+        }
+        $state = [
+            'params' => $params,
+            'errors' => $errors
+        ];
+        $isValid = _::isEmpty($errors);
+        if ($isValid) {
+            // TODO side effects
+            $state['screen'] = 'success';
+        }
+        return $state;
     }
 
     static function assets() {

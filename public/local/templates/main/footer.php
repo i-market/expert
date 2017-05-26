@@ -99,7 +99,6 @@ extract(App::layoutContext(), EXTR_SKIP)
                     <span>строительная экспертиза</span>
                 </p>
             </a>
-            <? // TODO link ?>
             <a class="advertisers_hidden" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
             <div class="adress">
                 <? // TODO <p> tag messes up editing ?>
@@ -122,8 +121,7 @@ extract(App::layoutContext(), EXTR_SKIP)
                 <p><span>E-mail:</span><a href="mailto:6417069@bk.ru">6417069@bk.ru</a></p>
             </div>
             <div class="btns">
-                <? // TODO modals ?>
-                <div class="blue_btn re_call">Заказать <span class="hidden">обратный</span> звонок</div>
+                <div class="blue_btn re_call" data-modal="re_call">Заказать <span class="hidden">обратный</span> звонок</div>
                 <a href="<?= v::path('what-we-do') ?>" class="blue_btn calculate_cost">Рассчитать стоимость</a>
             </div>
         </div>
@@ -135,6 +133,15 @@ extract(App::layoutContext(), EXTR_SKIP)
     </div>
 </footer>
 <? $APPLICATION->ShowViewContent('modals') ?>
+<!--Обратный звонок-->
+<div class="modal" id="re_call">
+    <div class="block">
+        <span class="close">×</span>
+        <form ic-post-to="/api/callback-request">
+            <?= v::render('partials/callback_request_form', ['state' => []]) ?>
+        </form>
+    </div>
+</div>
 <? if ($sentry['enabled']): ?>
     <?= v::render('partials/sentry_js', $sentry) ?>
 <? endif ?>

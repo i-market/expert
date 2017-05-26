@@ -8,10 +8,16 @@ use Bex\Tools\Iblock\IblockTools;
 
 extract(App::layoutContext(), EXTR_SKIP)
 ?>
-<?= App::renderLayout(ob_get_clean()) ?>
-<? if ($showBottomBanners): ?>
-    <? Components::showBannersSection('bottom') ?>
-<? endif ?>
+<? $APPLICATION->AddBufferContent(function() {
+    return App::renderLayoutFooter();
+}) ?>
+<? $APPLICATION->AddBufferContent(function() use ($showBottomBannersFn) {
+    ob_start();
+    if ($showBottomBannersFn()) {
+        Components::showBannersSection('bottom');
+    }
+    return ob_get_clean();
+}) ?>
 <? $APPLICATION->IncludeComponent(
     "bitrix:menu",
     "footer",

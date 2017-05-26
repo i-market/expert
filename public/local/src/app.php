@@ -17,6 +17,7 @@ class App extends \Core\App {
      * @var Engine
      */
     private static $templates;
+    private static $layoutFooter;
 
     static function templates() {
         global $APPLICATION, $USER;
@@ -27,10 +28,18 @@ class App extends \Core\App {
         return self::$templates;
     }
 
-    static function renderLayout($content) {
+    static function renderLayoutHeader() {
         global $APPLICATION;
         $layout = $APPLICATION->GetProperty('layout', 'default');
-        return self::templates()->render('layouts/'.$layout, ['content' => $content]);
+        $placeholder = '{{ content-placeholder }}';
+        $html = self::templates()->render('layouts/'.$layout, ['content' => $placeholder]);
+        list($header, $footer) = explode($placeholder, $html);
+        self::$layoutFooter = $footer;
+        return $header;
+    }
+
+    static function renderLayoutFooter() {
+        return self::$layoutFooter;
     }
 
     static function layoutContext() {
@@ -38,9 +47,12 @@ class App extends \Core\App {
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
         $isHomepage = $APPLICATION->GetCurPage() === '/';
         return [
-            // TODO add page properties to hide top/bottom banners
-            'showTopBanners' => !$isHomepage,
-            'showBottomBanners' => !$isHomepage,
+            'showTopBannersFn' => function() use (&$APPLICATION, $isHomepage) {
+                return !$isHomepage && !$APPLICATION->GetProperty('hide_top_banners', false);
+            },
+            'showBottomBannersFn' => function() use (&$APPLICATION, $isHomepage) {
+                return !$isHomepage && !$APPLICATION->GetProperty('hide_bottom_banners', false);
+            },
             'shareUrlsFn' => function() use (&$APPLICATION) {
                 // defer to get the title
                 return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());

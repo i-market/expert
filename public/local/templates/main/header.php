@@ -193,7 +193,13 @@ if (App::useBitrixAsset()) {
             "START_FROM" => "0"
         )
     ); ?>
-    <? if ($showTopBanners): ?>
-        <? Components::showBannersSection('top') ?>
-    <? endif ?>
-    <? ob_start() ?>
+    <? $APPLICATION->AddBufferContent(function() use ($showTopBannersFn) {
+        ob_start();
+        if ($showTopBannersFn()) {
+            Components::showBannersSection('top');
+        }
+        return ob_get_clean();
+    }) ?>
+    <? $APPLICATION->AddBufferContent(function() {
+        return App::renderLayoutHeader();
+    }) ?>

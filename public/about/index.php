@@ -52,95 +52,68 @@ $APPLICATION->SetPageProperty('layout', 'bare');
                 "PATH" => v::includedArea('about/card_heading.php')
             )
         ); ?>
-        <? // TODO about page org card ?>
         <div class="wrap_organization_card_table">
-            <table class="organization_card_table">
-                <tr>
-                    <td>Полное наименование организации</td>
-                    <td>ООО «Техническая строительная экспертиза»</td>
-                </tr>
-                <tr>
-                    <td>Регистрационный номер</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Дата государственной регистрации</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Регистрирующий орган</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Юридический адрес</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Фактический адрес</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Идентификационный номер налогоплательщика (ИНН)</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Код причины постановки на налоговый учет (КПП)</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Основной государственный регистрационный номер</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Код отрасли по ОКВЭД</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Код организации по ОКПО</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Наименование должности руководителя</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Генеральный директор</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Главный бухгалтер</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>WEB адрес</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Электронный адрес</td>
-                    <td>текст</td>
-                </tr>
-                <tr>
-                    <td>Приемная</td>
-                    <td>текст</td>
-                </tr>
-            </table>
+            <? $APPLICATION->IncludeComponent(
+                "bitrix:main.include",
+                "",
+                Array(
+                    "AREA_FILE_SHOW" => "file",
+                    "PATH" => v::includedArea('about/card_table.php')
+                )
+            ); ?>
         </div>
     </div>
 </section>
-<? // TODO download org card files ?>
-<section class="download_document">
-    <div class="wrap">
-        <div class="grid">
-            <a href="#" class="col col_2 item pdf">
-                <p class="text">Скачать PDF, 650 Кб</p>
-                <p class="title">Карточка организации</p>
-            </a>
-            <a href="#" class="col col_2 item doc">
-                <p class="text">Скачать DOC, 650 Кб</p>
-                <p class="title">Карточка организации</p>
-            </a>
-        </div>
-    </div>
-</section>
+<? $APPLICATION->IncludeComponent(
+    "bitrix:news.detail",
+    "files_section",
+    Array(
+        "ACTIVE_DATE_FORMAT" => "d.m.Y",
+        "ADD_ELEMENT_CHAIN" => "N",
+        "ADD_SECTIONS_CHAIN" => "N",
+        "AJAX_MODE" => "N",
+        "AJAX_OPTION_ADDITIONAL" => "",
+        "AJAX_OPTION_HISTORY" => "N",
+        "AJAX_OPTION_JUMP" => "N",
+        "AJAX_OPTION_STYLE" => "N",
+        "BROWSER_TITLE" => "-",
+        "CACHE_GROUPS" => "Y",
+        "CACHE_TIME" => "36000000",
+        "CACHE_TYPE" => "A",
+        "CHECK_DATES" => "Y",
+        "DETAIL_URL" => "",
+        "DISPLAY_BOTTOM_PAGER" => "N",
+        "DISPLAY_DATE" => "N",
+        "DISPLAY_NAME" => "N",
+        "DISPLAY_PICTURE" => "Y",
+        "DISPLAY_PREVIEW_TEXT" => "N",
+        "DISPLAY_TOP_PAGER" => "N",
+        "ELEMENT_CODE" => "about_card",
+        "ELEMENT_ID" => "",
+        "FIELD_CODE" => array("", ""),
+        "IBLOCK_ID" => IblockTools::find(Iblock::CONTENT_TYPE, Iblock::FILES)->id(),
+        "IBLOCK_TYPE" => Iblock::CONTENT_TYPE,
+        "IBLOCK_URL" => "",
+        "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+        "MESSAGE_404" => "",
+        "META_DESCRIPTION" => "-",
+        "META_KEYWORDS" => "-",
+        "PAGER_BASE_LINK_ENABLE" => "N",
+        "PAGER_SHOW_ALL" => "N",
+        "PAGER_TEMPLATE" => ".default",
+        "PAGER_TITLE" => "",
+        "PROPERTY_CODE" => array('FILES'),
+        "SET_BROWSER_TITLE" => "Y",
+        "SET_CANONICAL_URL" => "N",
+        "SET_LAST_MODIFIED" => "N",
+        "SET_META_DESCRIPTION" => "N",
+        "SET_META_KEYWORDS" => "Y",
+        "SET_STATUS_404" => "N",
+        "SET_TITLE" => "N",
+        "SHOW_404" => "N",
+        "USE_PERMISSIONS" => "N",
+        "USE_SHARE" => "N"
+    )
+); ?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

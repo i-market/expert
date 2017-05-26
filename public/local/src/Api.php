@@ -38,7 +38,7 @@ class Api {
                 $state = json_decode($params['state'], true);
                 $session = $state['session'];
                 if ($session === null) {
-                    // dots in directory name break `Util::fileExtension` unfortunately
+                    // dots in directory name break `basename`
                     $session = str::replace(uniqid('fileupload-', true), '.', '');
                 }
                 // `basename` sort of sanitizes user input

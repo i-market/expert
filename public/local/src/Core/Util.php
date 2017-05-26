@@ -38,9 +38,24 @@ class Util {
         return round($size, $precision).' '.$units[$i];
     }
 
+    static function splitFileExtension($path) {
+        $filename = str::contains($path, DIRECTORY_SEPARATOR)
+            ? basename($path)
+            : $path;
+        $parts = explode('.', $filename);
+        if (str::startsWith($filename, '.')) {
+            return [$filename, ''];
+        } elseif (count($parts) < 2) {
+            return [$filename, ''];
+        } else {
+            return [join('', _::initial($parts)), _::last($parts)];
+        }
+    }
+
+    /** @deprecated use splitFileExtension */
     static function fileExtension($path) {
-        $ret = _::last(explode('.', $path));
-        return $ret === $path ? null : $ret;
+        $ext = _::last(self::splitFileExtension($path));
+        return $ext === '' ? null : $ext;
     }
 
     /**
@@ -63,5 +78,9 @@ class Util {
                 : ($num % 10 >= 2 && $num % 10 <= 4 && ($num % 100 < 10 || $num % 100 >= 20)
                     ? $cases['gen']
                     : $cases['plu'])));
+    }
+
+    static function ensureList($x) {
+        return !is_array($x) || is_array_assoc($x) ? [$x] : $x;
     }
 }

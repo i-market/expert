@@ -22,6 +22,7 @@ class Iblock {
     const CONTACT_GALLERY = 'contact_gallery';
     const IMAGES = 'images';
     const EQUIPMENT = 'equipment';
+    const FILES = 'files';
 
     const SERVICES_TYPE = 'services';
     const SERVICES = 'services';

@@ -8,6 +8,7 @@ use App\View as v;
             <h4><?= $section['NAME'] ?></h4>
             <? if (!v::isEmpty($section['FILE'])): ?>
                 <? $extension = v::upper($section['FILE']['EXTENSION']) ?>
+                <? // TODO improve microcopy ?>
                 <? $downloadText = 'Скачать '.$extension.', '.$section['FILE']['HUMAN_SIZE'] ?>
                 <a class="download_doc" href="<?= $section['FILE']['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
             <? endif ?>

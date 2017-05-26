@@ -4,7 +4,16 @@ use App\View as v;
 <? if ($state['screen'] === 'success'): ?>
     <div class="success-screen">
         <img class="icon" src="<?= v::asset('images/plane-gray.svg') ?>">
-        <div>Ваша заявка отправлена, спасибо!</div>
+        <div>
+            <? $APPLICATION->IncludeComponent(
+                "bitrix:main.include",
+                "",
+                Array(
+                    "AREA_FILE_SHOW" => "file",
+                    "PATH" => v::includedArea('service_forms/success_screen_message.php')
+                )
+            ); ?>
+        </div>
     </div>
 <? else: ?>
     <? // TODO implement removing files ?>
@@ -29,9 +38,10 @@ use App\View as v;
     <div class="wrap_robot_block">
         <? if (!v::isEmpty($state['errors'])): ?>
             <? $errorCount = count($state['errors']) ?>
-            <? $found = \Core\Util::units($errorCount, 'найдена', 'найдено', 'найдено') ?>
+            <? $msgErrors = \Core\Util::units($errorCount, 'ошибка', 'ошибки', 'ошибок') ?>
+            <? $msgAllowed = \Core\Util::units($errorCount, 'позволила', 'позволили', 'позволили') ?>
             <div class="form-message error">
-                В форме выше <?= $found ?> <?= $errorCount ?> <?= \Core\Util::units($errorCount, 'ошибка', 'ошибки', 'ошибок') ?>.
+                <span><?= "{$errorCount} {$msgErrors} не {$msgAllowed} отправить эту заявку." ?></span>
             </div>
         <? endif ?>
         <div class="loader form-loader" style="display: none"></div>

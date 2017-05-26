@@ -15,14 +15,12 @@
     $form.on('submit', function(e) {
       // TODO wait for files to upload
       e.preventDefault();
-      var $loader = $form.find('.form-loader');
-      var $formMsg = $form.find('.form-message');
       function showLoader() {
-        $formMsg.hide();
-        $loader.show();
+        $form.find('.form-message').hide();
+        $form.find('.form-loader').show();
       }
-      function hideLoader() {
-        $loader.hide();
+      function hideLoader($formMsg) {
+        $form.find('.form-loader').hide();
         $formMsg.show();
       }
       showLoader();
@@ -57,7 +55,19 @@
         },
         complete: function() {
           Mockup.initForms($form);
-          hideLoader();
+          var $formMsg = $form.find('.form-message');
+          hideLoader($formMsg);
+          $formMsg.filter('.error').on('click', function() {
+            var $firstError = $form.find('.error:first');
+            console.log($firstError);
+            if ($firstError.length) {
+              var $modal = $form.closest('.modal');
+              // TODO extract scrolling
+              $modal.animate({
+                scrollTop: $firstError.offset().top - $modal.find('.block').offset().top
+              }, 700);
+            }
+          });
         }
       });
     });

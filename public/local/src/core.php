@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use ArrayIterator;
 use Bitrix\Main\Config\Configuration;
 use CBitrixComponentTemplate;
 use CFile;
@@ -107,6 +108,10 @@ class Nullable {
 
     static public function map($nullable, $f) {
         return $nullable !== null ? $f($nullable) : $nullable;
+    }
+
+    static function iterator($nullable) {
+        return new ArrayIterator($nullable === null ? [] : [$nullable]);
     }
 }
 

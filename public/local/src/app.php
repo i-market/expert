@@ -39,6 +39,7 @@ class App extends \Core\App {
     }
 
     static function renderLayoutFooter() {
+        assert(isset(self::$layoutFooter));
         return self::$layoutFooter;
     }
 

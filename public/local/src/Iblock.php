@@ -26,6 +26,7 @@ class Iblock {
 
     const SERVICES_TYPE = 'services';
     const SERVICES = 'services';
+    const LITERATURE = 'literature';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

@@ -19,6 +19,10 @@ class App extends \Core\App {
     private static $templates;
     private static $layoutFooter;
 
+    static function init() {
+        EventHandlers::attach();
+    }
+
     static function templates() {
         global $APPLICATION, $USER;
         if (!isset(self::$templates)) {
@@ -133,3 +137,28 @@ class View extends \Core\View {
     }
 }
 
+class Videos {
+    static function youtubeSnippetMaybe($videoId) {
+        $query = http_build_query([
+            'key' => _::get(Configuration::getValue('app'), 'youtube_data_api.key'),
+            'part' => 'snippet',
+            'id' => $videoId
+        ]);
+        $result = file_get_contents('https://www.googleapis.com/youtube/v3/videos?'.$query);
+        if ($result === false) {
+            return null;
+        } else {
+            return json_decode($result);
+        }
+    }
+
+    static function youtubeIdMaybe($url) {
+        $matchesRef = array();
+        // https://github.com/mpratt/Embera/blob/master/Lib/Embera/Providers/Youtube.php#L30
+        if (preg_match('~(?:v=|youtu\.be/|youtube\.com/embed/)([a-z0-9_-]+)~i', $url, $matchesRef)) {
+            return $matchesRef[1];
+        } else {
+            return null;
+        }
+    }
+}

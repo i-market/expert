@@ -20,6 +20,6 @@ use App\View as v;
         <span class="text"><span>Смотреть все видео</span></span>
         <span class="img">
             <img src="<?= v::asset('images/arrow_right.png') ?>">
-          </span>
+        </span>
     </a>
 </div>

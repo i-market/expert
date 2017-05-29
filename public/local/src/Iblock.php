@@ -23,10 +23,11 @@ class Iblock {
     const IMAGES = 'images';
     const EQUIPMENT = 'equipment';
     const FILES = 'files';
+    const LITERATURE = 'literature';
+    const OPINIONS = 'opinions';
 
     const SERVICES_TYPE = 'services';
     const SERVICES = 'services';
-    const LITERATURE = 'literature';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

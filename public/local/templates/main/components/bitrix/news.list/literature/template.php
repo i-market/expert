@@ -20,11 +20,6 @@ use App\View as v;
         </div>
     <? endforeach ?>
 </div>
-<div class="bottom_btn">
-    <a href="<?= v::path('info-block/literature') ?>" class="big_btn">
-        <span class="text"><span>Вся литература</span></span>
-        <span class="img">
-            <img src="<?= v::asset('images/arrow_right.png') ?>">
-          </span>
-    </a>
-</div>
+<? if ($arParams['DISPLAY_BOTTOM_PAGER']): ?>
+    <?= $arResult['NAV_STRING'] ?>
+<? endif ?>

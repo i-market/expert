@@ -28,6 +28,7 @@ class Iblock {
 
     const SERVICES_TYPE = 'services';
     const SERVICES = 'services';
+    const INFO_BLOCK_GALLERY = 'info_block_gallery';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

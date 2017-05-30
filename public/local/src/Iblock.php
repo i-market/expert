@@ -30,6 +30,7 @@ class Iblock {
     const SERVICES = 'services';
     const INFO_BLOCK_GALLERY = 'info_block_gallery';
     const VIDEOS = 'videos';
+    const OUR_WORK = 'our_work';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

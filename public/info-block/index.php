@@ -202,7 +202,7 @@ $APPLICATION->SetPageProperty('hide_bottom_banners', 'Y');
                 "CACHE_TYPE" => "A",
                 "CHECK_DATES" => "Y",
                 "DETAIL_URL" => "",
-                "DISPLAY_BOTTOM_PAGER" => "Y",
+                "DISPLAY_BOTTOM_PAGER" => "N",
                 "DISPLAY_DATE" => "Y",
                 "DISPLAY_NAME" => "Y",
                 "DISPLAY_PICTURE" => "Y",
@@ -241,6 +241,14 @@ $APPLICATION->SetPageProperty('hide_bottom_banners', 'Y');
                 "SORT_ORDER2" => "ASC"
             )
         ); ?>
+        <div class="bottom_btn">
+            <a href="<?= v::path('info-block/gallery') ?>" class="big_btn">
+                <span class="text"><span>Все фотоподборки</span></span>
+                <span class="img">
+                    <img src="<?= v::asset('images/arrow_right.png') ?>">
+                </span>
+            </a>
+        </div>
     </div>
 </section>
 <? // videos ?>

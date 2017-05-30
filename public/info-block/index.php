@@ -320,6 +320,14 @@ $APPLICATION->SetPageProperty('hide_bottom_banners', 'Y');
                 "SORT_ORDER2" => "ASC"
             )
         ); ?>
+        <div class="bottom_btn">
+            <a href="<?= v::path('info-block/videos') ?>" class="big_btn">
+                <span class="text"><span>Смотреть все видео</span></span>
+                <span class="img">
+                    <img src="<?= v::asset('images/arrow_right.png') ?>">
+                </span>
+            </a>
+        </div>
     </div>
 </section>
 

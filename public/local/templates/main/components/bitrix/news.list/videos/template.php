@@ -14,12 +14,6 @@ use App\View as v;
         </div>
     <? endforeach ?>
 </div>
-<div class="bottom_btn">
-    <? // TODO link ?>
-    <a href="#" class="big_btn">
-        <span class="text"><span>Смотреть все видео</span></span>
-        <span class="img">
-            <img src="<?= v::asset('images/arrow_right.png') ?>">
-        </span>
-    </a>
-</div>
+<? if ($arParams['DISPLAY_BOTTOM_PAGER']): ?>
+    <?= $arResult['NAV_STRING'] ?>
+<? endif ?>

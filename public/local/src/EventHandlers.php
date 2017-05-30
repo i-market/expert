@@ -24,6 +24,7 @@ class EventHandlers {
 
     static function beforeVideoAddOrUpdate(&$fieldsRef) {
         global $APPLICATION;
+        // TODO refactor: optimize query
         $props = _::keyBy('CODE', PropertyTable::query()
             ->setSelect(['ID', 'CODE'])
             ->setFilter(['IBLOCK_ID' => $fieldsRef['IBLOCK_ID']])

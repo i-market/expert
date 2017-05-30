@@ -24,13 +24,14 @@ class EventHandlers {
 
     static function beforeVideoAddOrUpdate(&$fieldsRef) {
         global $APPLICATION;
-        // TODO refactor: optimize query
-        $props = _::keyBy('CODE', PropertyTable::query()
-            ->setSelect(['ID', 'CODE'])
-            ->setFilter(['IBLOCK_ID' => $fieldsRef['IBLOCK_ID']])
-            ->exec()->fetchAll());
-        $linkPropId = $props['LINK']['ID'];
-        $link = _::first($fieldsRef['PROPERTY_VALUES'][$linkPropId])['VALUE'];
+        $linkProp = PropertyTable::query()
+            ->setSelect(['ID'])
+            ->setFilter([
+                'IBLOCK_ID' => $fieldsRef['IBLOCK_ID'],
+                'CODE' => 'LINK'
+            ])
+            ->exec()->fetch();
+        $link = _::first($fieldsRef['PROPERTY_VALUES'][$linkProp['ID']])['VALUE'];
         $videoId = Videos::youtubeIdMaybe($link);
         if ($videoId === null) {
             $APPLICATION->ThrowException('Неизвестный формат ссылки на YouTube видео.');

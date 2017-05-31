@@ -17,6 +17,7 @@ use App\View as v;
             <? foreach ($section['ITEMS'] as $item): ?>
                 <? $file = $item['FILE'] ?>
                 <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
+                    <? // TODO add fancybox gallery id? ?>
                     <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
                         <span class="wrap_img">
                             <img src="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">

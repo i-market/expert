@@ -86,6 +86,22 @@ class Util {
     }
 
     static function ensureList($x) {
-        return !is_array($x) || is_array_assoc($x) ? [$x] : $x;
+        return !is_array($x) || !_::isIndexed($x) ? [$x] : $x;
+    }
+
+    // TODO refactor
+    static function descendants($parents, $childrenFn, $ret = []) {
+        if (is_string($childrenFn)) {
+            $path = $childrenFn;
+            $childrenFn = function($array) use ($path) {
+                return _::get($array, $path);
+            };
+        }
+        $children = _::flatMap($parents, $childrenFn);
+        if (_::isEmpty($children)) {
+            return $ret;
+        } else {
+            return self::descendants($children, $childrenFn, array_merge($ret, $children));
+        }
     }
 }

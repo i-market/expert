@@ -21,6 +21,15 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    static function flatMap($array, $f) {
+        $ret = [];
+        foreach ($array as $k => $v) {
+            // TODO optimize
+            $ret = array_merge($ret, is_string($f) ? self::get($v, $f) : $f($v, $k));
+        }
+        return $ret;
+    }
+
     static function mapKeys($array, $f) {
         $ret = [];
         foreach ($array as $k => $v) {
@@ -42,9 +51,15 @@ class Underscore extends ArraysMethods {
         }, $initial);
     }
 
-    static function filter($array, $pred = null) {
+    static function filter($array, callable $pred = null) {
+        if ($pred === null) {
+            return self::clean($array);
+        }
+        $ret = array_filter($array, function($key) use ($array, $pred) {
+            return $pred($array[$key], $key);
+        }, ARRAY_FILTER_USE_KEY);
         // restore indices
-        return array_values(array_filter($array, $pred));
+        return self::isIndexed($array) ? array_values($ret) : $ret;
     }
     
     static function drop($array, $n) {
@@ -63,6 +78,11 @@ class Underscore extends ArraysMethods {
     static function isEmpty($x) {
         return is_array($x) && count($x) === 0;
     }
+
+    static function isIndexed(array $array) {
+        if (!is_array($array)) return false;
+        return isset($array[0]);
+    }
     
     static function groupBy($array, $f) {
         $ret = [];
@@ -73,6 +93,7 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    // TODO inconsistent argument ordering
     static function keyBy($by, $array) {
         // TODO add callable support
         assert(is_string($by));

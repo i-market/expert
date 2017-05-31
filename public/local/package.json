@@ -24,7 +24,7 @@
     "build:vendor:js": "./scripts/build-vendor-js.sh",
     "build:copy": "cp -R assets/. ${npm_package_config_dist}",
     "build": "npm run build:mockup && npm run build:vendor:js && npm run build:copy",
-    "browsersync": "browser-sync start --proxy $PROXY -f ${npm_package_config_dist}/css/*.css -f ${npm_package_config_dist}/js/*.js -f ${npm_package_config_template}/*/*.php --no-open",
+    "browsersync": "browser-sync start --proxy ${PROXY:-localhost} -f ${npm_package_config_dist}/css/*.css -f ${npm_package_config_dist}/js/*.js -f ${npm_package_config_template}/*/*.php --no-open",
     "sass": "node-sass -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:sass": "npm run sass && node-sass --watch -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:copy": "watch 'npm run build:copy' assets",

@@ -23,6 +23,7 @@ templates = {
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
 asset_build_command = 'npm install && npm run build'
+test_command = 'npm test'
 git_ftp_syncroot = 'public'
 
 
@@ -266,6 +267,14 @@ def clear_cache(dry_run=False):
 
 
 @fab.task
+def test():
+    # TODO refactor cwd
+    cwd = '../public/local'
+    with lcd(cwd):
+        fab.local(test_command)
+
+
+@fab.task
 def verbose():
     state['verbose'] = True
 
@@ -288,6 +297,7 @@ def slack(text):
 def deploy():
     env = environment()
     # TODO
+    fab.execute(test)
     # maintenance mode on
     # push configs
     fab.execute(push_configs)

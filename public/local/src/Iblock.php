@@ -48,6 +48,22 @@ class Iblock {
         });
     }
 
+    private static function inflate($roots, $children) {
+        return array_map(function($section) use ($children) {
+            return _::set($section, 'SECTIONS', self::inflate(_::get($children, $section['ID'], []), $children));
+        }, $roots);
+    }
+
+    static function sectionTrees($sections) {
+        $sections = _::keyBy('ID', $sections);
+        $isRoot = function($section) use ($sections) {
+            return !in_array($section['IBLOCK_SECTION_ID'], array_keys($sections));
+        };
+        $children = _::groupBy($sections, 'IBLOCK_SECTION_ID');
+        $ret = self::inflate(array_filter($sections, $isRoot), $children);
+        return $ret;
+    }
+
     static function collect(CIBlockResult $result) {
         $ret = [];
         while($x = $result->GetNext()) {

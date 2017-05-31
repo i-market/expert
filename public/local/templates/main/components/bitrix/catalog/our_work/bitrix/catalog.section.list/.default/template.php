@@ -42,23 +42,25 @@ $showSections = function($sections) use ($splitList) {
 <!--			<div class="number_marker">1</div>-->
 			<h2><?= $arResult['SECTION']['NAME'] ?></h2>
 		</div>
-		<div class="accordeon">
-			<? foreach ($arResult['ROOT_SECTIONS'] as $root): ?>
-				<div class="accordeon_item">
-					<div class="accordeon_title">
-						<h4 class="color_blue"><?= $root['NAME'] ?></h4>
-					</div>
-                    <div class="accordeon_inner">
-                        <? if (!v::isEmpty($root['SECTIONS'])): ?>
-                            <? $showSections($root['SECTIONS']) ?>
-                        <? else: ?>
-                            <? // placeholder to be replaced in component_epilog.php ?>
-                            <?= "{{ placeholder:section:{$root['ID']} }}" ?>
-                        <? endif ?>
+        <? if (!v::isEmpty($arResult['ROOT_SECTIONS'])): ?>
+            <div class="accordeon">
+                <? foreach ($arResult['ROOT_SECTIONS'] as $root): ?>
+                    <div class="accordeon_item">
+                        <div class="accordeon_title">
+                            <h4 class="color_blue"><?= $root['NAME'] ?></h4>
+                        </div>
+                        <div class="accordeon_inner">
+                            <? if (!v::isEmpty($root['SECTIONS'])): ?>
+                                <? $showSections($root['SECTIONS']) ?>
+                            <? else: ?>
+                                <? // placeholder to be replaced in component_epilog.php ?>
+                                <?= "{{ placeholder:section:{$root['ID']} }}" ?>
+                            <? endif ?>
+                        </div>
                     </div>
-				</div>
-			<? endforeach ?>
-		</div>
+                <? endforeach ?>
+            </div>
+		<? endif ?>
 	</div>
 </section>
 <?

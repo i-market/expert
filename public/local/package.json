@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.18.12",
+    "nightwatch": "^0.9.15",
     "node-sass": "^4.5.3",
     "watch": "^1.0.2"
   },
@@ -26,7 +27,8 @@
     "sass": "node-sass -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:sass": "npm run sass && node-sass --watch -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:copy": "watch 'npm run build:copy' assets",
-    "watch": "npm run watch:sass & npm run watch:copy & npm run browsersync"
+    "watch": "npm run watch:sass & npm run watch:copy & npm run browsersync",
+    "test": "nightwatch"
   },
   "author": "",
   "license": "ISC"

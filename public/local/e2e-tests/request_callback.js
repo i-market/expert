@@ -1,12 +1,16 @@
 module.exports = {
-  'request callback': function(browser) {
-    browser
-      .url(browser.launch_url)
-      .waitForElementVisible('.header .re_call', 1000)
-      .click('.header .re_call')
-      .waitForElementVisible('#re_call', 1000)
-      .assert.containsText('#re_call h2', 'ОБРАТНЫЙ ЗВОНОК')
-      // TODO ...
-      .end();
+  'request callback': function(client) {
+    var homepage = client.page.homepage();
+    homepage.navigate()
+      .section.header
+      .waitForElementVisible('@requestCallbackButton', 1000)
+      .click('@requestCallbackButton');
+    homepage
+      .waitForElementVisible(homepage.section.requestCallbackModal.selector, 1000);
+    homepage
+      .section.requestCallbackModal
+      .assert.containsText('@heading', 'ОБРАТНЫЙ ЗВОНОК')
+    // TODO ...
+    client.end();
   }
 };

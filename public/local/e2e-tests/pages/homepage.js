@@ -16,6 +16,12 @@ module.exports = {
       elements: {
         heading: {
           selector: 'h2'
+        },
+        submitButton: {
+          selector: 'button[type=submit]'
+        },
+        errorMessage: {
+          selector: '.error-message'
         }
       }
     }

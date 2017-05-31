@@ -1,3 +1,6 @@
+// these should be global
+var emptyError = 'Поле не может быть пустым.';
+
 module.exports = {
   'request callback': function(client) {
     var homepage = client.page.homepage();
@@ -10,7 +13,11 @@ module.exports = {
     homepage
       .section.requestCallbackModal
       .assert.containsText('@heading', 'ОБРАТНЫЙ ЗВОНОК')
-    // TODO ...
+      .click('@submitButton')
+      .waitForJqueryAjaxRequest()
+      // TODO check specific inputs
+      .assert.containsText('@errorMessage', emptyError);
+      // TODO test for successful submission
     client.end();
   }
 };

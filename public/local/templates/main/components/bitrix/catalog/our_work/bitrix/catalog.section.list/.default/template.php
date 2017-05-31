@@ -34,6 +34,7 @@ $showSections = function($sections) use ($splitList) {
     <?
 }
 ?>
+<? ob_start() ?>
 <section class="work_examples_inner">
 	<div class="wrap">
 		<div class="wrap_title">
@@ -50,6 +51,9 @@ $showSections = function($sections) use ($splitList) {
                     <div class="accordeon_inner">
                         <? if (!v::isEmpty($root['SECTIONS'])): ?>
                             <? $showSections($root['SECTIONS']) ?>
+                        <? else: ?>
+                            <? // placeholder to be replaced in component_epilog.php ?>
+                            <?= "{{ placeholder:section:{$root['ID']} }}" ?>
                         <? endif ?>
                     </div>
 				</div>
@@ -57,3 +61,8 @@ $showSections = function($sections) use ($splitList) {
 		</div>
 	</div>
 </section>
+<?
+$key = 'HTML_OUTPUT';
+$component->arResult[$key] = ob_get_clean();
+$component->setResultCacheKeys([$key]);
+?>

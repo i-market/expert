@@ -10,7 +10,7 @@ global $DB;
 $app = \Bitrix\Main\Application::getInstance();
 $con = $app->getConnection();
 $DB->db_Conn = $con->getResource();
-// 'authorizing' as admin
+// "authorizing" as admin
 $_SESSION['SESS_AUTH']['USER_ID'] = 1;
 
 $config = include realpath(__DIR__.'/../bitrix/.settings.php');

@@ -23,6 +23,7 @@ templates = {
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
 asset_build_command = 'npm install && npm run build'
+# TODO needs configuration such as the url to run tests against
 test_command = 'npm test'
 git_ftp_syncroot = 'public'
 
@@ -297,7 +298,7 @@ def slack(text):
 def deploy():
     env = environment()
     # TODO
-    fab.execute(test)
+    # fab.execute(test)
     # maintenance mode on
     # push configs
     fab.execute(push_configs)

@@ -9,6 +9,8 @@ use Core\Underscore as _;
 
 class MonitoringCalc extends AbstractCalc {
     function validateState($state) {
+        // TODO validate
+        return true;
         $validator = v::keySet(
             v::key('DESCRIPTION', v::stringType()->notEmpty()),
             v::key('BUILDING_COUNT', v::intType()->min(1)),

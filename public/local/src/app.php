@@ -99,6 +99,8 @@ class App extends \Core\App {
             'css/lib/normalize.min.css',
             'css/lib/jquery.fancybox.min.css',
             'css/lib/slick.css',
+            'css/lib/tooltipster.bundle.min.css',
+            'css/lib/dropdown.css',
             'css/main.css'
         ]);
         $scripts = array_merge(

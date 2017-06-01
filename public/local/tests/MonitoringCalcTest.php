@@ -8,7 +8,7 @@ class MonitoringCalcTest extends TestCase {
         // Описание объекта  (ов) мониторинга – текстовое поле
         'DESCRIPTION' => 'Описание объекта',
         // Количество зданий, сооружений, строений – числовое поле,  допустимые значения от 1 до  «более» 100
-        'BUILDING_COUNT' => 42,
+        'SITE_COUNT' => 42,
         // ref Местонахождение – единичный выбор из списка
         'LOCATION' => 1,
         // Адрес – поле для ввода
@@ -51,9 +51,16 @@ class MonitoringCalcTest extends TestCase {
     }
 
     function testParseCsv() {
-        $path = getcwd().'/fixtures/calc/monitoring-single-building.tsv';
-        $result = MonitoringCalc::parseCsv($path);
-        // TODO csv parsing assertions
-        $this->assertNotNull($result);
+        $filenames = [
+            // TODO test everything
+//            'monitoring-single-building.tsv',
+            'monitoring-multiple-buildings.tsv'
+        ];
+        foreach ($filenames as $filename) {
+            $path = getcwd().'/fixtures/calc/'.$filename;
+            $result = MonitoringCalc::parseCsv($path);
+            // TODO csv parsing assertions
+            $this->assertTrue(is_array($result));
+        }
     }
 }

@@ -7,6 +7,7 @@ use Core\Util;
 use Core\Underscore as _;
 
 class FormMacros {
+    static private $requiredMark = ' <span class="red">*</span>';
     private $state;
 
     function __construct($state) {
@@ -29,7 +30,7 @@ class FormMacros {
         ?>
         <div class="wrap_input<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <input name="<?= $name ?>" type="text" value="<?= $value ?>">
-            <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? '<span class="red">*</span>' : '') ?></span>
+            <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></span>
             <div class="error-message"><?= $error ?></div>
         </div>
         <?
@@ -40,7 +41,7 @@ class FormMacros {
         ?>
         <div class="wrap_input<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <textarea name="<?= $name ?>"><?= $value ?></textarea>
-            <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? '<span class="red">*</span>' : '') ?></span>
+            <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></span>
             <div class="error-message"><?= $error ?></div>
         </div>
         <?

@@ -1,3 +1,4 @@
+/*
 // these should be global
 var emptyError = 'Поле не может быть пустым.';
 
@@ -21,3 +22,21 @@ module.exports = {
     client.end();
   }
 };
+*/
+
+var webdriverio = require('webdriverio');
+
+var options = {
+  desiredCapabilities: {
+    browserName: 'firefox'
+  }
+};
+
+webdriverio
+  .remote(options)
+  .init()
+  .url('http://bitrix.localhost')
+  .getTitle().then(function(title) {
+  console.log('Title was: ' + title);
+})
+  .end();

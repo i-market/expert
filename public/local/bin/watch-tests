@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+vendor/bin/phpunit tests --colors=auto
+# requires pywatchman
+watchman-make -p 'src/**/*.php' 'tests/**/*.php' --make=vendor/bin/phpunit -t "tests --colors=auto"

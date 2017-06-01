@@ -36,14 +36,10 @@ use App\View as v;
         ); ?> Также, Вы можете определить стоимость и сроки выполнения работ, заполнив <a href="<?= $service['calcLink'] ?>" class="red">On-line форму</a>.</p>
     <?= $inputs ?>
     <div class="wrap_robot_block">
-        <? if (!v::isEmpty($state['errors'])): ?>
-            <? $errorCount = count($state['errors']) ?>
-            <? $msgErrors = \Core\Util::units($errorCount, 'ошибка', 'ошибки', 'ошибок') ?>
-            <? $msgAllowed = \Core\Util::units($errorCount, 'позволила', 'позволили', 'позволили') ?>
-            <div class="form-message error">
-                <span><?= "{$errorCount} {$msgErrors} выше не {$msgAllowed} отправить заявку." ?></span>
-            </div>
-        <? endif ?>
+        <?= v::render('partials/form_error_message', [
+            'errors' => $state['errors'],
+            'action' => 'отправить заявку'
+        ]) ?>
         <?= v::render('partials/form_loader') ?>
         <button type="submit" class="big_btn">
             <span class="text"><span>Отправить заявку</span></span>

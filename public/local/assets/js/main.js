@@ -8,22 +8,43 @@
 
   Intercooler.ready(function($el) {
     Mockup.initForms($el);
+    initFormErrorMessage($el);
   });
+
+  // TODO refactor
+  function initFormErrorMessage($form) {
+    var $formMsg = $form.find('.form-message');
+    $formMsg.filter('.error').on('click', function() {
+      var $firstError = $form.find('.error:first');
+      if ($firstError.length) {
+        var $modal = $form.closest('.modal');
+        // TODO extract scrolling
+        var duration = 700;
+        if ($modal.length) {
+          $modal.animate({
+            scrollTop: $firstError.offset().top - $modal.find('.block').offset().top
+          }, duration);
+        } else {
+          var $title = $firstError.closest(':has(.title)').find('.title');
+          $('body, html').animate({
+            scrollTop: ($title.length ? $title : $firstError).offset().top
+          }, duration);
+        }
+      }
+    });
+  }
 
   function initServiceRequestForm($form) {
     var apiEndpoint = $form.attr('data-api-endpoint');
     $form.on('submit', function(e) {
       // TODO wait for files to upload
       e.preventDefault();
-      function showLoader() {
-        $form.find('.form-message').hide();
-        $form.find('.form-loader').show();
+      function setLoading(toggle) {
+        // imitate intercooler behavior
+        $form.toggleClass('disabled', toggle);
+        $form.find('.form-loader').toggle(toggle);
       }
-      function hideLoader($formMsg) {
-        $form.find('.form-loader').hide();
-        $formMsg.show();
-      }
-      showLoader();
+      setLoading(true);
       var data = $form.serialize();
       $.ajax({
         url: apiEndpoint,
@@ -55,19 +76,8 @@
         },
         complete: function() {
           Mockup.initForms($form);
-          var $formMsg = $form.find('.form-message');
-          hideLoader($formMsg);
-          $formMsg.filter('.error').on('click', function() {
-            var $firstError = $form.find('.error:first');
-            console.log($firstError);
-            if ($firstError.length) {
-              var $modal = $form.closest('.modal');
-              // TODO extract scrolling
-              $modal.animate({
-                scrollTop: $firstError.offset().top - $modal.find('.block').offset().top
-              }, 700);
-            }
-          });
+          setLoading(false);
+          initFormErrorMessage($form);
         }
       });
     });

@@ -48,8 +48,9 @@ class CalculatorMacros {
         <div class="wrap_calc_item">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
-                <div class="left">
+                <div class="left<?= !v::isEmpty($error) ? ' error' : '' ?>">
                     <textarea name="<?= $name ?>"></textarea>
+                    <div class="error-message"><?= $error ?></div>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>

@@ -7,6 +7,8 @@ use Core\Util;
 use Core\Underscore as _;
 
 class FormMacros {
+    // TODO wrap error messages in `if`
+
     static private $requiredMark = ' <span class="red">*</span>';
     private $state;
 

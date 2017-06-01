@@ -33,10 +33,17 @@ class Api {
             $router->respond('POST', '/services/monitoring/calculate', function($request, $response) {
                 // TODO sanitize params
                 $params = $request->params();
-//                $state = Services::requestMonitoring($params);
+                // TODO state
+                $state = [
+                    'params' => $params,
+                    'errors' => [
+                        'DESCRIPTION' => 'some error'
+                    ]
+                ];
                 // monitoring_calculator
                 return v::render('partials/calculator/calculator', [
-                    'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования'
+                    'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
+                    'state' => $state
                 ]);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {

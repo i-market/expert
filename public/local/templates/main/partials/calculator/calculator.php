@@ -229,6 +229,11 @@ $macros = new macros($state);
     </div>
     <div class="calculator_content_robot">
         <div class="wrap_robot_block">
+            <?= v::render('partials/form_error_message', [
+                'errors' => $state['errors'],
+                'action' => 'рассчитать стоимость'
+            ]) ?>
+            <?= v::render('partials/form_loader') ?>
             <button type="submit" class="big_btn">
                 <span class="text"><span>Выполнить расчет</span></span>
                 <span class="img">

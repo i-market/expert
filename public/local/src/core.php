@@ -51,7 +51,8 @@ class Underscore extends ArraysMethods {
         }, $initial);
     }
 
-    static function filter($array, callable $pred = null) {
+    static function filter($array, $pred = null) {
+        /** @var callable $pred */
         if ($pred === null) {
             return self::clean($array);
         }

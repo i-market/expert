@@ -29,7 +29,10 @@
     "watch:sass": "npm run sass && node-sass --watch -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:copy": "watch 'npm run build:copy' assets",
     "watch": "npm run watch:sass & npm run watch:copy & npm run browsersync",
-    "test": "nightwatch"
+    "php:test": "vendor/bin/phpunit tests --colors=auto",
+    "php:watch": "watch 'npm run --silent php:test' tests src",
+    "test:e2e": "nightwatch",
+    "test": "npm run php:test && npm run test:e2e"
   },
   "author": "",
   "license": "ISC"

@@ -128,7 +128,7 @@
 ); ?>
 <?
 // mutate navigation elements. seems like this is the only way to exclude sections that are used only for grouping.
-if (count($APPLICATION->arAdditionalChain) > 1) {
+if (count($APPLICATION->arAdditionalChain) > 2) {
     // but first and last
     foreach (range(1, count($APPLICATION->arAdditionalChain) - 2) as $idx) {
         unset($APPLICATION->arAdditionalChain[$idx]);

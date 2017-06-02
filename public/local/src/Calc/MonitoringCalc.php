@@ -77,6 +77,25 @@ class MonitoringCalc extends AbstractCalc {
         ]
     ];
 
+    // TODO persist locations
+    static function locations() {
+        $filenames = [
+            'monitoring-single-building.tsv',
+            'monitoring-multiple-buildings.tsv'
+        ];
+        $locations = _::flatMap($filenames, function($filename) {
+            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
+            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
+            return array_keys($result['MULTIPLIERS']['LOCATION']);
+        });
+        return _::map(array_unique($locations), function($name, $idx) {
+            return [
+                'ID' => $idx,
+                'NAME' => $name
+            ];
+        });
+    }
+
     function validateState($state) {
         // TODO validate
         return true;
@@ -241,7 +260,7 @@ class MonitoringCalc extends AbstractCalc {
         return '"'.join(', ', self::nonEmptyCells($row)).'"';
     }
 
-    private static function rowIterator($path) {
+    static function rowIterator($path) {
         // TODO check path/file format
         // TODO report unexpected file "format" (e.g. missing/extra sections)
         // Help PHP detect line ending in Mac OS X.
@@ -266,7 +285,7 @@ class MonitoringCalc extends AbstractCalc {
     /**
      * @return array structured data with minimal transformations
      */
-    static function parseCsv($path) {
+    static function parseWorksheet($rowIterator) {
         $validSectionKeys = join(', ', array_reduce(self::$sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
                 return '"'.$prefix.'"';
@@ -275,7 +294,7 @@ class MonitoringCalc extends AbstractCalc {
         $log = [];
         $sectionKey2Rows = [];
         $state = ['find_section'];
-        foreach (self::rowIterator($path) as $idx => $rawCells) {
+        foreach ($rowIterator as $idx => $rawCells) {
             $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
             $stateName = _::first($state);

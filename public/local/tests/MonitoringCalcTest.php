@@ -51,18 +51,27 @@ class MonitoringCalcTest extends TestCase {
         $this->assertEquals(33, $result['TOTAL_PRICE']);
     }
 
-    function testParseCsv() {
+    function testParseWorksheet() {
         $filenames = [
-            // TODO test everything
-//            'monitoring-single-building.tsv',
+            'monitoring-single-building.tsv',
             'monitoring-multiple-buildings.tsv'
         ];
         foreach ($filenames as $filename) {
             $path = getcwd().'/fixtures/calc/'.$filename;
-            $result = MonitoringCalc::parseCsv($path);
-            // TODO csv parsing assertions
+            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
+            // TODO assertions
             $missingSections = array_diff(_::pluck(MonitoringCalc::$sections, 'KEY'), array_keys($result['MULTIPLIERS']));
             $this->assertTrue(_::isEmpty($missingSections));
         }
+    }
+
+    function testLocations() {
+        // TODO set document root in phpunit bootstrap
+        $_SERVER['DOCUMENT_ROOT'] = realpath(__DIR__ . '/../..');
+        $locations = MonitoringCalc::locations();
+        $this->assertTrue(!_::isEmpty($locations));
+        $this->assertTrue(_::matches($locations, function($location) {
+            return _::has($location, 'ID') && _::has($location, 'NAME');
+        }));
     }
 }

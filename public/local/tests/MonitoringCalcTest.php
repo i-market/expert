@@ -2,6 +2,7 @@
 
 use App\Calc\MonitoringCalc;
 use PHPUnit\Framework\TestCase;
+use Core\Underscore as _;
 
 class MonitoringCalcTest extends TestCase {
     private $validState = [
@@ -60,7 +61,8 @@ class MonitoringCalcTest extends TestCase {
             $path = getcwd().'/fixtures/calc/'.$filename;
             $result = MonitoringCalc::parseCsv($path);
             // TODO csv parsing assertions
-            $this->assertTrue(is_array($result));
+            $missingSections = array_diff(_::pluck(MonitoringCalc::$sections, 'KEY'), array_keys($result['MULTIPLIERS']));
+            $this->assertTrue(_::isEmpty($missingSections));
         }
     }
 }

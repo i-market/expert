@@ -10,7 +10,7 @@ use Core\Underscore as _;
 use Core\Nullable as nil;
 
 class MonitoringCalc extends AbstractCalc {
-    private static $sections = [
+    static $sections = [
 //            'Описание объекта(ов) мониторинга',
         [
             'KEY' => 'SITE_COUNT',
@@ -241,10 +241,8 @@ class MonitoringCalc extends AbstractCalc {
         return '"'.join(', ', self::nonEmptyCells($row)).'"';
     }
 
-    /**
-     * @return array structured data with minimal transformations
-     */
-    static function parseCsv($path) {
+    private static function rowIterator($path) {
+        // TODO check path/file format
         // TODO report unexpected file "format" (e.g. missing/extra sections)
         // Help PHP detect line ending in Mac OS X.
         // http://csv.thephpleague.com/8.0/instantiation/#csv-and-macintosh
@@ -262,6 +260,13 @@ class MonitoringCalc extends AbstractCalc {
         if ($inputBom === Reader::BOM_UTF16_LE || $inputBom === Reader::BOM_UTF16_BE) {
             $reader->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
         }
+        return $reader->getIterator();
+    }
+
+    /**
+     * @return array structured data with minimal transformations
+     */
+    static function parseCsv($path) {
         $validSectionKeys = join(', ', array_reduce(self::$sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
                 return '"'.$prefix.'"';
@@ -270,7 +275,7 @@ class MonitoringCalc extends AbstractCalc {
         $log = [];
         $sectionKey2Rows = [];
         $state = ['find_section'];
-        foreach ($reader->getIterator() as $idx => $rawCells) {
+        foreach (self::rowIterator($path) as $idx => $rawCells) {
             $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
             $stateName = _::first($state);
@@ -310,7 +315,9 @@ class MonitoringCalc extends AbstractCalc {
             }
         });
         // TODO validate return VALUE
-        $missingSections = array_diff(_::pluck(self::$sections, 'KEY'), array_keys($ret));
-        return ['MULTIPLIERS' => $ret];
+        return [
+            'MULTIPLIERS' => $ret,
+            'LOG' => $log
+        ];
     }
 }

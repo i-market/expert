@@ -8,7 +8,8 @@
         "league/plates": "^3.3",
         "respect/validation": "^1.1",
         "gargron/fileupload": "^1.4",
-        "league/csv": "^8.2"
+        "league/csv": "^8.2",
+        "pimple/pimple": "~3.0"
     },
     "autoload": {
         "files": ["src/core.php", "src/app.php"],

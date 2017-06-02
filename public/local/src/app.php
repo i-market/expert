@@ -19,7 +19,7 @@ class App extends \Core\App {
     private static $templates;
     private static $layoutFooter;
 
-    static function init() {
+    function init() {
         EventHandlers::attach();
     }
 

@@ -11,6 +11,7 @@ use Core\Underscore as _;
 use Core\Nullable as nil;
 use Underscore\Methods\ArraysMethods;
 use Underscore\Methods\StringsMethods;
+use Pimple\Container;
 
 class Underscore extends ArraysMethods {
     static function map($array, $f) {
@@ -174,6 +175,20 @@ class Env {
 }
 
 class App {
+    private static $instance;
+    public $container;
+
+    static function getInstance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    function __construct() {
+        $this->container = new Container();
+    }
+
     static function env() {
         $app = Nullable::get(Configuration::getValue('app'), []);
         return _::get($app, 'env', Env::PROD);

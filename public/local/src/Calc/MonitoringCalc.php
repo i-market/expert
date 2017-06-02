@@ -62,8 +62,10 @@ class MonitoringCalc extends AbstractCalc {
             'KEY' => 'DURATION',
             'PREFIX' => 'Продолжетельность мониторинга (мес.)',
         ],
-        // TODO Удаленность объектов друг от друга?
-//            'Удаленность объектов друг от друга',
+        [
+            'KEY' => 'DISTANCE_BETWEEN_SITES',
+            'PREFIX' => 'Удаленность объектов друг от друга'
+        ],
         [
             'KEY' => 'TRANSPORT_ACCESSIBILITY',
             'PREFIX' => 'Транспортная доуступность',

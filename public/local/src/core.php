@@ -235,6 +235,12 @@ class View {
         global $APPLICATION;
         $APPLICATION->AddViewContent($view, $APPLICATION->GetViewContent($view).$content);
     }
+
+    static function attrs($map) {
+        return join(' ', _::map($map, function($value, $key) {
+            return $key.'="'.htmlspecialchars($value).'"';
+        }));
+    }
 }
 
 trait NewsListLike {

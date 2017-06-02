@@ -38,37 +38,21 @@ $macros = new macros($state);
                 <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
                 <? $macros->showSelect('LOCATION', $locationOptions, 'Местонахождение', ['required' => true]) ?>
                 <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
-                <? $macros->showSelect('SITE_COUNT', $siteCountOptions, 'Количество объектов мониторинга', ['required' => true]) ?>
+                <? $macros->showSelect('SITE_COUNT', $siteCountOptions, 'Количество объектов мониторинга', [
+                    'required' => true,
+                    'selectAttrs' => v::attrs([
+                        'ic-post-to' => $floorsApiUri,
+                        'ic-target' => '#monitoring-floors-group',
+                        'ic-replace-target' => 'true',
+                        'ic-indicator' => '#monitoring-floors-group .loader'
+                    ])
+                ]) ?>
                 <? // TODO reveal ?>
                 <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', [['value' => 42, 'text' => 'some text']], 'Удаленность объектов друг от друга', ['required' => true]) ?>
                 <? $macros->showSelect('USED_FOR', $usedForOptions, 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
                 <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', ['required' => true]) ?>
                 <? $macros->showInput('VOLUME', 'Строительный объем объекта(ов), куб.м') ?>
-                <? // TODO unclear ?>
-                <div class="wrap_calc_item">
-                    <p class="title">Количество надземных этажей <span class="red">*</span></p>
-                    <div class="inner inner_some">
-                        <div class="left">
-                            <span class="text">Строение&nbsp;1</span>
-                            <input type="text" value="от 1 до 30">
-                        </div>
-                        <div class="right">
-                            <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
-                        </div>
-                    </div>
-                    <div class="inner inner_some">
-                        <div class="left">
-                            <span class="text">Строение&nbsp;2</span>
-                            <input type="text" value="от 1 до 30">
-                        </div>
-                    </div>
-                    <div class="inner inner_some">
-                        <div class="left">
-                            <span class="text">Строение&nbsp;3</span>
-                            <input type="text" value="от 1 до 30">
-                        </div>
-                    </div>
-                </div>
+                <?= v::render('partials/calculator/monitoring_floors_group', ['floorSelects' => $floorSelects]) ?>
                 <div class="wrap_calc_item">
                     <p class="title">Наличие подполья, подвала, подземных этажей</p>
                     <div class="inner">

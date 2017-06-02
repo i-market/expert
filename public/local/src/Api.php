@@ -42,9 +42,20 @@ class Api {
                     ]
                 ];
                 // monitoring_calculator
-                return v::render('partials/calculator/calculator', array_merge(MonitoringForm::context(), [
+                return v::render('partials/calculator/calculator', array_merge(MonitoringForm::context($state), [
                     'state' => $state
                 ]));
+            });
+            $router->respond('POST', '/services/monitoring/calculate/floors', function($request, $response) {
+                // TODO sanitize params
+                $params = $request->params();
+                // TODO state
+                $state = [
+                    'params' => $params
+                ];
+                return v::render('partials/calculator/monitoring_floors_group', [
+                    'floorSelects' => MonitoringForm::floorSelects($state)
+                ]);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params

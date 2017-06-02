@@ -134,6 +134,25 @@ class MonitoringCalc extends AbstractCalc {
         });
     }
 
+    // TODO persist items
+    static function floors() {
+        $filenames = [
+            'monitoring-single-building.tsv',
+            'monitoring-multiple-buildings.tsv'
+        ];
+        $items = _::flatMap($filenames, function($filename) {
+            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
+            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
+            return array_keys($result['MULTIPLIERS']['FLOORS']);
+        });
+        return _::map(array_unique($items), function($name, $idx) {
+            return [
+                'ID' => $idx,
+                'NAME' => $name
+            ];
+        });
+    }
+
     function validateState($state) {
         // TODO validate
         return true;

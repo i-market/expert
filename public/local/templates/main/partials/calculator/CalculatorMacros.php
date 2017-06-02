@@ -79,6 +79,34 @@ class CalculatorMacros {
         <?
     }
 
+    function showSelectGroup($name, $selects, $label, $opts = []) {
+        global $APPLICATION;
+        // TODO values and errors
+        list($value, $error) = $this->valueErrorPair($name);
+        ?>
+        <div class="wrap_calc_item">
+            <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
+            <? foreach ($selects as $idx => $select): ?>
+                <div class="inner inner_some">
+                    <div class="left">
+                        <span class="text" style="white-space: nowrap"><?= $select['label'] ?></span>
+                        <select name="<?= "{$name}[{$idx}]" ?>">
+                            <? foreach ($select['options'] as $option): ?>
+                                <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
+                            <? endforeach ?>
+                        </select>
+                    </div>
+                    <? if ($idx === 0): ?>
+                        <div class="right">
+                            <? self::showTooltip($name) ?>
+                        </div>
+                    <? endif ?>
+                </div>
+            <? endforeach ?>
+        </div>
+        <?
+    }
+
     function showSelect($name, $options, $label, $opts) {
         // TODO values and errors
         ?>
@@ -86,7 +114,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <select name="<?= $name ?>">
+                    <select name="<?= $name ?>"<?= isset($opts['selectAttrs']) ? ' '.$opts['selectAttrs'] : '' ?>>
                         <? foreach ($options as $option): ?>
                             <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
                         <? endforeach ?>

@@ -10,10 +10,10 @@
   },
   "devDependencies": {
     "browser-sync": "^2.18.12",
+    "chokidar-cli": "^1.2.0",
     "nightwatch": "^0.9.15",
     "nightwatch-custom-commands-assertions": "^1.0.5",
-    "node-sass": "^4.5.3",
-    "watch": "^1.0.2"
+    "node-sass": "^4.5.3"
   },
   "config": {
     "template": "templates/main",
@@ -27,10 +27,10 @@
     "browsersync": "browser-sync start --proxy ${PROXY:-localhost} -f ${npm_package_config_dist}/css/*.css -f ${npm_package_config_dist}/js/*.js -f ${npm_package_config_template}/*/*.php --no-open",
     "sass": "node-sass -o ${npm_package_config_dist}/css mockup/css/*.scss",
     "watch:sass": "npm run sass && node-sass --watch -o ${npm_package_config_dist}/css mockup/css/*.scss",
-    "watch:copy": "watch 'npm run build:copy' assets",
+    "watch:copy": "chokidar assets -c 'npm run build:copy'",
     "watch": "npm run watch:sass & npm run watch:copy & npm run browsersync",
     "php:test": "vendor/bin/phpunit tests --colors=auto || true",
-    "php:watch": "watch 'npm run php:test' tests src",
+    "php:watch": "chokidar tests src -c 'npm run php:test'",
     "test:e2e": "nightwatch",
     "test": "npm run php:test && npm run test:e2e"
   },

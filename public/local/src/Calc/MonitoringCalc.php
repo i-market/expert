@@ -3,6 +3,7 @@
 namespace App\Calc;
 
 use Core\Strings as str;
+use Core\Util;
 use League\Csv\Reader;
 use Respect\Validation\Validator as v;
 use Core\Underscore as _;
@@ -115,6 +116,12 @@ class MonitoringCalc extends AbstractCalc {
         // TODO если проверять только первую ячейку можно потерять (плохо составленные) данные,
         // лучше чтобы вся строка была пустой
         return str::isEmpty(_::first($row));
+    }
+
+    private static function isEmptyRow($row) {
+        return _::matches($row, function($str) {
+            return str::isEmpty($str);
+        });
     }
 
     private static function parseFloat($str) {
@@ -230,16 +237,15 @@ class MonitoringCalc extends AbstractCalc {
         return $ret;
     }
 
+    private static function messageRow($row) {
+        return '"'.join(', ', self::nonEmptyCells($row)).'"';
+    }
+
     /**
      * @return array structured data with minimal transformations
      */
     static function parseCsv($path) {
         // TODO report unexpected file "format" (e.g. missing/extra sections)
-        $isEmptyRow = function($row) {
-            return _::matches($row, function($str) {
-                return str::isEmpty($str);
-            });
-        };
         // Help PHP detect line ending in Mac OS X.
         // http://csv.thephpleague.com/8.0/instantiation/#csv-and-macintosh
         if (!ini_get('auto_detect_line_endings')) {
@@ -256,9 +262,16 @@ class MonitoringCalc extends AbstractCalc {
         if ($inputBom === Reader::BOM_UTF16_LE || $inputBom === Reader::BOM_UTF16_BE) {
             $reader->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
         }
+        $validSectionKeys = join(', ', array_reduce(self::$sections, function($acc, $section) {
+            return array_merge($acc, array_map(function($prefix) {
+                return '"'.$prefix.'"';
+            }, Util::ensureList($section['PREFIX'])));
+        }, []));
+        $log = [];
         $sectionKey2Rows = [];
         $state = ['find_section'];
-        foreach ($reader->getIterator() as $rawCells) {
+        foreach ($reader->getIterator() as $idx => $rawCells) {
+            $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
@@ -266,6 +279,11 @@ class MonitoringCalc extends AbstractCalc {
                 foreach (nil::iterator($sectionMaybe) as $section) {
                     $sectionKey2Rows[$section['KEY']] = [];
                     $state = ['in_section', $section];
+                }
+                if ($sectionMaybe === null && !self::isEmptyRow($cells)) {
+                    $msg = "Не могу найти заголовок раздела в строке номер {$rowNumber}: ".self::messageRow($cells).'. '
+                        ."Заголовок должен начинаться с одной из следующих строк: {$validSectionKeys}";
+                    $log[] = ['error', $msg];
                 }
             } elseif ($stateName === 'in_section') {
                 list($_, $section) = $state;

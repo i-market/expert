@@ -36,13 +36,12 @@ $macros = new macros($state);
         <div class="wrap">
             <div class="left_side">
                 <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
-                <? $macros->showSelect('LOCATION', [['value' => 42, 'text' => 'some text']], 'Местонахождение', ['required' => true]) ?>
+                <? $macros->showSelect('LOCATION', $locationOptions, 'Местонахождение', ['required' => true]) ?>
                 <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
-                <? // TODO this should be a select ?>
-                <? $macros->showInput('SITE_COUNT', 'Количество объектов мониторинга', ['required' => true]) ?>
+                <? $macros->showSelect('SITE_COUNT', $siteCountOptions, 'Количество объектов мониторинга', ['required' => true]) ?>
                 <? // TODO reveal ?>
                 <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', [['value' => 42, 'text' => 'some text']], 'Удаленность объектов друг от друга', ['required' => true]) ?>
-                <? $macros->showSelect('USED_FOR', [['value' => 42, 'text' => 'some text']], 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
+                <? $macros->showSelect('USED_FOR', $usedForOptions, 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
                 <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', ['required' => true]) ?>
                 <? $macros->showInput('VOLUME', 'Строительный объем объекта(ов), куб.м') ?>
                 <? // TODO unclear ?>

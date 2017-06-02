@@ -96,6 +96,44 @@ class MonitoringCalc extends AbstractCalc {
         });
     }
 
+    // TODO persist items
+    static function usedForItems() {
+        $filenames = [
+            'monitoring-single-building.tsv',
+            'monitoring-multiple-buildings.tsv'
+        ];
+        $items = _::flatMap($filenames, function($filename) {
+            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
+            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
+            return array_keys($result['MULTIPLIERS']['USED_FOR']);
+        });
+        return _::map(array_unique($items), function($name, $idx) {
+            return [
+                'ID' => $idx,
+                'NAME' => $name
+            ];
+        });
+    }
+
+    // TODO persist items
+    static function siteCounts() {
+        $filenames = [
+            'monitoring-single-building.tsv',
+            'monitoring-multiple-buildings.tsv'
+        ];
+        $items = _::flatMap($filenames, function($filename) {
+            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
+            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
+            return array_keys($result['MULTIPLIERS']['SITE_COUNT']);
+        });
+        return _::map(array_unique($items), function($name, $idx) {
+            return [
+                'ID' => $idx,
+                'NAME' => $name
+            ];
+        });
+    }
+
     function validateState($state) {
         // TODO validate
         return true;

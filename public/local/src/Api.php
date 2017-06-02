@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Calc\MonitoringForm;
 use Core\Util;
 use Klein\Klein;
 use App\View as v;
@@ -41,10 +42,9 @@ class Api {
                     ]
                 ];
                 // monitoring_calculator
-                return v::render('partials/calculator/calculator', [
-                    'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
+                return v::render('partials/calculator/calculator', array_merge(MonitoringForm::context(), [
                     'state' => $state
-                ]);
+                ]));
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params

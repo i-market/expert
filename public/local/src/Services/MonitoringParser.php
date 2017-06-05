@@ -7,6 +7,7 @@ use Core\Util;
 use Core\Underscore as _;
 use Core\Nullable as nil;
 
+// TODO refactor with Parser base class
 class MonitoringParser {
     public $log = [];
 

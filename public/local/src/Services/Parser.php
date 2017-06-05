@@ -3,34 +3,43 @@
 namespace App\Services;
 
 use Core\Util;
+// TODO remove dependency
 use League\Csv\Reader;
 use Core\Underscore as _;
 use Core\Nullable as nil;
 use Core\Strings as str;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\BaseReader;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 abstract class Parser {
     public $log = [];
 
-    static function rowIterator($path) {
+    /**
+     * @return Worksheet\Iterator
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    function worksheetIterator($path) {
         // TODO check path/file format
-        // TODO report unexpected file "format" (e.g. missing/extra sections)
-        // Help PHP detect line ending in Mac OS X.
-        // http://csv.thephpleague.com/8.0/instantiation/#csv-and-macintosh
-        if (!ini_get('auto_detect_line_endings')) {
-            ini_set('auto_detect_line_endings', '1');
+        $readerType = IOFactory::identify($path);
+        /** @var BaseReader $reader */
+        $reader = IOFactory::createReader($readerType);
+        $reader->setReadDataOnly(true);
+//        $reader->setReadFilter(...);
+        /** @var Spreadsheet $spreadsheet */
+        $spreadsheet = $reader->load($path);
+        return $spreadsheet->getWorksheetIterator();
+    }
+
+    function cellValues(Row $row) {
+        $ret = [];
+        // TODO expose cut-off column
+        foreach ($row->getCellIterator('A', 'Z') as $cell) {
+            $ret[] = $cell->getValue();
         }
-        $reader = Reader::createFromPath($path);
-        // TODO set delimiter automatically
-        $extension = _::last(explode('.', $path));
-        if ($extension === 'tsv') {
-            $reader->setDelimiter("\t");
-        }
-        // convert to UTF-8
-        $inputBom = $reader->getInputBOM();
-        if ($inputBom === Reader::BOM_UTF16_LE || $inputBom === Reader::BOM_UTF16_BE) {
-            $reader->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
-        }
-        return $reader->getIterator();
+        return $ret;
     }
 
     protected function defaultMultiplierFn($rowNumber) {
@@ -95,7 +104,8 @@ abstract class Parser {
         }, []));
         $ret = [];
         $state = ['find_section'];
-        foreach ($rowIterator as $idx => $rawCells) {
+        foreach ($rowIterator as $idx => $sheetRow) {
+            $rawCells = $this->cellValues($sheetRow);
             $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
             $stateName = _::first($state);
@@ -123,5 +133,41 @@ abstract class Parser {
             }
         }
         return $ret;
+    }
+
+    protected function parseBoolean($str) {
+        // TODO keywords class property
+        $truthy = ['Имеется', 'ЕСТЬ'];
+        $falsy = ['Не имеется', 'НЕТ'];
+        if (in_array($str, $truthy)) {
+            return true;
+        } elseif (in_array($str, $falsy)) {
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    // TODO
+    protected function parseNumericPredicate($str) {
+        if (is_numeric($str)) {
+            return function ($x) use ($str) {
+                return $x == $str;
+            };
+        } else {
+            $matchesRef = [];
+            return preg_match('/(\d+)[-—\s]+(\d+)/', $str, $matchesRef)
+                ? function ($x) use ($matchesRef) {
+                    list($_, $min, $max) = $matchesRef;
+                    return $min <= $x && $x <= $max;
+                }
+                : null;
+        }
+    }
+
+    protected function nonEmptyCells($cells) {
+        return array_filter($cells, function ($cell) {
+            return !str::isEmpty($cell);
+        });
     }
 }

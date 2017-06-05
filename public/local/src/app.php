@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Services\Monitoring;
+use App\Services\MonitoringParser;
+use App\Services\MonitoringRepo;
 use Core\NewsListLike;
 use Core\ShareButtons;
 use League\Plates\Engine;
@@ -21,6 +24,23 @@ class App extends \Core\App {
 
     function init() {
         EventHandlers::attach();
+        $this->container['monitoring_parser'] = function($c) {
+            return new MonitoringParser();
+        };
+        $this->container['monitoring_repo'] = function($c) {
+            // TODO tmp parser dependency
+            return new MonitoringRepo($c['monitoring_parser']);
+        };
+        $this->container['monitoring'] = function($c) {
+            return new Monitoring($c['monitoring_repo']);
+        };
+    }
+
+    /**
+     * @return Monitoring
+     */
+    function getMonitoring() {
+        return $this->container['monitoring'];
     }
 
     static function templates() {

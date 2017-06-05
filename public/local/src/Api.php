@@ -2,14 +2,12 @@
 
 namespace App;
 
-use App\Calc\MonitoringForm;
 use Core\Util;
 use Klein\Klein;
 use App\View as v;
 use Core\FileUpload;
 use FileUpload\FileSystem;
 use FileUpload\PathResolver;
-use Core\Underscore as _;
 use Core\Strings as str;
 
 class Api {
@@ -34,17 +32,8 @@ class Api {
             $router->respond('POST', '/services/monitoring/calculate', function($request, $response) {
                 // TODO sanitize params
                 $params = $request->params();
-                // TODO state
-                $state = [
-                    'params' => $params,
-                    'errors' => [
-                        'DESCRIPTION' => 'some error'
-                    ]
-                ];
-                // monitoring_calculator
-                return v::render('partials/calculator/calculator', array_merge(MonitoringForm::context($state), [
-                    'state' => $state
-                ]));
+                $monitoring = App::getInstance()->getMonitoring();
+                return $monitoring->renderCalculator($params);
             });
             $router->respond('POST', '/services/monitoring/calculate/floors', function($request, $response) {
                 // TODO sanitize params
@@ -53,8 +42,9 @@ class Api {
                 $state = [
                     'params' => $params
                 ];
+                $monitoring = App::getInstance()->getMonitoring();
                 return v::render('partials/calculator/monitoring_floors_group', [
-                    'floorSelects' => MonitoringForm::floorSelects($state)
+                    'floorSelects' => $monitoring->floorSelects($state)
                 ]);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {

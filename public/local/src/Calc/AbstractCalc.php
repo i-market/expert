@@ -4,6 +4,7 @@ namespace App\Calc;
 
 use Respect\Validation\Validator as v;
 
+/** @deprecated use Services namespace */
 abstract class AbstractCalc {
     abstract function validateState($state);
 

@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Calc;
+namespace App\Services;
 
 use Core\Strings as str;
 use Core\Util;
-use League\Csv\Reader;
-use Respect\Validation\Validator as v;
 use Core\Underscore as _;
 use Core\Nullable as nil;
 
-/** @deprecated use Services namespace */
-class MonitoringCalc extends AbstractCalc {
-    static $sections = [
+class MonitoringParser {
+    public $log = [];
+
+    public $sections = [
 //            'Описание объекта(ов) мониторинга',
         [
             'KEY' => 'SITE_COUNT',
@@ -75,112 +74,20 @@ class MonitoringCalc extends AbstractCalc {
         [
             'KEY' => 'DOCUMENTS',
             'PREFIX' => 'Наличие документов',
+        ],
+        [
+            'KEY' => 'PRICES',
+            'PREFIX' => 'ЦЕНЫ'
         ]
     ];
 
-    // TODO persist locations
-    static function locations() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $locations = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['LOCATION']);
-        });
-        return _::map(array_unique($locations), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
-    }
-
-    // TODO persist items
-    static function usedForItems() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['USED_FOR']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
-    }
-
-    // TODO persist items
-    static function siteCounts() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['SITE_COUNT']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
-    }
-
-    // TODO persist items
-    static function floors() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = MonitoringCalc::parseWorksheet(MonitoringCalc::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['FLOORS']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
-    }
-
-    function validateState($state) {
-        // TODO validate
-        return true;
-        $validator = v::allOf(
-            v::key('DESCRIPTION', v::stringType()->notEmpty()),
-            v::key('SITE_COUNT', v::intType()->min(1)),
-            // TODO validate reference?
-            v::key('LOCATION_ID', v::intType()),
-            v::key('ADDRESS', v::stringType()->notEmpty())
-        );
-        return $validator->validate($state);
-    }
-
-    protected function multipliers($state) {
-        // TODO stub
-        return [
-            'SITE_COUNT' => 2,
-            'LOCATION_ID' => 1.5
-        ];
-    }
-
-    private static function findSection($row) {
+    private function findSection($row) {
         $isMatch = function($prefix) use ($row) {
             // TODO maybe ignore whitespace?
+            // TODO make it case-insensitive
             return str::startsWith(_::first($row), $prefix);
         };
-        return _::find(self::$sections, function($section) use ($isMatch) {
+        return _::find($this->sections, function($section) use ($isMatch) {
             if (is_array($section['PREFIX'])) {
                 return _::matchesAny($section['PREFIX'], $isMatch);
             } else {
@@ -189,26 +96,28 @@ class MonitoringCalc extends AbstractCalc {
         });
     }
 
-    private static function isSectionDelimiter($row) {
+    private function isSectionDelimiter($row) {
         // TODO если проверять только первую ячейку можно потерять (плохо составленные) данные,
         // лучше чтобы вся строка была пустой
         return str::isEmpty(_::first($row));
     }
 
-    private static function isEmptyRow($row) {
+    private function isEmptyRow($row) {
         return _::matches($row, function($str) {
             return str::isEmpty($str);
         });
     }
 
-    private static function parseFloat($str) {
-        // TODO validate
+    private function parseFloat($str, $defaultFn) {
         $normalized = str::replace($str, ',', '.');
-        $val = floatval($normalized);
-        return $val == 0 ? 1 : $val;
+        if (!is_numeric($normalized)) {
+            return $defaultFn($normalized);
+        } else {
+            return floatval($normalized);
+        }
     }
 
-    private static function parseBoolean($str) {
+    private function parseBoolean($str) {
         $truthy = ['Имеется', 'ЕСТЬ'];
         $falsy = ['Не имеется', 'НЕТ'];
         if (in_array($str, $truthy)) {
@@ -220,7 +129,8 @@ class MonitoringCalc extends AbstractCalc {
         }
     }
 
-    private static function parseNumericPredicate($str) {
+    // TODO
+    private function parseNumericPredicate($str) {
         if (is_numeric($str)) {
             return function($x) use ($str) {
                 return $x == $str;
@@ -236,30 +146,31 @@ class MonitoringCalc extends AbstractCalc {
         }
     }
 
-    private static function nonEmptyCells($cells) {
+    private function nonEmptyCells($cells) {
         return array_filter($cells, function($cell) {
             return !str::isEmpty($cell);
         });
     }
 
-    private static function parseStructuresToMonitor($rows) {
+    private function parseStructuresToMonitor($rows) {
         $ret = [];
         $state = ['default'];
-        foreach ($rows as $idx => $cells) {
+        foreach ($rows as $idx => $row) {
+            $cells = $row['cells'];
             $stateName = _::first($state);
             if ($stateName === 'default' || $stateName === 'in_subsection') {
                 $isAllCaps = str::upper(_::first($cells)) === _::first($cells);
                 // TODO extract function
                 $isSubsectionName = $isAllCaps;
                 if (_::first($cells) === 'ВЫБОРОЧНЫЙ МОНИТОРИНГ') {
-                    $header = _::drop(self::nonEmptyCells($cells), 1);
+                    $header = _::drop($this->nonEmptyCells($cells), 1);
                     $state = ['in_conditional_multipliers', _::first($cells), $header];
                 } elseif ($isSubsectionName) {
                     $state = ['in_subsection', _::first($cells)];
                 } else {
                     // simple case
                     list($k, $v) = $cells;
-                    $value = self::parseFloat($v);
+                    $value = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
                     if ($stateName === 'in_subsection') {
                         list($_, $subsection) = $state;
                         $ret[$subsection][$k] = $value;
@@ -269,17 +180,19 @@ class MonitoringCalc extends AbstractCalc {
                 }
             } elseif ($stateName === 'in_conditional_multipliers') {
                 list($_, $subsection, $header) = $state;
-                $filteredCells = self::nonEmptyCells($cells);
+                $filteredCells = $this->nonEmptyCells($cells);
                 $isConditionalMultiplier = function($cells) use ($header) {
                     return count($cells) === count($header) + 1;
                 };
                 if ($isConditionalMultiplier($filteredCells)) {
                     $key = _::first($cells);
-                    $multipliers = array_map(self::class.'::parseFloat', _::drop($filteredCells, 1));
+                    $multipliers = array_map(function($str) use ($row) {
+                        return $this->parseFloat($str, $this->defaultMultiplierFn($row['row_number']));
+                    }, _::drop($filteredCells, 1));
                     $ret[$subsection][$key] = array_combine($header, $multipliers);
                 }
                 // peek the next row
-                if (isset($rows[$idx + 1]) && !$isConditionalMultiplier(self::nonEmptyCells($rows[$idx + 1]))) {
+                if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {
                     $state = ['default'];
                 }
             }
@@ -287,26 +200,27 @@ class MonitoringCalc extends AbstractCalc {
         return $ret;
     }
 
-    private static function parseDocuments($rows) {
+    private function parseDocuments($rows) {
         $ret = [];
         $state = ['find_document'];
-        foreach ($rows as $idx => $cells) {
+        foreach ($rows as $idx => $row) {
+            $cells = $row['cells'];
             $stateName = _::first($state);
             if ($stateName === 'find_document') {
-                if (self::parseBoolean(_::first($cells)) === null) {
+                if ($this->parseBoolean(_::first($cells)) === null) {
                     $state = ['in_document', _::first($cells)];
                 }
             } elseif ($stateName === 'in_document') {
                 list($_, $document) = $state;
                 list($k, $v) = $cells;
-                $booleanMaybe = self::parseBoolean($k);
+                $booleanMaybe = $this->parseBoolean($k);
                 if ($booleanMaybe !== null) {
-                    $ret[$document][$booleanMaybe] = self::parseFloat($v);
+                    $ret[$document][$booleanMaybe] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
                 } else {
                     // TODO handle the unexpected
                 }
                 // peek the next row
-                if (isset($rows[$idx + 1]) && !self::parseBoolean(_::first($rows[$idx + 1]))) {
+                if (isset($rows[$idx + 1]) && !$this->parseBoolean(_::first($rows[$idx + 1]))) {
                     $state = ['find_document'];
                 }
             }
@@ -314,87 +228,70 @@ class MonitoringCalc extends AbstractCalc {
         return $ret;
     }
 
-    private static function messageRow($row) {
+    private function messageRow($row) {
         return '"'.join(', ', self::nonEmptyCells($row)).'"';
     }
 
-    static function rowIterator($path) {
-        // TODO check path/file format
-        // TODO report unexpected file "format" (e.g. missing/extra sections)
-        // Help PHP detect line ending in Mac OS X.
-        // http://csv.thephpleague.com/8.0/instantiation/#csv-and-macintosh
-        if (!ini_get('auto_detect_line_endings')) {
-            ini_set('auto_detect_line_endings', '1');
-        }
-        $reader = Reader::createFromPath($path);
-        // TODO set delimiter automatically
-        $extension = _::last(explode('.', $path));
-        if ($extension === 'tsv') {
-            $reader->setDelimiter("\t");
-        }
-        // convert to UTF-8
-        $inputBom = $reader->getInputBOM();
-        if ($inputBom === Reader::BOM_UTF16_LE || $inputBom === Reader::BOM_UTF16_BE) {
-            $reader->appendStreamFilter('convert.iconv.UTF-16/UTF-8');
-        }
-        return $reader->getIterator();
+    private function defaultMultiplierFn($rowNumber) {
+        return function($str) use ($rowNumber) {
+            $this->log[] = ['error', "Не могу найти коэффициент в строке номер {$rowNumber}."];
+            return (float) 1;
+        };
     }
 
-    /**
-     * @return array structured data with minimal transformations
-     */
-    static function parseWorksheet($rowIterator) {
-        $validSectionKeys = join(', ', array_reduce(self::$sections, function($acc, $section) {
+    function parseWorksheet($rowIterator) {
+        $validSectionKeys = join(', ', array_reduce($this->sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
                 return '"'.$prefix.'"';
             }, Util::ensureList($section['PREFIX'])));
         }, []));
-        $log = [];
-        $sectionKey2Rows = [];
+        $sectionGroups = [];
         $state = ['find_section'];
         foreach ($rowIterator as $idx => $rawCells) {
             $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
-                $sectionMaybe = self::findSection($cells);
+                $sectionMaybe = $this->findSection($cells);
                 foreach (nil::iterator($sectionMaybe) as $section) {
-                    $sectionKey2Rows[$section['KEY']] = [];
+                    $sectionGroups[$section['KEY']] = [];
                     $state = ['in_section', $section];
                 }
-                if ($sectionMaybe === null && !self::isEmptyRow($cells)) {
-                    $msg = "Не могу найти заголовок раздела в строке номер {$rowNumber}: ".self::messageRow($cells).'. '
+                if ($sectionMaybe === null && !$this->isEmptyRow($cells)) {
+                    $msg = "Не могу найти заголовок раздела в строке номер {$rowNumber}. "
                         ."Заголовок должен начинаться с одной из следующих строк: {$validSectionKeys}";
-                    $log[] = ['error', $msg];
+                    $this->log[] = ['error', $msg];
                 }
             } elseif ($stateName === 'in_section') {
                 list($_, $section) = $state;
-                if (self::isSectionDelimiter($cells)) {
+                if ($this->isSectionDelimiter($cells)) {
                     $state = ['find_section'];
                 } else {
-                    $sectionKey2Rows[$section['KEY']][] = $cells;
+                    $sectionGroups[$section['KEY']][] = [
+                        'cells' => $cells,
+                        'row_number' => $rowNumber
+                    ];
                 }
             }
         }
-        $ret = _::map($sectionKey2Rows, function($rows, $sectionKey) {
+        $ret = _::map($sectionGroups, function($rows, $sectionKey) {
             if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
-                return self::parseStructuresToMonitor($rows);
+                return $this->parseStructuresToMonitor($rows);
             } elseif ($sectionKey === 'DOCUMENTS') {
-                return self::parseDocuments($rows);
-            } else {
+                return $this->parseDocuments($rows);
+            }  else {
                 // simple case
                 $map = [];
-                foreach ($rows as $cells) {
-                    list($k, $v) = $cells;
-                    $map[$k] = self::parseFloat($v);
+                foreach ($rows as $row) {
+                    list($k, $v) = $row['cells'];
+                    $map[$k] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
                 }
                 return $map;
             }
         });
         // TODO validate return VALUE
         return [
-            'MULTIPLIERS' => $ret,
-            'LOG' => $log
+            'MULTIPLIERS' => $ret
         ];
     }
 }

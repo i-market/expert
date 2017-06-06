@@ -14,6 +14,33 @@ use Underscore\Methods\StringsMethods;
 use Pimple\Container;
 
 class Underscore extends ArraysMethods {
+    /**
+     * @param mixed $collection
+     * @param array|string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    static function set($collection, $key, $value) {
+        if (is_string($key)) {
+            return parent::set($collection, $key, $value);
+        }
+        $ref = &$collection;
+        foreach($key as $k) {
+            if (!is_array($ref)) {
+                $ref = [];
+            }
+            $ref = &$ref[$k];
+        }
+        $ref = $value;
+        return $collection;
+    }
+
+    static function get($collection, $key, $default = null) {
+        // TODO implement array path
+        assert(!is_array($key), 'array path $key is not implemented yet');
+        return parent::get($collection, $key, $default);
+    }
+
     static function map($array, $f) {
         $ret = [];
         foreach ($array as $k => $v) {

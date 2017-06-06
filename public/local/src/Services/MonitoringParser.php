@@ -11,11 +11,11 @@ class MonitoringParser extends Parser {
         'worksheets' => [
             [
                 'key' => 'SINGLE_BUILDING',
-                'name' => 'Мониторинг одно здание'
+                'name' => 'Мониторинг одного здания'
             ],
             [
                 'key' => 'MULTIPLE_BUILDINGS',
-                'name' => 'Мониторинг несколько зданий'
+                'name' => 'Мониторинг нескольких зданий'
             ]
         ],
         'sections' => [

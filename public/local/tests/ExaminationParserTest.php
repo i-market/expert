@@ -3,6 +3,7 @@
 use App\Services\ExaminationParser;
 use PHPUnit\Framework\TestCase;
 use Core\Underscore as _;
+use Respect\Validation\Validator as v;
 
 class ExaminationParserTest extends TestCase {
     function testParseWorksheet() {
@@ -10,9 +11,39 @@ class ExaminationParserTest extends TestCase {
         $path = getcwd().'/fixtures/calculator/Экспертиза калькуляторы.xlsx';
         $result = $parser->parseFile($path);
         foreach ($result as $worksheetResult) {
+            $multipliers = $worksheetResult['multipliers'];
             // TODO assertions
-            $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($worksheetResult['multipliers']));
+            $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($multipliers));
             $this->assertTrue(_::isEmpty($missingSections));
+            $this->assertTrue(v::allOf(
+                // TODO strict keySet validation
+                v::key('GOALS', v::allOf(
+                    v::key('14.1. Установление технического состояния, исправности', v::keySet(
+                        v::key('КОМПЛЕКСНЫЕ ЭКСПЕРТИЗЫ'),
+                        v::key('ВЫБОРОЧНЫЕ ЭКСПЕРТИЗЫ', v::keySet(
+                            v::key('Конструкции зданий, сооружений'),
+                            v::key('Внутренние инженерные сети и оборудование'),
+                            v::key('Дороги, дорожные покрытия')
+                        ))
+                    )),
+                    v::key('14.2. Определение качества выполнения строительных работ', v::keySet(
+                        v::key('КОМПЛЕКСНЫЕ ЭКСПЕРТИЗЫ'),
+                        v::key('ВЫБОРОЧНЫЕ ЭКСПЕРТИЗЫ', v::keySet(
+                            v::key('Конструкции зданий, сооружений'),
+                            v::key('Внутренние инженерные сети и оборудование'),
+                            v::key('Дороги, дорожные покрытия')
+
+                        ))
+                    )),
+                    v::key('14.3. Определение качества выполнения работ по проектированию', v::keySet(
+                        v::key('КОМПЛЕКСНЫЕ ЭКСПЕРТИЗЫ'),
+                        v::key('ЭКСПЕРТИЗА РАЗДЕЛОВ ПРОЕКТНОЙ ДОКУМЕНТАЦИИ'),
+                        v::key('ЭКСПЕРТИЗА РАЗДЕЛОВ РАБОЧЕЙ ДОКУМЕНТАЦИИ'),
+                        v::key('ЭКСПЕРТИЗА ПРИНЯТЫХ ПРОЕКТНЫХ РЕШЕНИЙ')
+                    )),
+                    v::key('14.4. Установление величины физического износа' /* TODO etc. */)
+                ))
+            )->assert($multipliers));
 //            $this->assertTrue(_::isEmpty($parser->log));
         }
     }

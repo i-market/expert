@@ -25,7 +25,7 @@ abstract class Parser {
         $readerType = IOFactory::identify($path);
         /** @var BaseReader $reader */
         $reader = IOFactory::createReader($readerType);
-        $reader->setReadDataOnly(true);
+//        $reader->setReadDataOnly(true);
 //        $reader->setReadFilter(...);
         /** @var Spreadsheet $spreadsheet */
         $spreadsheet = $reader->load($path);
@@ -125,6 +125,7 @@ abstract class Parser {
                     $state = ['find_section'];
                 } else {
                     $ret[$section['key']][] = [
+                        'object' => $sheetRow,
                         'cells' => $cells,
                         'row_number' => $rowNumber
                     ];

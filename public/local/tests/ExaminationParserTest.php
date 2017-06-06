@@ -3,6 +3,7 @@
 use App\Services\ExaminationParser;
 use PHPUnit\Framework\TestCase;
 use Core\Underscore as _;
+use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class ExaminationParserTest extends TestCase {
@@ -15,8 +16,11 @@ class ExaminationParserTest extends TestCase {
             // TODO assertions
             $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($multipliers));
             $this->assertTrue(_::isEmpty($missingSections));
-            $this->assertTrue(v::allOf(
-                // TODO strict keySet validation
+//            $this->assertTrue(_::isEmpty($parser->log));
+        }
+        // TODO strict keySet validation
+        $workSheetValidator = v::keySet(
+            v::key('multipliers', v::allOf(
                 v::key('GOALS', v::allOf(
                     v::key('14.1. Установление технического состояния, исправности', v::keySet(
                         v::key('КОМПЛЕКСНЫЕ ЭКСПЕРТИЗЫ'),
@@ -32,7 +36,6 @@ class ExaminationParserTest extends TestCase {
                             v::key('Конструкции зданий, сооружений'),
                             v::key('Внутренние инженерные сети и оборудование'),
                             v::key('Дороги, дорожные покрытия')
-
                         ))
                     )),
                     v::key('14.3. Определение качества выполнения работ по проектированию', v::keySet(
@@ -43,8 +46,16 @@ class ExaminationParserTest extends TestCase {
                     )),
                     v::key('14.4. Установление величины физического износа' /* TODO etc. */)
                 ))
-            )->assert($multipliers));
-//            $this->assertTrue(_::isEmpty($parser->log));
-        }
+            ))
+        );
+        $validator = v::keySet(
+            v::key('SINGLE_BUILDING', $workSheetValidator),
+            v::key('MULTIPLE_BUILDINGS', $workSheetValidator)
+        );
+        try {
+            $validator->assert($result);
+        } catch (NestedValidationException $e) {
+            $this->fail($e->getFullMessage());
+        };
     }
 }

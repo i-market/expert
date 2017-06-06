@@ -51,7 +51,7 @@ abstract class Parser {
     protected function isSectionDelimiter($row) {
         // TODO если проверять только первую ячейку можно потерять (плохо составленные) данные,
         // лучше чтобы вся строка была пустой
-        return str::isEmpty(_::first($row));
+        return str::isEmpty(_::first($row['cells']));
     }
 
     protected function isEmptyRow($row) {
@@ -103,10 +103,14 @@ abstract class Parser {
         }, []));
         $ret = [];
         $state = ['find_section'];
-        foreach ($rowIterator as $idx => $sheetRow) {
+        foreach ($rowIterator as $rowNumber => $sheetRow) {
             $rawCells = $this->cellValues($sheetRow);
-            $rowNumber = $idx + 1;
             $cells = array_map('trim', $rawCells);
+            $row = [
+                'object' => $sheetRow,
+                'cells' => $cells,
+                'row_number' => $rowNumber
+            ];
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
                 $sectionMaybe = $this->findSection($cells, $sections);
@@ -121,14 +125,10 @@ abstract class Parser {
                 }
             } elseif ($stateName === 'in_section') {
                 list($_, $section) = $state;
-                if ($this->isSectionDelimiter($cells)) {
+                if ($this->isSectionDelimiter($row)) {
                     $state = ['find_section'];
                 } else {
-                    $ret[$section['key']][] = [
-                        'object' => $sheetRow,
-                        'cells' => $cells,
-                        'row_number' => $rowNumber
-                    ];
+                    $ret[$section['key']][] = $row;
                 }
             }
         }

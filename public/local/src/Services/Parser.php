@@ -11,17 +11,16 @@ use Core\Strings as str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\BaseReader;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 abstract class Parser {
     public $log = [];
 
     /**
-     * @return Worksheet\Iterator
+     * @return Spreadsheet
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    function worksheetIterator($path) {
+    function spreadsheet($path) {
         // TODO check path/file format
         $readerType = IOFactory::identify($path);
         /** @var BaseReader $reader */
@@ -30,7 +29,7 @@ abstract class Parser {
 //        $reader->setReadFilter(...);
         /** @var Spreadsheet $spreadsheet */
         $spreadsheet = $reader->load($path);
-        return $spreadsheet->getWorksheetIterator();
+        return $spreadsheet;
     }
 
     function cellValues(Row $row) {
@@ -70,10 +69,10 @@ abstract class Parser {
             return str::startsWith($str, $prefix);
         };
         return _::find($sections, function($section) use ($isMatch) {
-            if (is_array($section['PREFIX'])) {
-                return _::matchesAny($section['PREFIX'], $isMatch);
+            if (is_array($section['prefix'])) {
+                return _::matchesAny($section['prefix'], $isMatch);
             } else {
-                return $isMatch($section['PREFIX']);
+                return $isMatch($section['prefix']);
             }
         });
     }
@@ -100,7 +99,7 @@ abstract class Parser {
         $validSectionKeys = join(', ', array_reduce($sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
                 return '"'.$prefix.'"';
-            }, Util::ensureList($section['PREFIX'])));
+            }, Util::ensureList($section['prefix'])));
         }, []));
         $ret = [];
         $state = ['find_section'];
@@ -112,7 +111,7 @@ abstract class Parser {
             if ($stateName === 'find_section') {
                 $sectionMaybe = $this->findSection($cells, $sections);
                 foreach (nil::iterator($sectionMaybe) as $section) {
-                    $ret[$section['KEY']] = [];
+                    $ret[$section['key']] = [];
                     $state = ['in_section', $section];
                 }
                 if ($sectionMaybe === null && !$this->isEmptyRow($cells)) {
@@ -125,13 +124,29 @@ abstract class Parser {
                 if ($this->isSectionDelimiter($cells)) {
                     $state = ['find_section'];
                 } else {
-                    $ret[$section['KEY']][] = [
+                    $ret[$section['key']][] = [
                         'cells' => $cells,
                         'row_number' => $rowNumber
                     ];
                 }
             }
         }
+        return $ret;
+    }
+
+    protected function mapWorksheets($path, $worksheetSpecs, callable $f) {
+        $ret = [];
+        $spreadsheet = $this->spreadsheet($path);
+        foreach ($worksheetSpecs as $worksheetSpec) {
+            $worksheetMaybe = $spreadsheet->getSheetByName($worksheetSpec['name']);
+            if ($worksheetMaybe === null) {
+                $this->log[] = ['error', 'Не могу найти лист "'.$worksheetSpec['name'].'".'];
+            }
+            foreach (nil::iterator($worksheetMaybe) as $worksheet) {
+                $ret[$worksheetSpec['key']] = $f($worksheet);
+            }
+        }
+        // TODO validate return VALUE
         return $ret;
     }
 

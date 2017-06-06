@@ -4,78 +4,90 @@ namespace App\Services;
 
 use Core\Strings as str;
 use Core\Underscore as _;
+use PhpOffice\PhpSpreadsheet\Worksheet;
 
 class MonitoringParser extends Parser {
-    public $log = [];
-
-    public $sections = [
+    public $spec = [
+        'worksheets' => [
+            [
+                'key' => 'SINGLE_BUILDING',
+                'name' => 'Мониторинг одно здание'
+            ],
+            [
+                'key' => 'MULTIPLE_BUILDINGS',
+                'name' => 'Мониторинг несколько зданий'
+            ]
+        ],
+        'sections' => [
 //            'Описание объекта(ов) мониторинга',
-        [
-            'KEY' => 'SITE_COUNT',
-            'PREFIX' => 'Количество зданий сооружений, строений (шт.)'
-        ],
-        [
-            'KEY' => 'LOCATION',
-            'PREFIX' => 'Местонахождение'
-        ],
+            [
+                'key' => 'SITE_COUNT',
+                'prefix' => 'Количество зданий сооружений, строений (шт.)'
+            ],
+            [
+                'key' => 'LOCATION',
+                'prefix' => 'Местонахождение'
+            ],
 //            'Адрес',
-        [
-            'KEY' => 'USED_FOR',
-            'PREFIX' => [
-                'Назначение объекта мониторинга',
-                'Назначение объектов мониторинга'
+            [
+                'key' => 'USED_FOR',
+                'prefix' => [
+                    'Назначение объекта мониторинга',
+                    'Назначение объектов мониторинга'
+                ],
             ],
-        ],
 //            'Общая площадь объекта (кв.м.)',
-        [
-            'KEY' => 'VOLUME',
-            'PREFIX' => [
-                'Строительный объем объекта (куб. м.)',
-                'Строительный объем объектов (куб. м.)'
+            [
+                'key' => 'VOLUME',
+                'prefix' => [
+                    'Строительный объем объекта (куб. м.)',
+                    'Строительный объем объектов (куб. м.)'
+                ],
             ],
-        ],
-        [
-            'KEY' => 'FLOORS',
-            'PREFIX' => 'Количество надземных этажей',
-        ],
-        [
-            'KEY' => 'HAS_UNDERGROUND_FLOORS',
-            'PREFIX' => [
-                'Наличие технического подполья, подвала, подземных этажей',
-                'Наличие технических подпольев, подвалов, подземных этажей'
+            [
+                'key' => 'FLOORS',
+                'prefix' => 'Количество надземных этажей',
             ],
-        ],
-        [
-            'KEY' => 'UNDERGROUND_FLOORS',
-            'PREFIX' => 'Количество подземных этажей',
-        ],
-        [
-            'KEY' => 'MONITORING_GOAL',
-            'PREFIX' => 'Цели мониторинга',
-        ],
-        [
-            'KEY' => 'STRUCTURES_TO_MONITOR',
-            'PREFIX' => 'Конструкции подлежащие мониторингу',
-        ],
-        [
-            'KEY' => 'DURATION',
-            'PREFIX' => 'Продолжетельность мониторинга (мес.)',
-        ],
-        [
-            'KEY' => 'DISTANCE_BETWEEN_SITES',
-            'PREFIX' => 'Удаленность объектов друг от друга'
-        ],
-        [
-            'KEY' => 'TRANSPORT_ACCESSIBILITY',
-            'PREFIX' => 'Транспортная доуступность',
-        ],
-        [
-            'KEY' => 'DOCUMENTS',
-            'PREFIX' => 'Наличие документов',
-        ],
-        [
-            'KEY' => 'PRICES',
-            'PREFIX' => 'ЦЕНЫ'
+            [
+                'key' => 'HAS_UNDERGROUND_FLOORS',
+                'prefix' => [
+                    'Наличие технического подполья, подвала, подземных этажей',
+                    'Наличие технических подпольев, подвалов, подземных этажей'
+                ],
+            ],
+            [
+                'key' => 'UNDERGROUND_FLOORS',
+                'prefix' => 'Количество подземных этажей',
+            ],
+            [
+                'key' => 'MONITORING_GOAL',
+                'prefix' => 'Цели мониторинга',
+            ],
+            [
+                'key' => 'STRUCTURES_TO_MONITOR',
+                'prefix' => 'Конструкции подлежащие мониторингу',
+            ],
+            [
+                'key' => 'DURATION',
+                'prefix' => 'Продолжетельность мониторинга (мес.)',
+            ],
+            [
+                'key' => 'DISTANCE_BETWEEN_SITES',
+                'prefix' => 'Удаленность объектов друг от друга'
+            ],
+            [
+                'key' => 'TRANSPORT_ACCESSIBILITY',
+                'prefix' => 'Транспортная доуступность',
+            ],
+            [
+                'key' => 'DOCUMENTS',
+                'prefix' => 'Наличие документов',
+            ],
+            [
+                'key' => 'PRICES',
+                // TODO case-insensitive
+                'prefix' => 'ЦЕНЫ'
+            ]
         ]
     ];
 
@@ -155,20 +167,20 @@ class MonitoringParser extends Parser {
         return $ret;
     }
 
-    function parseWorksheet($rowIterator) {
-        $sectionGroups = $this->sectionGroups($rowIterator, $this->sections);
-        $ret = _::map($sectionGroups, function($rows, $sectionKey) {
-            if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
-                return $this->parseStructuresToMonitor($rows);
-            } elseif ($sectionKey === 'DOCUMENTS') {
-                return $this->parseDocuments($rows);
-            }  else {
-                return $this->parseSimpleSection($rows);
-            }
+    function parseFile($path) {
+        return $this->mapWorksheets($path, $this->spec['worksheets'], function(Worksheet $worksheet) {
+            $sectionGroups = $this->sectionGroups($worksheet->getRowIterator(), $this->spec['sections']);
+            return [
+                'multipliers' => _::map($sectionGroups, function ($rows, $sectionKey) {
+                    if ($sectionKey === 'STRUCTURES_TO_MONITOR') {
+                        return $this->parseStructuresToMonitor($rows);
+                    } elseif ($sectionKey === 'DOCUMENTS') {
+                        return $this->parseDocuments($rows);
+                    } else {
+                        return $this->parseSimpleSection($rows);
+                    }
+                })
+            ];
         });
-        // TODO validate return VALUE
-        return [
-            'MULTIPLIERS' => $ret
-        ];
     }
 }

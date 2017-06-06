@@ -2,14 +2,22 @@
 
 namespace App\Services;
 
+use App\Iblock;
+use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
 use App\View as v;
 
 class Monitoring {
     private $repo;
-    
-    function __construct(MonitoringRepo $repo) {
+    private $parser;
+
+    function __construct(MonitoringRepo $repo, MonitoringParser $parser) {
         $this->repo = $repo;
+        $this->parser = $parser;
+    }
+
+    function importData($path) {
+//        $this->parser->
     }
     
     function floorSelects($state) {

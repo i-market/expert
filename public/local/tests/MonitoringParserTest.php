@@ -11,7 +11,7 @@ class MonitoringParserTest extends TestCase {
         $result = $parser->parseFile($path);
         foreach ($result as $worksheetResult) {
             // TODO assertions
-            $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($worksheetResult['multipliers']));
+            $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($worksheetResult['MULTIPLIERS']));
             $this->assertTrue(_::isEmpty($missingSections));
 //            $this->assertTrue(_::isEmpty($parser->log));
         }

@@ -154,7 +154,7 @@ class ExaminationParser extends Parser {
         return $this->mapWorksheets($path, $this->spec['worksheets'], function(Worksheet $worksheet) {
             $sectionGroups = $this->sectionGroups($worksheet->getRowIterator(), $this->spec['sections']);
             return [
-                'multipliers' => _::map($sectionGroups, function($rows, $sectionKey) {
+                'MULTIPLIERS' => _::map($sectionGroups, function($rows, $sectionKey) {
                     if ($sectionKey === 'GOALS') {
                         return $this->parseConditionalMultipliers($rows);
                     } else {

@@ -12,7 +12,7 @@ class ExaminationParserTest extends TestCase {
         $path = getcwd().'/fixtures/calculator/Экспертиза калькуляторы.xlsx';
         $result = $parser->parseFile($path);
         foreach ($result as $worksheetResult) {
-            $multipliers = $worksheetResult['multipliers'];
+            $multipliers = $worksheetResult['MULTIPLIERS'];
             // TODO assertions
             $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($multipliers));
             $this->assertTrue(_::isEmpty($missingSections));
@@ -20,7 +20,7 @@ class ExaminationParserTest extends TestCase {
         }
         // TODO strict keySet validation
         $workSheetValidator = v::keySet(
-            v::key('multipliers', v::allOf(
+            v::key('MULTIPLIERS', v::allOf(
                 v::key('GOALS', v::allOf(
                     v::key('14.1. Установление технического состояния, исправности', v::keySet(
                         v::key('КОМПЛЕКСНЫЕ ЭКСПЕРТИЗЫ'),

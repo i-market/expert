@@ -30,7 +30,7 @@
     "watch:copy": "chokidar assets -c 'npm run build:copy'",
     "watch": "npm run watch:sass & npm run watch:copy & npm run browsersync",
     "php:test": "vendor/bin/phpunit tests --colors=auto || true",
-    "php:watch": "chokidar tests src -c 'npm run php:test'",
+    "php:watch": "npm run php:test && chokidar tests src -c 'npm run php:test'",
     "test:e2e": "nightwatch",
     "test": "npm run php:test && npm run test:e2e"
   },

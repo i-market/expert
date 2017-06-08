@@ -13,6 +13,10 @@ class Util {
         return self::$lastId;
     }
     
+    static function inRange($x, $min, $max) {
+        return $x >= $min && $x <= $max;
+    }
+    
     static function joinPath($paths) {
         $trimmed = _::clean(array_map(function($path) {
             return trim($path, DIRECTORY_SEPARATOR);

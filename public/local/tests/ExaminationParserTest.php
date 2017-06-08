@@ -7,6 +7,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class ExaminationParserTest extends TestCase {
+    /** @group slow */
     function testParseWorksheet() {
         $parser = new ExaminationParser();
         $path = getcwd().'/fixtures/calculator/Экспертиза калькуляторы.xlsx';

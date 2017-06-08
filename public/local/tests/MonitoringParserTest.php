@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Core\Underscore as _;
 
 class MonitoringParserTest extends TestCase {
+    /** @group slow */
     function testParseWorksheet() {
         $parser = new MonitoringParser();
         $path = getcwd().'/fixtures/calculator/Мониторинг калькуляторы.xlsx';

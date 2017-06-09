@@ -6,7 +6,7 @@ use App\Iblock;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 
-extract(App::layoutContext(), EXTR_SKIP)
+extract(App::getInstance()->layoutContext(), EXTR_SKIP)
 ?>
 <? $APPLICATION->AddBufferContent(function() {
     return App::renderLayoutFooter();

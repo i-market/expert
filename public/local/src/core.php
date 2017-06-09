@@ -4,6 +4,7 @@ namespace Core;
 
 use ArrayIterator;
 use Bitrix\Main\Config\Configuration;
+use Bitrix\Main\Config\Option;
 use CBitrixComponentTemplate;
 use CFile;
 use CIBlock;
@@ -224,6 +225,10 @@ class App {
     static function useBitrixAsset() {
         // use bitrix asset pipeline for non-dev environments
         return self::env() !== Env::DEV;
+    }
+
+    function adminEmailMaybe() {
+        return Option::get('main', 'email_from', null);
     }
 
     static function requestUrl() {

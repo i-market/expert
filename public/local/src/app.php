@@ -67,7 +67,7 @@ class App extends \Core\App {
         return self::$layoutFooter;
     }
 
-    static function layoutContext() {
+    function layoutContext() {
         global $APPLICATION;
         $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
         $isHomepage = $APPLICATION->GetCurPage() === '/';
@@ -82,6 +82,7 @@ class App extends \Core\App {
                 // defer to get the title
                 return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());
             },
+            'adminEmailMaybe' => $this->adminEmailMaybe(),
             'sentry' => [
                 'enabled' => $sentryConfig['enabled'],
                 'env' => self::env(),

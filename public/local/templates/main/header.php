@@ -7,7 +7,7 @@ use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Main\Page\Asset;
 use App\View as v;
 
-extract(App::layoutContext(), EXTR_SKIP);
+extract(App::getInstance()->layoutContext(), EXTR_SKIP);
 
 $assets = App::assets();
 $asset = Asset::getInstance();
@@ -49,6 +49,7 @@ if (App::useBitrixAsset()) {
 }) ?>
 <!--прокрутка вверх-->
 <a class="scroll_top" href="#"></a>
+<?= v::render('partials/global_error_message', ['sentry' => $sentry, 'adminEmailMaybe' => $adminEmailMaybe]) ?>
 <!-- HEADER START -->
 <header class="header">
     <div class="top">

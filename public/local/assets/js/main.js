@@ -6,6 +6,11 @@
   // import intercooler
   // import Mockup from mockup/script.js
 
+  $(document).ajaxError(function() {
+    // TODO make it closeable
+    $('#global-error-message').show();
+  });
+
   Intercooler.ready(function($el) {
     Mockup.initForms($el);
     initFormErrorMessage($el);
@@ -70,9 +75,6 @@
           } else {
             $form.replaceWith($next);
           }
-        },
-        error: function() {
-          // TODO handle errors
         },
         complete: function() {
           Mockup.initForms($form);

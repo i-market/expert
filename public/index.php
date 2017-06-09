@@ -90,7 +90,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
                     "PATH" => v::includedArea('homepage/our_sites_heading.php')
                 )
             ); ?>
-            <div class="arrows">
+            <div class="arrows arrows--visible">
                 <span class="arrow prev"></span>
                 <span class="arrow next"></span>
             </div>

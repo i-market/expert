@@ -54,8 +54,10 @@ class Underscore extends ArraysMethods {
     static function flatMap($array, $f) {
         $ret = [];
         foreach ($array as $k => $v) {
-            // TODO optimize
-            $ret = array_merge($ret, is_string($f) ? self::get($v, $f) : $f($v, $k));
+            $xs = is_string($f) ? self::get($v, $f) : $f($v, $k);
+            foreach ($xs as $x) {
+                $ret[] = $x;
+            }
         }
         return $ret;
     }

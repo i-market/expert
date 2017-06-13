@@ -10,6 +10,7 @@ import requests
 import jinja2 as j2
 import yaml
 import ftputil
+import pexpect
 from ftpsync.synchronizers import UploadSynchronizer
 from ftpsync.targets import FsTarget
 from ftpsync.ftp_target import FtpTarget
@@ -202,9 +203,12 @@ def upload_dir(local, remote, dry_run=False, opts=None):
         abs_remote = os.path.join(ssh['document_root'], remote)
         dest = '{}@{}:{}'.format(ssh['user'], ssh['host'], abs_remote)
         args = rsync_opts + ([] if opts is None else opts) + [src, dest]
-        # TODO rsync still prompts for the password
-        with shell_env(RSYNC_PASSWORD=ssh['password']):
-            fab.local('rsync {}'.format(' '.join(args)))
+        rsync_cmd = 'rsync {}'.format(' '.join(args))
+        fab.puts(rsync_cmd)
+        proc = pexpect.spawn(rsync_cmd, encoding='utf8', logfile=os.sys.stdout)
+        proc.expect('password')
+        proc.sendline(ssh['password'])
+        proc.expect(pexpect.EOF)
     else:
         ftp = env['ftp']
         host = ftp_host(env)

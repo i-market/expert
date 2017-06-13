@@ -7,9 +7,25 @@ use Core\Underscore as _;
 
 class MonitoringRepo {
     private $parser;
+    private $data;
 
     function __construct(MonitoringParser $parser) {
         $this->parser = $parser;
+        $this->data = $this->load();
+    }
+
+    private function dataFilePath() {
+        // TODO tmp implementation for development
+        return Util::joinPath([sys_get_temp_dir(), 'expert-monitoring.json']);
+    }
+
+
+    function save($data) {
+        return file_put_contents($this->dataFilePath(), json_encode($data));
+    }
+
+    private function load() {
+        return json_decode(file_get_contents($this->dataFilePath()), true);
     }
 
     // TODO persist locations

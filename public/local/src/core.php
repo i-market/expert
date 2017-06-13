@@ -173,6 +173,10 @@ class Nullable {
         return $nullable !== null ? $f($nullable) : $nullable;
     }
 
+    /**
+     * @param $nullable
+     * @return \Iterator
+     */
     static function iterator($nullable) {
         return new ArrayIterator($nullable === null ? [] : [$nullable]);
     }

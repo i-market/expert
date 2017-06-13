@@ -32,7 +32,7 @@ class App extends \Core\App {
             return new MonitoringRepo($c['monitoring_parser']);
         };
         $this->container['monitoring'] = function($c) {
-            return new Monitoring($c['monitoring_repo']);
+            return new Monitoring($c['monitoring_repo'], $c['monitoring_parser']);
         };
     }
 

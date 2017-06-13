@@ -31,6 +31,7 @@ class Iblock {
     const INFO_BLOCK_GALLERY = 'info_block_gallery';
     const VIDEOS = 'videos';
     const OUR_WORK = 'our_work';
+    const SERVICE_DATA = 'service_data';
 
     const INBOX_TYPE = 'inbox';
     const SERVICE_REQUESTS = 'service_requests';

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use CIBlockElement;
+use Core\Util;
 use Exception;
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Iblock\PropertyTable;
@@ -16,21 +18,39 @@ class EventHandlers {
     }
     
     static function dispatchBeforeAddOrUpdate(&$fieldsRef) {
-        if ($fieldsRef['IBLOCK_ID'] === IblockTools::find(Iblock::CONTENT_TYPE, Iblock::VIDEOS)->id()) {
+        $iblockId = $fieldsRef['IBLOCK_ID'];
+        if ($iblockId === IblockTools::find(Iblock::CONTENT_TYPE, Iblock::VIDEOS)->id()) {
             return self::beforeVideoAddOrUpdate($fieldsRef);
+        } elseif ($iblockId === IblockTools::find(Iblock::SERVICES_TYPE, Iblock::SERVICE_DATA)->id()) {
+            return self::beforeServiceDataAddOrUpdate($fieldsRef);
         }
+        return true;
+    }
+
+    static function beforeServiceDataAddOrUpdate(&$fieldsRef) {
+        $fileProp = PropertyTable::query()->setSelect(['ID'])->setFilter([
+            'IBLOCK_ID' => $fieldsRef['IBLOCK_ID'],
+            'CODE' => 'FILE'
+        ])->exec()->fetch();
+        $file = _::first($fieldsRef['PROPERTY_VALUES'][$fileProp['ID']]);
+        $path = _::get($file, 'VALUE.tmp_name', function() use ($fieldsRef) {
+            $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($fieldsRef['ID'])));
+            $fileId = $element['PROPERTIES']['FILE']['VALUE'];
+            $file = CFile::GetFileArray($fileId);
+            return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $file['SRC']]);
+        });
+        // TODO handle parsing error
+        $data = App::getInstance()->container['monitoring_parser']->parseFile($path);
+        assert(App::getInstance()->container['monitoring_repo']->save($data) !== false);
         return true;
     }
 
     static function beforeVideoAddOrUpdate(&$fieldsRef) {
         global $APPLICATION;
-        $linkProp = PropertyTable::query()
-            ->setSelect(['ID'])
-            ->setFilter([
-                'IBLOCK_ID' => $fieldsRef['IBLOCK_ID'],
-                'CODE' => 'LINK'
-            ])
-            ->exec()->fetch();
+        $linkProp = PropertyTable::query()->setSelect(['ID'])->setFilter([
+            'IBLOCK_ID' => $fieldsRef['IBLOCK_ID'],
+            'CODE' => 'LINK'
+        ])->exec()->fetch();
         $link = _::first($fieldsRef['PROPERTY_VALUES'][$linkProp['ID']])['VALUE'];
         $videoId = Videos::youtubeIdMaybe($link);
         if ($videoId === null) {

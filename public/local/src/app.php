@@ -28,8 +28,7 @@ class App extends \Core\App {
             return new MonitoringParser();
         };
         $this->container['monitoring_repo'] = function($c) {
-            // TODO tmp parser dependency
-            return new MonitoringRepo($c['monitoring_parser']);
+            return new MonitoringRepo();
         };
         $this->container['monitoring'] = function($c) {
             return new Monitoring($c['monitoring_repo'], $c['monitoring_parser']);

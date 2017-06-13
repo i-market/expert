@@ -6,101 +6,56 @@ use Core\Util;
 use Core\Underscore as _;
 
 class MonitoringRepo {
-    private $parser;
     private $data;
-
-    function __construct(MonitoringParser $parser) {
-        $this->parser = $parser;
-        $this->data = $this->load();
-    }
 
     private function dataFilePath() {
         // TODO tmp implementation for development
         return Util::joinPath([sys_get_temp_dir(), 'expert-monitoring.json']);
     }
 
-
     function save($data) {
         return file_put_contents($this->dataFilePath(), json_encode($data));
     }
 
-    private function load() {
-        return json_decode(file_get_contents($this->dataFilePath()), true);
+    private function data() {
+        if ($this->data !== null) {
+            return $this->data;
+        }
+        $content = file_get_contents($this->dataFilePath());
+        assert($content !== false);
+        $this->data = json_decode($content, true);
+        return $this->data;
     }
 
-    // TODO persist locations
+    private function fromMultipliers($key) {
+        $items = _::flatMap($this->data(), function($worksheet) use ($key) {
+            return array_keys($worksheet['MULTIPLIERS'][$key]);
+        });
+        return _::map(array_unique($items), function($name, $idx) {
+            return [
+                'ID' => $idx,
+                'NAME' => $name
+            ];
+        });
+    }
+
     function locations() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $locations = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = $this->parser->parseWorksheet(Parser::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['LOCATION']);
-        });
-        return _::map(array_unique($locations), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
+        return $this->fromMultipliers('LOCATION');
     }
 
-    // TODO persist items
     function usedForItems() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = $this->parser->parseWorksheet(Parser::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['USED_FOR']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
+        return $this->fromMultipliers('USED_FOR');
     }
 
-    // TODO persist items
     function siteCounts() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = $this->parser->parseWorksheet(Parser::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['SITE_COUNT']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
+        return $this->fromMultipliers('SITE_COUNT');
     }
 
-    // TODO persist items
     function floors() {
-        $filenames = [
-            'monitoring-single-building.tsv',
-            'monitoring-multiple-buildings.tsv'
-        ];
-        $items = _::flatMap($filenames, function($filename) {
-            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calc', $filename]);
-            $result = $this->parser->parseWorksheet(Parser::rowIterator($path));
-            return array_keys($result['MULTIPLIERS']['FLOORS']);
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => $idx,
-                'NAME' => $name
-            ];
-        });
+        return $this->fromMultipliers('FLOORS');
+    }
+
+    function documents() {
+        return $this->fromMultipliers('DOCUMENTS');
     }
 }

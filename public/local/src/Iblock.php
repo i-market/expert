@@ -9,6 +9,7 @@ use Core\Underscore as _;
 
 Loader::includeModule('iblock');
 
+// TODO some of these will be useful in core
 class Iblock {
     const CONTENT_TYPE = 'content';
     const SLIDER = 'slider';

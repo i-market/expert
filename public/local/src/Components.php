@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\MonitoringRepo;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
@@ -89,7 +90,15 @@ class Components {
         $services = array_map(function($service) {
             return array_merge($service, [
                 'form' => Components::renderServiceForm('partials/service_forms/monitoring_form', [
-                    'service' => $service,
+                    // TODO
+                    'service' => array_merge($service, [
+                        'document_options' => array_map(function($document) {
+                            return [
+                                'value' => $document['ID'],
+                                'label' => $document['NAME']
+                            ];
+                        }, App::getInstance()->container['monitoring_repo']->documents())
+                    ]),
                     'state' => Services::initialState()
                 ])
             ]);

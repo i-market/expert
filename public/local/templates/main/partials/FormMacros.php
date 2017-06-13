@@ -49,11 +49,11 @@ class FormMacros {
         <?
     }
 
-    function showCheckbox($name, $label, $id, $opts) {
+    function showCheckbox($name, $value, $label, $id, $opts) {
 // TODO render state
         ?>
         <div class="wrap_checkbox">
-            <input name="<?= $name ?>" type="checkbox" hidden="hidden" id="<?= $id ?>" <?= $opts['checked'] ? 'checked' : '' ?>>
+            <input name="<?= $name ?>" value="<?= $value ?>" type="checkbox" hidden="hidden" id="<?= $id ?>" <?= $opts['checked'] ? 'checked' : '' ?>>
             <label for="<?= $id ?>"><?= $label ?></label>
         </div>
         <?

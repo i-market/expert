@@ -9,6 +9,7 @@ use Bitrix\Main\Mail\Event;
 use CBitrixComponentTemplate;
 use CFile;
 use CIBlock;
+use Closure;
 use Core\Underscore as _;
 use Core\Nullable as nil;
 use Underscore\Methods\ArraysMethods;
@@ -27,7 +28,7 @@ class Underscore extends ArraysMethods {
             return parent::set($collection, $key, $value);
         }
         $ref = &$collection;
-        foreach($key as $k) {
+        foreach ($key as $k) {
             if (!is_array($ref)) {
                 $ref = [];
             }
@@ -37,10 +38,25 @@ class Underscore extends ArraysMethods {
         return $collection;
     }
 
+    /**
+     * @param array $collection
+     * @param array|string $key
+     * @param mixed $default
+     * @return mixed
+     */
     static function get($collection, $key, $default = null) {
-        // TODO implement array path
-        assert(!is_array($key), 'array path $key is not implemented yet');
-        return parent::get($collection, $key, $default);
+        if (is_string($key)) {
+            return parent::get($collection, $key, $default);
+        }
+        $ret = $collection;
+        foreach ($key as $k) {
+            if (!isset($ret[$k])) {
+                return $default instanceof Closure ? $default() : $default;
+            }
+            // TODO add object support
+            $ret = $ret[$k];
+        }
+        return $ret;
     }
 
     static function map($array, $f) {

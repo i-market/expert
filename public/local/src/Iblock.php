@@ -32,6 +32,9 @@ class Iblock {
     const VIDEOS = 'videos';
     const OUR_WORK = 'our_work';
 
+    const INBOX_TYPE = 'inbox';
+    const SERVICE_REQUESTS = 'service_requests';
+
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {
             $sections = SectionTable::query()

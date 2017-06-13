@@ -5,6 +5,7 @@ namespace Core;
 use ArrayIterator;
 use Bitrix\Main\Config\Configuration;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Mail\Event;
 use CBitrixComponentTemplate;
 use CFile;
 use CIBlock;
@@ -229,6 +230,25 @@ class App {
 
     function adminEmailMaybe() {
         return Option::get('main', 'email_from', null);
+    }
+
+    function sendMail($eventName, $fields, $siteId) {
+        $app = Configuration::getValue('app');
+        $emailFromMaybe = _::get($app, 'override_default_email_from');
+        if ($emailFromMaybe !== null) {
+            $fields['DEFAULT_EMAIL_FROM'] = $emailFromMaybe;
+        }
+        $event = [
+            'EVENT_NAME' => $eventName,
+            'LID' => $siteId,
+            'C_FIELDS' => $fields
+        ];
+        $result = Event::sendImmediate($event);
+        $isSent = $result === Event::SEND_RESULT_SUCCESS;
+        if (!$isSent && $this->env() !== Env::DEV) {
+            trigger_error("mail sending issue: {$result}", E_USER_WARNING);
+        }
+        return $result;
     }
 
     static function requestUrl() {

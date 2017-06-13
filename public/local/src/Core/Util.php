@@ -17,7 +17,7 @@ class Util {
         return $x >= $min && $x <= $max;
     }
     
-    static function joinPath($paths) {
+    static function joinPath(array $paths) {
         $trimmed = _::clean(array_map(function($path) {
             return trim($path, DIRECTORY_SEPARATOR);
         }, $paths));

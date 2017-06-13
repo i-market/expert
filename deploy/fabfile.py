@@ -18,6 +18,7 @@ import fabric.contrib.console as console
 import fabric.contrib.files as files
 from fabric.context_managers import cd, lcd, shell_env
 
+config_path = '../config'
 templates = {
     'settings.php.j2': 'bitrix/.settings.php',
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
@@ -35,8 +36,8 @@ def config():
     }
     return reduce(merge, [
         dict(defaults),
-        yaml.load(open('vars.yml')),
-        yaml.load(open('vars/secrets.yml'))
+        yaml.load(open(os.path.join(config_path, 'vars.yml'))),
+        yaml.load(open(os.path.join(config_path, 'secrets.yml')))
     ])
 
 
@@ -55,7 +56,7 @@ state = {
     'connections': {}
 }
 cfg = config()
-templates_path = os.path.join(os.path.dirname(__file__), 'templates')
+templates_path = os.path.join(os.path.dirname(__file__), config_path)
 j2env = j2.Environment(loader=j2.FileSystemLoader(templates_path),
                        undefined=j2.StrictUndefined,
                        trim_blocks=True,
@@ -183,7 +184,7 @@ def push_robots():
     env = environment()
     if 'stage' in fab.env.roles:
         fab.puts('copying staging robots.txt')
-        push_file(env, 'files/stage/robots.txt', docroot_path(env, 'robots.txt'))
+        push_file(env, os.path.join(config_path, 'stage/robots.txt'), docroot_path(env, 'robots.txt'))
 
 
 @fab.task

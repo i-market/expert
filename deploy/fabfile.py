@@ -300,8 +300,16 @@ def slack(text):
 
 
 @fab.task
+def ensure_not_dirty():
+    output = fab.local('git diff --shortstat 2> /dev/null | tail -n1', capture=True)
+    if output != '':
+        fab.abort('dirty git repo')
+
+
+@fab.task
 def deploy():
     env = environment()
+    fab.execute(ensure_not_dirty)
     # TODO
     # fab.execute(test)
     # maintenance mode on

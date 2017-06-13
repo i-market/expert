@@ -17,7 +17,7 @@ from ftpsync.ftp_target import FtpTarget
 import fabric.api as fab
 import fabric.contrib.console as console
 import fabric.contrib.files as files
-from fabric.context_managers import cd, lcd, shell_env
+from fabric.context_managers import cd, lcd
 
 config_path = '../config'
 templates = {
@@ -50,8 +50,8 @@ def init():
                 fab.env.roledefs.setdefault(role, []).append(host)
 
 
+cache_path = 'bitrix/cache'
 # global state
-
 state = {
     'verbose': False,
     'connections': {}
@@ -253,7 +253,7 @@ def clear_cache(dry_run=False):
     env = environment()
     if 'ssh' in env:
         # TODO plug host vars into fabric in the global manner
-        path = os.path.join(env['ssh']['document_root'], 'bitrix/cache')
+        path = os.path.join(env['ssh']['document_root'], cache_path)
         ssh = env['ssh']
         fab.env.host_string = '{}@{}'.format(ssh['user'], ssh['host'])
         fab.env.password = ssh['password']

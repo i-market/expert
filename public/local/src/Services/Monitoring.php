@@ -81,6 +81,6 @@ class Monitoring {
             }, $this->repo->siteCounts()),
             'floorSelects' => $this->floorSelects($state)
         ];
-        return v::render('partials/calculator/calculator', $context);
+        return v::render('partials/calculator/monitoring_calculator', $context);
     }
 }

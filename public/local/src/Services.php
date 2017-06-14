@@ -112,6 +112,19 @@ class Services {
         return $elementId;
     }
 
+    private static function formatList($items) {
+        return join("\n", array_map(function($item) {
+            return '✓ '.$item;
+        }, $items));
+    }
+
+    private static function markEmptyStrings($array) {
+        return array_map(function($value) {
+            return str::isEmpty($value) ? '—' : $value;
+        }, $array);
+    }
+
+    // TODO refactor: move to `Monitoring`
     static function requestMonitoring($params) {
         $contactValidator = v::allOf(
             v::key('ORGANIZATION', v::stringType()),
@@ -149,11 +162,16 @@ class Services {
         ];
         $isValid = _::isEmpty($errors);
         if ($isValid) {
-            $fields = array_merge(_::flatten($params, '_'), [
+            $documentOptions = _::keyBy('ID', App::getInstance()->container['monitoring_repo']->documents());
+            $documentNames = array_map(function($documentId) use ($documentOptions) {
+                return $documentOptions[$documentId]['NAME'];
+            }, array_map('intval', $params['DOCUMENTS']));
+            $fields = self::markEmptyStrings(array_merge(_::flatten($params, '_'), [
                 // TODO service requests email_to
                 'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
-                'FILE_LINKS' => ''
-            ]);
+                'FILE_LINKS' => '',
+                'DOCUMENTS' => self::formatList($documentNames)
+            ]));
             $serviceCode = 'monitoring';
             $elementName = $params['CONTACT']['PERSON'];
             $eventName = self::newRequestEventName($serviceCode);

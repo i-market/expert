@@ -51,7 +51,7 @@ class Api {
                 // TODO sanitize params
                 $params = $request->params();
                 $state = Services::requestMonitoring($params);
-                $ctx = App::getInstance()->container['monitoring']->context(Services::services()['monitoring'], $state);
+                $ctx = App::getInstance()->getMonitoring()->context(Services::services()['monitoring'], $state);
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {

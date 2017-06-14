@@ -19,7 +19,7 @@ class FormMacros {
 
     private function getValue($name) {
         $path = Util::formInputNamePath($name);
-        return _::get($this->state['params'], join('.', $path));
+        return _::get($this->state['params'], $path);
     }
 
     // TODO refactor
@@ -50,10 +50,12 @@ class FormMacros {
     }
 
     function showCheckbox($name, $value, $label, $id, $opts) {
-// TODO render state
+        list($checkedValuesRaw, $_) = $this->valueErrorPair($name);
+        $checkedValues = array_map('intval', $checkedValuesRaw);
+        $checked = $opts['checked'] || in_array($value, $checkedValues);
         ?>
         <div class="wrap_checkbox">
-            <input name="<?= $name ?>" value="<?= $value ?>" type="checkbox" hidden="hidden" id="<?= $id ?>" <?= $opts['checked'] ? 'checked' : '' ?>>
+            <input name="<?= $name ?>" value="<?= $value ?>" type="checkbox" hidden="hidden" id="<?= $id ?>" <?= $checked ? 'checked' : '' ?>>
             <label for="<?= $id ?>"><?= $label ?></label>
         </div>
         <?

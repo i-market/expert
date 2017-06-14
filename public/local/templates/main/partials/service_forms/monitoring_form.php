@@ -17,7 +17,7 @@ $macros = new macros($state);
     <h4>Наличие документов:</h4>
     <? foreach ($service['document_options'] as $idx => $opt): ?>
         <? // TODO checked state ?>
-        <? $macros->showCheckbox('DOCUMENTS[]', $opt['value'], $opt['label'], "document-option-{$idx}", ['checked' => false]) ?>
+        <? $macros->showCheckbox('DOCUMENTS[]', $opt['value'], $opt['label'], "monitoring-document-{$idx}", ['checked' => false]) ?>
     <? endforeach ?>
 </div>
 <? macros::showFilesBlock('<b>Документы</b> по объекту(ам) мониторинга (к заявке можно прикрепить не более 10-и файлов)') ?>

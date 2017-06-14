@@ -88,21 +88,19 @@ class Components {
 
     static function renderServicesSection() {
         $services = array_map(function($service) {
-            return array_merge($service, [
-                'form' => Components::renderServiceForm('partials/service_forms/monitoring_form', [
-                    // TODO
-                    'service' => array_merge($service, [
-                        'document_options' => array_map(function($document) {
-                            return [
-                                'value' => $document['ID'],
-                                'label' => $document['NAME']
-                            ];
-                        }, App::getInstance()->container['monitoring_repo']->documents())
-                    ]),
-                    'state' => Services::initialState()
-                ])
-            ]);
+            if ($service['code'] === 'monitoring') {
+                $ctx = App::getInstance()->container['monitoring']->context($service, Services::initialState());
+                $form = Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
+            } else {
+                // TODO
+                $form = '';
+            }
+            return array_merge($service, ['form' => $form]);
         }, array_values(Services::services()));
+        // TODO tmp filter for development
+        $services = array_filter($services, function($service) {
+            return $service['code'] === 'monitoring';
+        });
         return v::render('partials/services_section', ['services' => $services]);
     }
 }

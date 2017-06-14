@@ -9,17 +9,25 @@ use App\View as v;
 
 class Monitoring {
     private $repo;
-    private $parser;
 
-    function __construct(MonitoringRepo $repo, MonitoringParser $parser) {
+    function __construct(MonitoringRepo $repo) {
         $this->repo = $repo;
-        $this->parser = $parser;
     }
 
-    function importData($path) {
-//        $this->parser->
+    function context($service, $state) {
+        return [
+            'service' => array_merge($service, [
+                'document_options' => array_map(function($document) {
+                    return [
+                        'value' => $document['ID'],
+                        'label' => $document['NAME']
+                    ];
+                }, $this->repo->documents())
+            ]),
+            'state' => $state
+        ];
     }
-    
+
     function floorSelects($state) {
         $siteCountId = intval($state['params']['SITE_COUNT']);
         $items = _::keyBy('ID', $this->repo->siteCounts());

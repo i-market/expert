@@ -26,9 +26,10 @@ class Util {
     }
     
     static function formInputNamePath($name) {
-        return array_map(function($segment) {
+        // clean = remove empty strings
+        return _::clean(array_map(function($segment) {
             return trim($segment, ']');
-        }, explode('[', $name));
+        }, explode('[', $name)));
     }
 
     static function humanFileSize($size, $precision = 0) {

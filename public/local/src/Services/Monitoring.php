@@ -2,11 +2,8 @@
 
 namespace App\Services;
 
-use App\Iblock;
-use Bex\Tools\Iblock\IblockTools;
-use Bitrix\Main\Application;
-use Core\Underscore as _;
 use App\View as v;
+use Core\Nullable as nil;
 
 class Monitoring {
     private $repo;
@@ -32,7 +29,10 @@ class Monitoring {
 
     // TODO rename to inputs
     function floorSelects($state) {
-        $siteCount = intval($state['params']['SITE_COUNT']);
+        $siteCountMaybe = nil::map($state['params']['SITE_COUNT'], function($siteCount) {
+            return intval($siteCount);
+        });
+        $siteCount = nil::get($siteCountMaybe, 1);
         return array_map(function($num) {
             return [
                 'label' => 'Строение '.$num,

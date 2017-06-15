@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Core\Underscore as _;
 use App\View as v;
 use Core\Nullable as nil;
 
@@ -50,6 +51,7 @@ class Monitoring {
     }
 
     function renderCalculator($params) {
+        $siteCount = intval($params['SITE_COUNT']);
         // TODO state
         $state = [
             'params' => $params,
@@ -57,13 +59,21 @@ class Monitoring {
                 'DESCRIPTION' => 'some error'
             ]
         ];
+        $distanceSpecialValue = '>3km';
+        $options = array_map([$this, 'mapOptions'], $this->repo->options());
         $context = [
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
-            'options' => array_map([$this, 'mapOptions'], $this->repo->options()),
+            'options' => _::update($options, 'DISTANCE_BETWEEN_SITES', function($options) use ($distanceSpecialValue) {
+                return _::append($options, [
+                    'value' => $distanceSpecialValue,
+                    'text' => 'Расстояние между объектами более 3 км'
+                ]);
+            }),
             'floorSelects' => $this->floorSelects($state),
-            'showDistanceSelect' => intval($params['SITE_COUNT']) > 1
+            'showDistanceSelect' => $siteCount > 1,
+            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue
         ];
         return v::render('partials/calculator/monitoring_calculator', $context);
     }

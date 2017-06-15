@@ -53,7 +53,8 @@ $macros = new macros($state);
                 <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [
                     'required' => true,
                     'show' => $showDistanceSelect,
-                    'class' => 'distance-between-sites'
+                    'class' => 'distance-between-sites',
+                    'show_warning' => $showDistanceWarning
                 ]) ?>
                 <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
                 <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', ['required' => true]) ?>
@@ -75,10 +76,11 @@ $macros = new macros($state);
                     </div>
                 </div>
                 <? // TODO reveal based on state ?>
-                <? $macros->showDropdownSelect('UNDERGROUND_FLOORS', $options['UNDERGROUND_FLOORS'], 'Количество подземных этажей', [
+                <? $macros->showSelectBlock('UNDERGROUND_FLOORS', $options['UNDERGROUND_FLOORS'], 'Количество подземных этажей', [
                     'required' => true,
                     'class' => 'underground_floors'
                 ]) ?>
+                <? $macros->showSelect() ?>
                 <div class="wrap_calc_item">
                     <p class="title">Цели мониторинга <span class="red">*</span></p>
                     <div class="inner">

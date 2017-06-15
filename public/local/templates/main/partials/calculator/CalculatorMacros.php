@@ -155,8 +155,11 @@ class CalculatorMacros {
         <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
-                <? // TODO warning text is shown when certain conditions are met ?>
-<!--                <p class="text red">При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта</p>-->
+                <? // TODO refactor: monitoring-specific warning ?>
+                <? // TODO stop users from submitting the form when this condition is met ?>
+                <p class="text red warning" style="display: <?= $opts['show_warning'] ? 'block' : 'none' ?>">
+                    При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта
+                </p>
             </div>
             <select name="<?= $name ?>">
                 <? foreach ($options as $option): ?>
@@ -167,7 +170,7 @@ class CalculatorMacros {
         <?
     }
 
-    function showDropdownSelect($name, $options, $label, $opts) {
+    function showSelectBlock($name, $options, $label, $opts) {
         // TODO values and errors
         // TODO display on subsequent renderings (state)
         ?>

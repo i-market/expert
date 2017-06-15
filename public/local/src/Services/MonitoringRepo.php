@@ -47,7 +47,10 @@ class MonitoringRepo {
             'SITE_COUNT',
             'FLOORS',
             'DOCUMENTS',
-            'DISTANCE_BETWEEN_SITES'
+            'DISTANCE_BETWEEN_SITES',
+            'MONITORING_GOAL',
+            'DURATION',
+            'TRANSPORT_ACCESSIBILITY'
         ];
         return array_reduce($keys, function($acc, $key) {
             return _::set($acc, $key, $this->fromMultipliers($key));

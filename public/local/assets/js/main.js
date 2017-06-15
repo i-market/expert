@@ -26,7 +26,7 @@
         }
       });
       $distanceBlock.find('select').on('change', function() {
-        // TODO animate
+        // TODO improve ux: animate
         $distanceBlock.find('.warning').toggle($(this).val() === '>3km');
       })
     });

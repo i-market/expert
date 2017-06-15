@@ -84,57 +84,9 @@ $macros = new macros($state);
                         'min' => 1
                     ])
                 ]) ?>
-                <div class="wrap_calc_item">
-                    <p class="title">Цели мониторинга <span class="red">*</span></p>
-                    <div class="inner">
-                        <div class="left">
-                            <select name="" id="">
-                                <option value="">Какое-то длинное описание, которое не поместится наверняка</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                            </select>
-                        </div>
-                        <div class="right">
-                            <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="wrap_calc_item">
-                    <p class="title">Продолжительность мониторинга <span class="red">*</span></p>
-                    <div class="inner">
-                        <div class="left">
-                            <select name="" id="">
-                                <option value="">Какое-то длинное описание, которое не поместится наверняка</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                            </select>
-                        </div>
-                        <div class="right">
-                            <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="wrap_calc_item">
-                    <p class="title">Транспортная доступность <span class="red">*</span></p>
-                    <div class="inner">
-                        <div class="left">
-                            <select name="" id="">
-                                <option value="">Какое-то длинное описание, которое не поместится наверняка</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                                <option value="">Текст</option>
-                            </select>
-                        </div>
-                        <div class="right">
-                            <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
-                        </div>
-                    </div>
-                </div>
+                <? $macros->showSelect('MONITORING_GOAL', $options['MONITORING_GOAL'], 'Цели мониторинга', ['required' => true]) ?>
+                <? $macros->showSelect('DURATION', $options['DURATION'], 'Продолжительность мониторинга', ['required' => true]) ?>
+                <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доуступность', ['required' => true]) ?>
             </div>
             <div class="right_side">
                 <div class="wrap_calc_item">

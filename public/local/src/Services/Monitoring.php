@@ -65,6 +65,7 @@ class Monitoring {
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
+            // TODO append duration units
             'options' => _::update($options, 'DISTANCE_BETWEEN_SITES', function($options) use ($distanceSpecialValue) {
                 return _::append($options, [
                     'value' => $distanceSpecialValue,

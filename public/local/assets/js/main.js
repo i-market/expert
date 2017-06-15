@@ -11,9 +11,31 @@
     $('#global-error-message').show();
   });
 
+  function init($scope) {
+    // calculators
+
+    $scope.find('.calculator--monitoring').each(function() {
+      var $form = $(this);
+      var $distanceBlock = $form.find('.distance-between-sites');
+      $form.find('input.site-count').on('change', function() {
+        var siteCount = parseInt($(this).val(), 10);
+        if (siteCount > 1) {
+          Mockup.openBlock($distanceBlock);
+        } else {
+          Mockup.closeBlock($distanceBlock);
+        }
+      });
+      $distanceBlock.find('select').on('change', function() {
+        // TODO animate
+        $distanceBlock.find('.warning').toggle($(this).val() === '>3km');
+      })
+    });
+  }
+
   Intercooler.ready(function($el) {
     Mockup.initForms($el);
     initFormErrorMessage($el);
+    init($el);
   });
 
   // TODO refactor
@@ -146,20 +168,6 @@
     $('.service-request form').each(function() {
       initServiceRequestForm($(this));
     });
-
-    // calculators
-
-    $('.calculator--monitoring').each(function() {
-      var $form = $(this);
-      $form.find('input.site-count').on('change', function() {
-        var siteCount = parseInt($(this).val(), 10);
-        var $distanceBlock = $form.find('.distance-between-sites');
-        if (siteCount > 1) {
-          Mockup.openBlock($distanceBlock);
-        } else {
-          Mockup.closeBlock($distanceBlock);
-        }
-      });
-    });
+    init($('body'));
   });
 })();

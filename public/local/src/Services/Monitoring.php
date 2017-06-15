@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Iblock;
 use Bex\Tools\Iblock\IblockTools;
+use Bitrix\Main\Application;
 use Core\Underscore as _;
 use App\View as v;
 
@@ -15,6 +16,7 @@ class Monitoring {
     }
 
     function context($service, $state) {
+        $options = $this->repo->options();
         return [
             'service' => array_merge($service, [
                 'document_options' => array_map(function($document) {
@@ -22,29 +24,29 @@ class Monitoring {
                         'value' => $document['ID'],
                         'label' => $document['NAME']
                     ];
-                }, $this->repo->documents())
+                }, $options['DOCUMENTS'])
             ]),
             'state' => $state
         ];
     }
 
+    // TODO rename to inputs
     function floorSelects($state) {
-        $siteCountId = intval($state['params']['SITE_COUNT']);
-        $items = _::keyBy('ID', $this->repo->siteCounts());
-        // TODO handle "более x" case
-        $siteCount = intval($items[$siteCountId]['NAME']);
-        $floorOptions = array_map(function($item) {
-            return [
-                'value' => $item['ID'],
-                'text' => $item['NAME']
-            ];
-        }, $this->repo->floors());
-        return array_map(function($num) use ($floorOptions) {
+        $siteCount = intval($state['params']['SITE_COUNT']);
+        return array_map(function($num) {
             return [
                 'label' => 'Строение '.$num,
-                'options' => $floorOptions
             ];
         }, range(1, $siteCount));
+    }
+
+    function mapOptions($items) {
+        return array_map(function($item) {
+                return [
+                    'value' => $item['ID'],
+                    'text' => $item['NAME']
+                ];
+            }, $items);
     }
 
     function renderCalculator($params) {
@@ -59,27 +61,9 @@ class Monitoring {
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
-            // TODO options should depend on the site count (one or more)
-            'locationOptions' => array_map(function($location) {
-                return [
-                    'value' => $location['ID'],
-                    'text' => $location['NAME']
-                ];
-            }, $this->repo->locations()),
-            'usedForOptions' => array_map(function($item) {
-                return [
-                    'value' => $item['ID'],
-                    'text' => $item['NAME']
-                ];
-            }, $this->repo->usedForItems()),
-            // TODO sort
-            'siteCountOptions' => array_map(function($item) {
-                return [
-                    'value' => $item['ID'],
-                    'text' => $item['NAME']
-                ];
-            }, $this->repo->siteCounts()),
-            'floorSelects' => $this->floorSelects($state)
+            'options' => array_map([$this, 'mapOptions'], $this->repo->options()),
+            'floorSelects' => $this->floorSelects($state),
+            'showDistanceSelect' => intval($params['SITE_COUNT']) > 1
         ];
         return v::render('partials/calculator/monitoring_calculator', $context);
     }

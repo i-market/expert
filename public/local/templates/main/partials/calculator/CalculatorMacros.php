@@ -41,7 +41,6 @@ class CalculatorMacros {
     }
 
     function showTextarea($name, $label, $opts = []) {
-        global $APPLICATION;
         // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
@@ -61,7 +60,6 @@ class CalculatorMacros {
     }
 
     function showInput($name, $label, $opts = []) {
-        global $APPLICATION;
         // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
@@ -69,7 +67,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <input name="<?= $name ?>" type="text">
+                    <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>
@@ -80,7 +78,6 @@ class CalculatorMacros {
     }
 
     function showSelectGroup($name, $selects, $label, $opts = []) {
-        global $APPLICATION;
         // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
@@ -107,6 +104,29 @@ class CalculatorMacros {
         <?
     }
 
+    function showInputGroup($name, $inputs, $label, $opts = []) {
+        // TODO values and errors
+        list($value, $error) = $this->valueErrorPair($name);
+        ?>
+        <div class="wrap_calc_item">
+            <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
+            <? foreach ($inputs as $idx => $input): ?>
+                <div class="inner inner_some">
+                    <div class="left">
+                        <span class="text" style="white-space: nowrap"><?= $input['label'] ?></span>
+                        <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+                    </div>
+                    <? if ($idx === 0): ?>
+                        <div class="right">
+                            <? self::showTooltip($name) ?>
+                        </div>
+                    <? endif ?>
+                </div>
+            <? endforeach ?>
+        </div>
+        <?
+    }
+
     function showSelect($name, $options, $label, $opts) {
         // TODO values and errors
         ?>
@@ -114,7 +134,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <select name="<?= $name ?>"<?= isset($opts['selectAttrs']) ? ' '.$opts['selectAttrs'] : '' ?>>
+                    <select name="<?= $name ?>"<?= isset($opts['select_attrs']) ? ' '.$opts['select_attrs'] : '' ?>>
                         <? foreach ($options as $option): ?>
                             <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
                         <? endforeach ?>
@@ -129,15 +149,31 @@ class CalculatorMacros {
     }
 
     function showOptionalSelect($name, $options, $label, $opts) {
-        global $APPLICATION;
         // TODO values and errors
         // TODO display on subsequent renderings (state)
         ?>
-        <div class="wrap_calc_item_block">
+        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
                 <? // TODO warning text is shown when certain conditions are met ?>
 <!--                <p class="text red">При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта</p>-->
+            </div>
+            <select name="<?= $name ?>">
+                <? foreach ($options as $option): ?>
+                    <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
+                <? endforeach ?>
+            </select>
+        </div>
+        <?
+    }
+
+    function showDropdownSelect($name, $options, $label, $opts) {
+        // TODO values and errors
+        // TODO display on subsequent renderings (state)
+        ?>
+        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>">
+            <div class="top">
+                <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             </div>
             <select name="<?= $name ?>">
                 <? foreach ($options as $option): ?>

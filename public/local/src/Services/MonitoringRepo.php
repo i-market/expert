@@ -39,23 +39,19 @@ class MonitoringRepo {
         });
     }
 
-    function locations() {
-        return $this->fromMultipliers('LOCATION');
-    }
-
-    function usedForItems() {
-        return $this->fromMultipliers('USED_FOR');
-    }
-
-    function siteCounts() {
-        return $this->fromMultipliers('SITE_COUNT');
-    }
-
-    function floors() {
-        return $this->fromMultipliers('FLOORS');
-    }
-
-    function documents() {
-        return $this->fromMultipliers('DOCUMENTS');
+    // TODO refactor: kind of a bad name (collides with view layer "options" for select inputs)
+    function options() {
+        $keys = [
+            'LOCATION',
+            'USED_FOR',
+            'SITE_COUNT',
+            'FLOORS',
+            'DOCUMENTS',
+            'UNDERGROUND_FLOORS',
+            'DISTANCE_BETWEEN_SITES'
+        ];
+        return array_reduce($keys, function($acc, $key) {
+            return _::set($acc, $key, $this->fromMultipliers($key));
+        }, []);
     }
 }

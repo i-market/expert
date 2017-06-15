@@ -6,7 +6,7 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
-<section class="calculator_certain_types">
+<section class="calculator_certain_types calculator--monitoring">
     <div class="wrap">
         <div class="wrap_title">
             <h2>On-line калькулятор</h2>
@@ -36,47 +36,49 @@ $macros = new macros($state);
         <div class="wrap">
             <div class="left_side">
                 <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
-                <? $macros->showSelect('LOCATION', $locationOptions, 'Местонахождение', ['required' => true]) ?>
+                <? $macros->showSelect('LOCATION', $options['LOCATION'], 'Местонахождение', ['required' => true]) ?>
                 <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
-                <? $macros->showSelect('SITE_COUNT', $siteCountOptions, 'Количество объектов мониторинга', [
+                <? $macros->showInput('SITE_COUNT', 'Количество объектов мониторинга', [
                     'required' => true,
-                    'selectAttrs' => v::attrs([
+                    'type' => 'number',
+                    'input_attrs' => v::attrs([
+                        'class' => 'site-count',
+                        'min' => 1,
                         'ic-post-to' => $floorsApiUri,
                         'ic-target' => '#monitoring-floors-group',
                         'ic-replace-target' => 'true',
                         'ic-indicator' => '#monitoring-floors-group .loader'
                     ])
                 ]) ?>
-                <? // TODO reveal ?>
-                <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', [['value' => 42, 'text' => 'some text']], 'Удаленность объектов друг от друга', ['required' => true]) ?>
-                <? $macros->showSelect('USED_FOR', $usedForOptions, 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
+                <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [
+                    'required' => true,
+                    'show' => $showDistanceSelect,
+                    'class' => 'distance-between-sites'
+                ]) ?>
+                <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
                 <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', ['required' => true]) ?>
                 <? $macros->showInput('VOLUME', 'Строительный объем объекта(ов), куб.м') ?>
                 <?= v::render('partials/calculator/monitoring_floors_group', ['floorSelects' => $floorSelects]) ?>
+                <? $hasUndergroundFloors = 'HAS_UNDERGROUND_FLOORS' ?>
                 <div class="wrap_calc_item">
                     <p class="title">Наличие подполья, подвала, подземных этажей</p>
                     <div class="inner">
                         <div class="left left--radio hidden_block">
-                            <input type="radio" hidden="hidden" name="family" id="some_111" data-name="some_block" class="open_block">
+                            <input name="<?= $hasUndergroundFloors ?>" value="1" type="radio" hidden="hidden" id="some_111" data-name="underground_floors" class="open_block">
                             <label for="some_111" class="radio_label">Да</label>
-                            <input type="radio" hidden="hidden" checked name="family" id="some_222" data-name="some_block">
+                            <input name="<?= $hasUndergroundFloors ?>" value="0" type="radio" hidden="hidden" checked id="some_222" data-name="underground_floors">
                             <label for="some_222" class="radio_label">Нет</label>
                         </div>
                         <div class="right">
-                            <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
+                            <? $macros->showTooltip($hasUndergroundFloors) ?>
                         </div>
                     </div>
                 </div>
-                <div class="wrap_calc_item_block some_block">
-                    <div class="top">
-                        <p class="title">Количество подземных этажей <span class="red">*</span></p>
-                    </div>
-                    <select name="" id="">
-                        <option value="">более 3х</option>
-                        <option value="">более 4х</option>
-                        <option value="">более 5х</option>
-                    </select>
-                </div>
+                <? // TODO reveal based on state ?>
+                <? $macros->showDropdownSelect('UNDERGROUND_FLOORS', $options['UNDERGROUND_FLOORS'], 'Количество подземных этажей', [
+                    'required' => true,
+                    'class' => 'underground_floors'
+                ]) ?>
                 <div class="wrap_calc_item">
                     <p class="title">Цели мониторинга <span class="red">*</span></p>
                     <div class="inner">
@@ -141,12 +143,12 @@ $macros = new macros($state);
                     </div>
                 </div>
                 <div class="wrap_calc_item hidden_block">
-                    <input type="radio" hidden="hiden" checked name="family_2" id="some_3" data-name="some_block_2">
+                    <input type="radio" hidden="hiden" checked name="family_2" id="some_3" data-name="underground_floors_2">
                     <label for="some_3" class="radio_label">Комплексный мониторинг состояния строительных конструкций, зданий и сооружений</label>
-                    <input type="radio" hidden="hiden" name="family_2" id="some_4" data-name="some_block_2" class="open_block">
+                    <input type="radio" hidden="hiden" name="family_2" id="some_4" data-name="underground_floors_2" class="open_block">
                     <label for="some_4" class="radio_label">Выборочное обследование</label>
                 </div>
-                <div class="wrap_calc_item_block wrap_calc_item_block--checkbox some_block_2">
+                <div class="wrap_calc_item_block wrap_calc_item_block--checkbox underground_floors_2">
                     <div class="wrap_checkbox">
                         <input type="checkbox" hidden="hidden" id="some_5">
                         <label for="some_5">Мониторинг состояния фундаментов</label>

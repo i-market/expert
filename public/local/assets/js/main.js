@@ -146,5 +146,20 @@
     $('.service-request form').each(function() {
       initServiceRequestForm($(this));
     });
+
+    // calculators
+
+    $('.calculator--monitoring').each(function() {
+      var $form = $(this);
+      $form.find('input.site-count').on('change', function() {
+        var siteCount = parseInt($(this).val(), 10);
+        var $distanceBlock = $form.find('.distance-between-sites');
+        if (siteCount > 1) {
+          Mockup.openBlock($distanceBlock);
+        } else {
+          Mockup.closeBlock($distanceBlock);
+        }
+      });
+    });
   });
 })();

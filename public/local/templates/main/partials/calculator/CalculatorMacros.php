@@ -170,11 +170,12 @@ class CalculatorMacros {
         <?
     }
 
+    // TODO rename to something like conditional select
     function showSelectBlock($name, $options, $label, $opts) {
         // TODO values and errors
         // TODO display on subsequent renderings (state)
         ?>
-        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
+        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             </div>
@@ -183,6 +184,19 @@ class CalculatorMacros {
                     <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
                 <? endforeach ?>
             </select>
+        </div>
+        <?
+    }
+
+    function showConditionalInput($name, $label, $opts) {
+        // TODO values and errors
+        // TODO display on subsequent renderings (state)
+        ?>
+        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
+            <div class="top">
+                <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
+            </div>
+            <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
         </div>
         <?
     }

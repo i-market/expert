@@ -47,7 +47,6 @@ class MonitoringRepo {
             'SITE_COUNT',
             'FLOORS',
             'DOCUMENTS',
-            'UNDERGROUND_FLOORS',
             'DISTANCE_BETWEEN_SITES'
         ];
         return array_reduce($keys, function($acc, $key) {

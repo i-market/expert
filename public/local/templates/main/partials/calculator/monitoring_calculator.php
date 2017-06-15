@@ -75,12 +75,15 @@ $macros = new macros($state);
                         </div>
                     </div>
                 </div>
-                <? $macros->showSelectBlock('UNDERGROUND_FLOORS', $options['UNDERGROUND_FLOORS'], 'Количество подземных этажей', [
+                <? $macros->showConditionalInput('UNDERGROUND_FLOORS', 'Количество подземных этажей', [
                     'required' => true,
                     'class' => 'underground_floors',
-                    'show' => $showUndergroundFloors
+                    'show' => $showUndergroundFloors,
+                    'type' => 'number',
+                    'input_attrs' => v::attrs([
+                        'min' => 1
+                    ])
                 ]) ?>
-                <? $macros->showSelect() ?>
                 <div class="wrap_calc_item">
                     <p class="title">Цели мониторинга <span class="red">*</span></p>
                     <div class="inner">

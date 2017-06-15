@@ -174,7 +174,7 @@ class CalculatorMacros {
         // TODO values and errors
         // TODO display on subsequent renderings (state)
         ?>
-        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>">
+        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             </div>

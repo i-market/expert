@@ -75,10 +75,10 @@ $macros = new macros($state);
                         </div>
                     </div>
                 </div>
-                <? // TODO reveal based on state ?>
                 <? $macros->showSelectBlock('UNDERGROUND_FLOORS', $options['UNDERGROUND_FLOORS'], 'Количество подземных этажей', [
                     'required' => true,
-                    'class' => 'underground_floors'
+                    'class' => 'underground_floors',
+                    'show' => $showUndergroundFloors
                 ]) ?>
                 <? $macros->showSelect() ?>
                 <div class="wrap_calc_item">

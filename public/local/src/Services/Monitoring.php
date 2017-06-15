@@ -73,7 +73,8 @@ class Monitoring {
             }),
             'floorSelects' => $this->floorSelects($state),
             'showDistanceSelect' => $siteCount > 1,
-            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue
+            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,
+            'showUndergroundFloors' => boolval($params['HAS_UNDERGROUND_FLOORS'])
         ];
         return v::render('partials/calculator/monitoring_calculator', $context);
     }

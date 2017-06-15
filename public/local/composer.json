@@ -10,7 +10,8 @@
         "gargron/fileupload": "^1.4",
         "league/csv": "^8.2",
         "pimple/pimple": "~3.0",
-        "phpoffice/phpspreadsheet": "dev-master"
+        "phpoffice/phpspreadsheet": "dev-master",
+        "mpdf/mpdf": "^6.1"
     },
     "autoload": {
         "files": ["src/core.php", "src/app.php"],

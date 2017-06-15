@@ -1,0 +1,40 @@
+body {
+    color: #000;
+}
+
+body, h1, h2 {
+    font-size: 11pt;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.body table td {
+    border: 1px solid black;
+    padding: 0 0.2cm;
+}
+
+.header .right {
+    text-align: right;
+    vertical-align: top;
+}
+
+.header table,
+.header p {
+    margin-bottom: 22pt;
+}
+
+.header p {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.extra-top-margin {
+    margin-top: 66pt;
+}

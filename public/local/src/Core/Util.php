@@ -8,7 +8,7 @@ use Core\Strings as str;
 class Util {
     static private $lastId = 0;
 
-    static function uniqueId($prefix='') {
+    static function uniqueId() {
         self::$lastId += 1;
         return self::$lastId;
     }

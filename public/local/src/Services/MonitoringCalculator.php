@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Core\Util as u;
 use Exception;
+use Core\Underscore as _;
 
 class MonitoringCalculator {
     function pricePerSquareMeter($sqMeters) {
@@ -24,5 +25,32 @@ class MonitoringCalculator {
         } else {
             throw new Exception('input is outside of the function domain. perhaps the function is not continuous.');
         }
+    }
+
+    function multipliers($params, $data, $ignoredKeys) {
+        // TODO double check
+        $dataSet = $params['SITE_COUNT'] > 1
+            ? $data['MULTIPLE_BUILDINGS']
+            : $data['SINGLE_BUILDING'];
+        $knownKeys = array_keys($dataSet['MULTIPLIERS']);
+        $missingKeys = array_diff($knownKeys, array_keys($params));
+        $requiredKeys = array_diff($knownKeys, $ignoredKeys);
+        // TODO
+        assert(count($missingKeys) === 0);
+        // TODO conditional multipliers
+        $multipliers = array_reduce($requiredKeys, function($acc, $k) use ($dataSet, $params) {
+            $v = $params[$k];
+            return _::set($acc, $k, $dataSet['MULTIPLIERS'][$k][$v]);
+        }, []);
+        return $multipliers;
+    }
+
+    function totalPrice($totalArea, $multipliers) {
+        $scale = 2; // копейки
+        $multiplier = array_reduce(array_values($multipliers), function($acc, $x) {
+            return $acc + $x;
+        }, 0);
+        $price = round($this->pricePerSquareMeter($totalArea), $scale);
+        return bcmul(bcmul($price, $totalArea, $scale), $multiplier, $scale);
     }
  }

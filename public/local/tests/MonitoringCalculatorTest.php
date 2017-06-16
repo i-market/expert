@@ -30,4 +30,43 @@ class MonitoringCalculatorTest extends TestCase {
             [PHP_INT_MAX, 3],
         ];
     }
+
+    function testMultipliers() {
+        // TODO use good ids instead of text values
+        $calc = new MonitoringCalculator();
+        $data = [
+            'SINGLE_BUILDING' => [
+                'MULTIPLIERS' => [
+                    'SITE_COUNT' => [
+                        '1' => 1
+                    ],
+                    'TOTAL_AREA' => [],
+                    'LOCATION' => [
+                        'Московская область' => 1.1
+                    ],
+                    'MONITORING_GOAL' => [
+                        'Однаквартирное жилое здание' => 0.8
+                    ]
+                ]
+            ]
+        ];
+        $params = [
+            'SITE_COUNT' => 1,
+            'TOTAL_AREA' => 200000,
+            'LOCATION' => 'Московская область',
+            'MONITORING_GOAL' => 'Однаквартирное жилое здание'
+        ];
+        $result = $calc->multipliers($params, $data, ['TOTAL_AREA']);
+        $expected = [
+            'SITE_COUNT' => 1,
+            'LOCATION' => 1.1,
+            'MONITORING_GOAL' => 0.8
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    function testTotalPrice() {
+        $calc = new MonitoringCalculator();
+        $this->assertEquals(120000 * 4.6 * (2 + 1.5), $calc->totalPrice(120000, [2, 1.5]));
+    }
 }

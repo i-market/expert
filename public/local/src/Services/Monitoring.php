@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use Core\Underscore as _;
+use Core\Strings as str;
 use App\View as v;
 use Core\Nullable as nil;
+use Core\Util;
 
 class Monitoring {
     private $repo;
@@ -65,17 +67,33 @@ class Monitoring {
         ];
         $distanceSpecialValue = '>3km';
         $options = array_map([$this, 'mapOptions'], $this->repo->options());
+        // mutate
+        $options = _::update($options, 'DISTANCE_BETWEEN_SITES', function($opts) use ($distanceSpecialValue) {
+            return _::append($opts, [
+                'value' => $distanceSpecialValue,
+                'text' => 'Расстояние между объектами более 3 км'
+            ]);
+        });
+        $options = _::update($options, 'DURATION', function($opts) {
+            return array_map(function($opt) {
+                return _::update($opt, 'text', function($text) {
+                    return preg_replace_callback('/(\pL+\s+)?(\d+)$/u', function($matches) {
+                        list($match, $word, $number) = $matches;
+                        $units = $word !== ''
+                            // e.g. более n месяцев
+                            ? Util::units($number, 'месяца', 'месяцев', 'месяцев')
+                            : Util::units($number, 'месяц', 'месяца', 'месяцев');
+                        return $match.' '.$units;
+                    }, $text);
+                });
+            }, $opts);
+        });
         $context = [
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
             // TODO append duration units
-            'options' => _::update($options, 'DISTANCE_BETWEEN_SITES', function($options) use ($distanceSpecialValue) {
-                return _::append($options, [
-                    'value' => $distanceSpecialValue,
-                    'text' => 'Расстояние между объектами более 3 км'
-                ]);
-            }),
+            'options' => $options,
             'floorSelects' => $this->floorSelects($state),
             'showDistanceSelect' => $siteCount > 1,
             'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,

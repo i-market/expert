@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet;
 
 class MonitoringParser extends Parser {
     public $spec = [
+        'package_selection_individual' => 'ВЫБОРОЧНЫЙ МОНИТОРИНГ',
         'worksheets' => [
             [
                 'key' => 'SINGLE_BUILDING',
@@ -92,6 +93,15 @@ class MonitoringParser extends Parser {
     ];
 
     private function parseStructuresToMonitor($rows) {
+        $setSubsectionValue = function($array, $subsection, $key, $value) {
+            $renameSubsection = [
+                // TODO refactor
+                $this->spec['package_selection_individual'] => 'INDIVIDUAL',
+                'КОМПЛЕКСНЫЙ МОНИТОРИНГ' => 'PACKAGE'
+            ];
+            $renamed = _::get($renameSubsection, $subsection, $subsection);
+            return _::set($array, [$renamed, $key], $value);
+        };
         $ret = [];
         $state = ['default'];
         foreach ($rows as $idx => $row) {
@@ -101,7 +111,7 @@ class MonitoringParser extends Parser {
                 $isAllCaps = str::upper(_::first($cells)) === _::first($cells);
                 // TODO extract function
                 $isSubsectionName = $isAllCaps;
-                if (_::first($cells) === 'ВЫБОРОЧНЫЙ МОНИТОРИНГ') {
+                if (_::first($cells) === $this->spec['package_selection_individual']) {
                     $header = _::drop($this->nonEmptyCells($cells), 1);
                     $state = ['in_conditional_multipliers', _::first($cells), $header];
                 } elseif ($isSubsectionName) {
@@ -112,7 +122,7 @@ class MonitoringParser extends Parser {
                     $value = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
                     if ($stateName === 'in_subsection') {
                         list($_, $subsection) = $state;
-                        $ret[$subsection][$k] = $value;
+                        $ret = $setSubsectionValue($ret, $subsection, $k, $value);
                     } else {
                         $ret[$k] = $value;
                     }
@@ -128,7 +138,7 @@ class MonitoringParser extends Parser {
                     $multipliers = array_map(function($str) use ($row) {
                         return $this->parseFloat($str, $this->defaultMultiplierFn($row['row_number']));
                     }, _::drop($filteredCells, 1));
-                    $ret[$subsection][$key] = array_combine($header, $multipliers);
+                    $ret = $setSubsectionValue($ret, $subsection, $key, array_combine($header, $multipliers));
                 }
                 // peek the next row
                 if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {

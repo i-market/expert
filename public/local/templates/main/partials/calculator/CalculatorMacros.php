@@ -200,4 +200,20 @@ class CalculatorMacros {
         </div>
         <?
     }
+
+    function showCheckboxList($name, $options, $label, $opts) {
+        $prefix = Util::uniqueId().'_'.$name;
+        ?>
+        <div class="wrap_calc_item">
+            <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
+            <? foreach ($options as $idx => $option): ?>
+                <? $id = "{$prefix}_{$idx}" ?>
+                <div class="wrap_checkbox">
+                    <input type="checkbox" value="<?= $option['value'] ?>" hidden="hidden" id="<?= $id ?>">
+                    <label for="<?= $id ?>"><?= $option['text'] ?></label>
+                </div>
+            <? endforeach ?>
+        </div>
+        <?
+    }
 }

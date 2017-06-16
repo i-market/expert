@@ -27,9 +27,9 @@ class MonitoringRepo {
         return $this->data;
     }
 
-    private function fromMultipliers($key) {
-        $items = _::flatMap($this->data(), function($worksheet) use ($key) {
-            return array_keys($worksheet['MULTIPLIERS'][$key]);
+    private function fromMultipliers($path) {
+        $items = _::flatMap($this->data(), function($worksheet) use ($path) {
+            return array_keys(_::get($worksheet, array_merge(['MULTIPLIERS'], $path)));
         });
         return _::map(array_unique($items), function($name, $idx) {
             return [
@@ -52,8 +52,13 @@ class MonitoringRepo {
             'DURATION',
             'TRANSPORT_ACCESSIBILITY'
         ];
-        return array_reduce($keys, function($acc, $key) {
-            return _::set($acc, $key, $this->fromMultipliers($key));
+        $ret = array_reduce($keys, function($acc, $key) {
+            return _::set($acc, $key, $this->fromMultipliers([$key]));
         }, []);
+        $ret['STRUCTURES_TO_MONITOR'] = [
+            'PACKAGE' => $this->fromMultipliers(['STRUCTURES_TO_MONITOR', 'PACKAGE']),
+            'INDIVIDUAL' => $this->fromMultipliers(['STRUCTURES_TO_MONITOR', 'INDIVIDUAL']),
+        ];
+        return $ret;
     }
 }

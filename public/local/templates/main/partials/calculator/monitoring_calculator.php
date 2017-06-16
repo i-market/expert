@@ -89,6 +89,7 @@ $macros = new macros($state);
                 <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доуступность', ['required' => true]) ?>
             </div>
             <div class="right_side">
+                <? $packageSelection = 'PACKAGE_SELECTION' ?>
                 <div class="wrap_calc_item">
                     <div class="inner">
                         <div class="left">
@@ -100,72 +101,23 @@ $macros = new macros($state);
                     </div>
                 </div>
                 <div class="wrap_calc_item hidden_block">
-                    <input type="radio" hidden="hiden" checked name="family_2" id="some_3" data-name="underground_floors_2">
+                    <? // TODO checked state ?>
+                    <input type="radio" hidden="hidden" checked name="<?= $packageSelection ?>" value="PACKAGE" id="some_3" data-name="package-selection-individual">
                     <label for="some_3" class="radio_label">Комплексный мониторинг состояния строительных конструкций, зданий и сооружений</label>
-                    <input type="radio" hidden="hiden" name="family_2" id="some_4" data-name="underground_floors_2" class="open_block">
+                    <input type="radio" hidden="hidden" name="<?= $packageSelection ?>" value="INDIVIDUAL" id="some_4" data-name="package-selection-individual" class="open_block">
                     <label for="some_4" class="radio_label">Выборочное обследование</label>
                 </div>
-                <div class="wrap_calc_item_block wrap_calc_item_block--checkbox underground_floors_2">
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния фундаментов</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния технических подпольев, цокольных помещений, подвальных помещений, подземных гаражей и стоянок</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Комплексный мониторинг состояния полов выполненных по грунтовому основанию (бетонных, железобетонных, фибробетонных)</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния стен, колонн, пилонов и пр.</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния окон, дверей, витражных и светопрозрачных конструкций</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния перекрытий, лестничных площадок и маршей, покрфтий</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния конструкций кровли</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Мониторинг состояния бассейнов, резервуаров</label>
-                    </div>
+                <div class="wrap_calc_item_block wrap_calc_item_block--checkbox package-selection-individual">
+                    <? $prefix = \Core\Util::uniqueId().'_STRUCTURES_TO_MONITOR_INDIVIDUAL' ?>
+                    <? foreach ($options['STRUCTURES_TO_MONITOR']['INDIVIDUAL'] as $idx => $option): ?>
+                        <? $id = "{$prefix}_{$idx}" ?>
+                        <div class="wrap_checkbox">
+                            <input type="checkbox" name="STRUCTURES_TO_MONITOR[]" value="<?= $option['value'] ?>" hidden="hidden" id="<?= $id ?>">
+                            <label for="<?= $id ?>"><?= $option['text'] ?></label>
+                        </div>
+                    <? endforeach ?>
                 </div>
-                <div class="wrap_calc_item">
-                    <p class="title">Наличие документов: <span class="red">*</span></p>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Результаты выполненых обследований или экспертиз</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Результаты ранее проведенного мониторинга</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Результаты гидрогеологических изысканий</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Проектная документация</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Рабочая документация</label>
-                    </div>
-                    <div class="wrap_checkbox">
-                        <input type="checkbox" hidden="hidden" id="some_5">
-                        <label for="some_5">Планы БТИ</label>
-                    </div>
-                </div>
+                <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
             </div>
         </div>
     </div>

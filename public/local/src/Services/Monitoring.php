@@ -42,6 +42,10 @@ class Monitoring {
     }
 
     function mapOptions($items) {
+        // recur
+        if (!_::isIndexed($items)) {
+            return array_map([$this, 'mapOptions'], $items);
+        }
         return array_map(function($item) {
                 return [
                     'value' => $item['ID'],

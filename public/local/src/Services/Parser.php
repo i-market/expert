@@ -182,7 +182,7 @@ abstract class Parser {
     }
 
     protected function nonEmptyCells($cells) {
-        return array_filter($cells, function ($cell) {
+        return _::takeWhile($cells, function ($cell) {
             return !str::isEmpty($cell);
         });
     }

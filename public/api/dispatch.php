@@ -8,5 +8,6 @@ try {
     Api::router()->dispatch();
 } catch (\Exception $e) {
     CHTTP::SetStatus('500 Internal Server Error');
-    throw $e;
+    // unwrap klein exception
+    throw $e->getPrevious();
 }

@@ -8,7 +8,7 @@ class MonitoringParserTest extends TestCase {
     /** @group slow */
     function testParseWorksheet() {
         $parser = new MonitoringParser();
-        $path = getcwd().'/fixtures/calculator/Мониторинг калькуляторы.xlsx';
+        $path = __DIR__.'/../fixtures/calculator/Мониторинг калькуляторы.xlsx';
         $result = $parser->parseFile($path);
         foreach ($result as $worksheetResult) {
             // TODO assertions

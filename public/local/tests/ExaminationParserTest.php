@@ -10,7 +10,7 @@ class ExaminationParserTest extends TestCase {
     /** @group slow */
     function testParseWorksheet() {
         $parser = new ExaminationParser();
-        $path = getcwd().'/fixtures/calculator/Экспертиза калькуляторы.xlsx';
+        $path = __DIR__.'/../fixtures/calculator/Экспертиза калькуляторы.xlsx';
         $result = $parser->parseFile($path);
         foreach ($result as $worksheetResult) {
             $multipliers = $worksheetResult['MULTIPLIERS'];

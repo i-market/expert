@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use Core\Hierarchy as h;
 use Core\Underscore as _;
 use Core\Strings as str;
 use PhpOffice\PhpSpreadsheet\Cell;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
@@ -68,58 +68,93 @@ class ExaminationParser extends Parser {
 //    }
 
     protected function parseConditionalMultipliers($rows) {
+        $h = h::make();
+        $h = h::derive($h, 'root_subsection_name', 'subsection_name');
+        $h = h::derive($h, 'table_header', 'subsection_name');
+        $h = h::derive($h, 'nesting_table_header', 'table_header');
         // TODO log errors
         $findNumberingIdx = function($row) {
             return _::findKey($row['cells'], function($v) {
                 return $v === 'Нумерация';
             });
         };
-        $isNestingTableHeader = function($row) use ($findNumberingIdx) {
-            return $findNumberingIdx($row) !== null;
-        };
-        $isTableHeader = function($row) use ($isNestingTableHeader) {
+        // TODO refactor
+        $rowType = function($row) use ($findNumberingIdx) {
+            $isNestingTableHeader = function($row) use ($findNumberingIdx) {
+                return $findNumberingIdx($row) !== null;
+            };
+            $isTableHeader = function($row) use ($isNestingTableHeader) {
+                if ($isNestingTableHeader($row)) {
+                    return true;
+                }
+                /** @var Row $rowObj */
+                $rowObj = $row['object'];
+                /** @var Cell[] $cellObjs */
+                $cellObjs = iterator_to_array($rowObj->getCellIterator());
+                return _::matches(_::pick($cellObjs, ['B', 'C']), function(Cell $cell) {
+                    // TODO brittle
+                    return is_numeric($cell->getValue());
+                });
+            };
+            $isSubsectionName = function($row) use ($isTableHeader) {
+                $secondCell = $row['cells'][1];
+                return $isTableHeader($row) || str::isEmpty($secondCell);
+            };
+            $isRootSubsection = function($row) use ($isSubsectionName) {
+                return $isSubsectionName($row) && str::startsWith(_::first($row['cells']), '14.');
+            };
             if ($isNestingTableHeader($row)) {
-                return true;
+                return 'nesting_table_header';
+            } elseif ($isTableHeader($row)) {
+                return 'table_header';
+            } elseif ($isRootSubsection($row)) {
+                return 'root_subsection_name';
+            } elseif ($isSubsectionName($row)) {
+                return 'subsection_name';
+            } else {
+                return 'unknown';
             }
-            /** @var Row $rowObj */
-            $rowObj = $row['object'];
-            /** @var Cell[] $cellObjs */
-            $cellObjs = iterator_to_array($rowObj->getCellIterator());
-            return _::matches(_::pick($cellObjs, ['B', 'C']), function(Cell $cell) {
-                // TODO brittle
-                return is_numeric($cell->getValue()) ;
-            });
         };
-        $isSubsectionName = function($row) use ($isTableHeader) {
-            $secondCell = $row['cells'][1];
-            return $isTableHeader($row) || str::isEmpty($secondCell);
-        };
-        $isRootSubsection = function($row) {
-            return str::startsWith(_::first($row['cells']), '14.');
-        };
+        // TODO
+        // 14.6 max = 4, otherwise 3?
         $maxSectionDepth = 3;
         $ret = [];
         $state = ['find_subsection'];
         foreach ($rows as $idx => $row) {
             $cells = $row['cells'];
             $stateName = _::first($state);
+            $type = $rowType($row);
             if ($stateName === 'find_subsection') {
-                if ($isSubsectionName($row)) {
+                if (h::isa($h, $type, 'subsection_name')) {
                     $state = ['in_subsection', [_::first($cells)]];
                 }
             } elseif ($stateName === 'in_subsection') {
                 list($_, $path) = $state;
-                if ($isSubsectionName($row)) {
+                if (h::isa($h, $type, 'subsection_name')) {
                     $name = _::first($cells);
-                    if ($isRootSubsection($row)) {
+                    // TODO refactor high cyclomatic complexity
+                    if (h::isa($h, $type, 'root_subsection_name')) {
                         $nextPath = [$name];
                     } else {
                         $isAllCaps = str::upper($name) === $name;
-                        // TODO brittle
-                        $goUpOneLevel = count($path) >= 2 && $isAllCaps || count($path) >= $maxSectionDepth;
+                        // TODO ! depth logic
+                        $goUpOneLevel = count($path) >= 2 && $isAllCaps;
                         $nextPath = array_merge($goUpOneLevel ? _::initial($path) : $path, [$name]);
                     }
-                    $state = ['in_subsection', $nextPath];
+                    if (h::isa($h, $type, 'table_header')) {
+                        if (h::isa($h, $type, 'nesting_table_header')) {
+                            $numberingIdx = $findNumberingIdx($row);
+                            // drop 1, take until numbering column
+                            $header = array_slice($this->nonEmptyCells($cells), 1, $numberingIdx - 1);
+                            $tables = [[array_merge($path, ['TABLE']), $header]];
+                            $state = ['in_nesting_table', $tables, $numberingIdx];
+                        } else {
+                            $header = _::drop($this->nonEmptyCells($cells), 1);
+                            $state = ['in_table', $nextPath, $header];
+                        }
+                    } else {
+                        $state = ['in_subsection', $nextPath];
+                    }
                 } else {
                     // simple case
                     list($k, $v) = $cells;
@@ -127,10 +162,10 @@ class ExaminationParser extends Parser {
                     // TODO check numbering (14.)
                     $ret = _::set($ret, array_merge($path, [$k]), $value);
                 }
-            } elseif ($stateName === 'in_conditional_multipliers') {
-                // TODO unreachable code for now
-                list($_, $subsection, $header) = $state;
+            } elseif ($stateName === 'in_table') {
+                list($_, $path, $header) = $state;
                 $filteredCells = $this->nonEmptyCells($cells);
+                // TODO refactor, extract function
                 $isConditionalMultiplier = function($cells) use ($header) {
                     return count($cells) === count($header) + 1;
                 };
@@ -139,12 +174,19 @@ class ExaminationParser extends Parser {
                     $multipliers = array_map(function($str) use ($row) {
                         return $this->parseFloat($str, $this->defaultMultiplierFn($row['row_number']));
                     }, _::drop($filteredCells, 1));
-                    $ret[$subsection][$key] = array_combine($header, $multipliers);
+                    $ret = _::set($ret, array_merge($path, [$key]), array_combine($header, $multipliers));
                 }
                 // peek the next row
                 if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {
-                    $state = ['find_subsection'];
+                    if (count($path) > 1) {
+                        $state = ['in_subsection', _::initial($path)];
+                    } else {
+                        $state = ['find_subsection'];
+                    }
                 }
+            } elseif ($stateName === 'in_nesting_table') {
+                list($_, $tables, $numberingIdx) = $state;
+//                $indices = array_reverse(array_slice($cells, ));
             }
         }
         return $ret;

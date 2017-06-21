@@ -29,6 +29,7 @@ class Monitoring {
             v::key('USED_FOR', v::notOptional()),
             v::key('TOTAL_AREA', v::intType()->positive()),
             v::key('VOLUME', v::optional(v::intType()->positive())),
+            // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
             v::key('FLOORS', v::callback(function($values) {
                 return is_array($values) && _::matches($values, function($v) {
                     return v::notOptional()->intType()->validate($v);

@@ -14,10 +14,11 @@
   function init($scope) {
     // calculators
 
-    $scope.find('.calculator--monitoring').each(function() {
-      var $form = $(this);
-      var $distanceBlock = $form.find('.distance-between-sites');
-      $form.find('input.site-count').on('change', function() {
+    var sel = '.calculator--monitoring';
+    $scope.find(sel).addBack(sel).each(function() {
+      var $calc = $(this);
+      var $distanceBlock = $calc.find('.distance-between-sites');
+      $calc.find('input.site-count').on('change', function() {
         var siteCount = parseInt($(this).val(), 10);
         if (siteCount > 1) {
           Mockup.openBlock($distanceBlock);

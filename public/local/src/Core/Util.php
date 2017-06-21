@@ -90,6 +90,13 @@ class Util {
                     : $cases['plu'])));
     }
 
+    static function formatCurrency($num, $options = []) {
+        $opts = array_merge([
+            'cents' => true
+        ], $options);
+        return number_format($num, $opts['cents'] ? 2 : 0, ',', ' ');
+    }
+
     static function ensureList($x) {
         return !is_array($x) || !_::isIndexed($x) ? [$x] : $x;
     }

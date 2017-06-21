@@ -147,7 +147,10 @@ class Monitoring {
             'showDistanceSelect' => $siteCount > 1,
             'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,
             'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
-            'duration' => $durationOpt['text']
+            'duration' => $durationOpt['text'],
+            'formattedTotalPrice' => nil::map($state['total_price'], function($totalPrice) {
+                return Util::formatCurrency(round($totalPrice), ['cents' => false]).' руб/мес';
+            })
         ];
         return View::render('partials/calculator/monitoring_calculator', $context);
     }

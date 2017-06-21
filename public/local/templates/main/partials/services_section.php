@@ -53,7 +53,7 @@ use App\View as v;
     <div class="modal service-request" id="<?= $service['requestModalId'] ?>">
         <div class="block">
             <span class="close">×</span>
-            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>">
+            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>" novalidate>
                 <?= $service['form'] ?>
             </form>
         </div>

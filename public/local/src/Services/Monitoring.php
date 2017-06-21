@@ -21,7 +21,7 @@ class Monitoring {
         // TODO improvement: validate reference values
         $validator = v::allOf(
             v::key('DESCRIPTION', v::stringType()->notEmpty()),
-            v::key('LOCATION'),
+            v::key('LOCATION', v::notOptional()),
             v::key('SITE_COUNT', v::intType()->positive()),
             v::key('DISTANCE_BETWEEN_SITES', $params['SITE_COUNT'] === 1
                 ? v::alwaysValid()
@@ -53,7 +53,7 @@ class Monitoring {
             $errors = Services::getMessages($exception);
             // TODO refactor empty checkbox list message
             $errors = _::update($errors, 'STRUCTURES_TO_MONITOR', _::constantly(Services::EMPTY_LIST_MESSAGE));
-            $errors = _::update($errors, 'FLOORS', _::constantly(''));
+            $errors = _::update($errors, 'FLOORS', _::constantly('Каждое поле должно быть положительным числом.'));
         }
         $state = [
             'params' => $params,

@@ -332,6 +332,10 @@ class View {
         return Strings::upper($str);
     }
 
+    static function lower($str) {
+        return Strings::lower($str);
+    }
+
     static function appendToView($view, $content) {
         global $APPLICATION;
         $APPLICATION->AddViewContent($view, $APPLICATION->GetViewContent($view).$content);

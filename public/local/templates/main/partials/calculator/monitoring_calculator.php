@@ -179,7 +179,7 @@ $macros = new macros($state);
                             <? // TODO format currency (150 0000) ?>
                             <? $totalPrice = round($state['total_price']) ?>
                             <p>Стоимость работ: <span><?= "{$totalPrice} руб/мес" ?></span></p>
-                            <p>Продолжительность выполнения работ: <span><?= $duration ?></span></p>
+                            <p>Продолжительность выполнения работ: <span><?= v::lower($duration) ?></span></p>
                         </div>
                         <h4>Получите коммерческое предложение на почту</h4>
                         <div class="commercial_proposal">

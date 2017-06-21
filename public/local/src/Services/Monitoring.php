@@ -140,7 +140,6 @@ class Monitoring {
         });
         $context = [
             'state' => $state,
-            'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости<br> проведения мониторинга',
             'options' => $options,
             'floorSelects' => $this->floorSelects($state),

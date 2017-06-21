@@ -8,6 +8,7 @@ use Core\Underscore as _;
 
 class CalculatorMacros {
     static private $requiredMark = ' <span class="red">*</span>';
+    static private $selectPlaceholder = '<option value="">Выбрать...</option>';
     private $state;
 
     function __construct($state) {
@@ -15,14 +16,11 @@ class CalculatorMacros {
         $this->state = $state;
     }
 
-    private function getValue($name) {
-        $path = Util::formInputNamePath($name);
-        return _::get($this->state['params'], join('.', $path));
-    }
-
-    // TODO refactor
     private function valueErrorPair($name) {
-        return [self::getValue($name), $this->state['errors'][$name]];
+        $path = Util::formInputNamePath($name);
+        $value = _::get($this->state['params'], $path);
+        $error = _::get($this->state['errors'], $path);
+        return [$value, $error];
     }
 
     static function showTooltip($name) {
@@ -41,14 +39,13 @@ class CalculatorMacros {
     }
 
     function showTextarea($name, $label, $opts = []) {
-        // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item">
+        <div class="wrap_calc_item<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left<?= !v::isEmpty($error) ? ' error' : '' ?>">
-                    <textarea name="<?= $name ?>"></textarea>
+                    <textarea name="<?= $name ?>"><?= $value ?></textarea>
                     <div class="error-message"><?= $error ?></div>
                 </div>
                 <div class="right">
@@ -60,14 +57,14 @@ class CalculatorMacros {
     }
 
     function showInput($name, $label, $opts = []) {
-        // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item">
+        <div class="wrap_calc_item<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+                    <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+                    <div class="error-message"><?= $error ?></div>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>
@@ -77,44 +74,18 @@ class CalculatorMacros {
         <?
     }
 
-    function showSelectGroup($name, $selects, $label, $opts = []) {
-        // TODO values and errors
-        list($value, $error) = $this->valueErrorPair($name);
-        ?>
-        <div class="wrap_calc_item">
-            <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
-            <? foreach ($selects as $idx => $select): ?>
-                <div class="inner inner_some">
-                    <div class="left">
-                        <span class="text" style="white-space: nowrap"><?= $select['label'] ?></span>
-                        <select name="<?= "{$name}[{$idx}]" ?>">
-                            <? foreach ($select['options'] as $option): ?>
-                                <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
-                            <? endforeach ?>
-                        </select>
-                    </div>
-                    <? if ($idx === 0): ?>
-                        <div class="right">
-                            <? self::showTooltip($name) ?>
-                        </div>
-                    <? endif ?>
-                </div>
-            <? endforeach ?>
-        </div>
-        <?
-    }
-
     function showInputGroup($name, $inputs, $label, $opts = []) {
-        // TODO values and errors
         list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item">
+        <div class="wrap_calc_item group<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <? foreach ($inputs as $idx => $input): ?>
+                <? $val = isset($value[$idx]) ? $value[$idx] : '' ?>
+                <? $isLast = $idx === count($inputs) - 1 ?>
                 <div class="inner inner_some">
                     <div class="left">
                         <span class="text" style="white-space: nowrap"><?= $input['label'] ?></span>
-                        <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+                        <input name="<?= $name ?>" value="<?= $val ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
                     </div>
                     <? if ($idx === 0): ?>
                         <div class="right">
@@ -122,23 +93,29 @@ class CalculatorMacros {
                         </div>
                     <? endif ?>
                 </div>
+                <? if ($isLast): ?>
+                    <div class="error-message"><?= $error ?></div>
+                <? endif ?>
             <? endforeach ?>
         </div>
         <?
     }
 
     function showSelect($name, $options, $label, $opts) {
-        // TODO values and errors
+        list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item">
+        <div class="wrap_calc_item<?= !v::isEmpty($error) ? ' error' : '' ?>">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
                     <select name="<?= $name ?>"<?= isset($opts['select_attrs']) ? ' '.$opts['select_attrs'] : '' ?>>
+                        <?= self::$selectPlaceholder ?>
                         <? foreach ($options as $option): ?>
-                            <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
+                            <? $selected = $value === $option['value'] ?>
+                            <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
                         <? endforeach ?>
                     </select>
+                    <div class="error-message"><?= $error ?></div>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>
@@ -149,10 +126,9 @@ class CalculatorMacros {
     }
 
     function showOptionalSelect($name, $options, $label, $opts) {
-        // TODO values and errors
-        // TODO display on subsequent renderings (state)
+        list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
+        <div class="wrap_calc_item_block<?= !v::isEmpty($error) ? ' error' : '' ?><?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
                 <? // TODO refactor: monitoring-specific warning ?>
@@ -162,26 +138,10 @@ class CalculatorMacros {
                 </p>
             </div>
             <select name="<?= $name ?>">
+                <?= self::$selectPlaceholder ?>
                 <? foreach ($options as $option): ?>
-                    <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
-                <? endforeach ?>
-            </select>
-        </div>
-        <?
-    }
-
-    // TODO rename to something like conditional select
-    function showSelectBlock($name, $options, $label, $opts) {
-        // TODO values and errors
-        // TODO display on subsequent renderings (state)
-        ?>
-        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
-            <div class="top">
-                <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
-            </div>
-            <select name="<?= $name ?>">
-                <? foreach ($options as $option): ?>
-                    <option value="<?= $option['value'] ?>"><?= $option['text'] ?></option>
+                    <? $selected = $value === $option['value'] ?>
+                    <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
                 <? endforeach ?>
             </select>
         </div>
@@ -189,27 +149,30 @@ class CalculatorMacros {
     }
 
     function showConditionalInput($name, $label, $opts) {
-        // TODO values and errors
-        // TODO display on subsequent renderings (state)
+        list($value, $error) = $this->valueErrorPair($name);
         ?>
-        <div class="wrap_calc_item_block<?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
+        <div class="wrap_calc_item_block<?= !v::isEmpty($error) ? ' error' : '' ?><?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
             <div class="top">
                 <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             </div>
-            <input name="<?= $name ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+            <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+            <div class="error-message"><?= $error ?></div>
         </div>
         <?
     }
 
     function showCheckboxList($name, $options, $label, $opts) {
+        // TODO errors
+        list($value, $error) = $this->valueErrorPair($name);
         $prefix = Util::uniqueId().'_'.$name;
         ?>
         <div class="wrap_calc_item">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <? foreach ($options as $idx => $option): ?>
                 <? $id = "{$prefix}_{$idx}" ?>
+                <? $checked = in_array($option['value'], $value) ?>
                 <div class="wrap_checkbox">
-                    <input type="checkbox" value="<?= $option['value'] ?>" hidden="hidden" id="<?= $id ?>">
+                    <input type="checkbox" name="<?= $name.'[]' ?>" value="<?= $option['value'] ?>"<?= $checked ? ' checked' : '' ?> hidden="hidden" id="<?= $id ?>">
                     <label for="<?= $id ?>"><?= $option['text'] ?></label>
                 </div>
             <? endforeach ?>

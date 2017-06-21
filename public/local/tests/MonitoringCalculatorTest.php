@@ -56,7 +56,7 @@ class MonitoringCalculatorTest extends TestCase {
             'LOCATION' => 'Московская область',
             'MONITORING_GOAL' => 'Однаквартирное жилое здание'
         ];
-        $result = $calc->multipliers($params, $data, ['TOTAL_AREA']);
+        $result = $calc->multipliers($params, $data);
         $expected = [
             'SITE_COUNT' => 1,
             'LOCATION' => 1.1,

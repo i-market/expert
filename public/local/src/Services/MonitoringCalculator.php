@@ -27,7 +27,18 @@ class MonitoringCalculator {
         }
     }
 
-    function multipliers($params, $data, $ignoredKeys) {
+    // TODO no need for bc math?
+    function mul($x, $y, $scale) {
+        if (extension_loaded('bcmath')) {
+            return bcmul($x, $y, $scale);
+        } else {
+            trigger_error('bcmath extension is not loaded, calculations are going to be less precise', E_USER_NOTICE);
+            return $x * $y;
+        }
+    }
+
+    function multipliers($params, $data) {
+        $ignoredKeys = ['TOTAL_AREA', 'PRICES'];
         // TODO double check
         $dataSet = $params['SITE_COUNT'] > 1
             ? $data['MULTIPLE_BUILDINGS']
@@ -36,7 +47,9 @@ class MonitoringCalculator {
         $missingKeys = array_diff($knownKeys, array_keys($params));
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);
         // TODO
-        assert(count($missingKeys) === 0);
+        assert(_::matches($requiredKeys, function($k) use ($params) {
+            return _::has($params, $k);
+        }));
         // TODO conditional multipliers
         $multipliers = array_reduce($requiredKeys, function($acc, $k) use ($dataSet, $params) {
             $v = $params[$k];
@@ -51,6 +64,6 @@ class MonitoringCalculator {
             return $acc + $x;
         }, 0);
         $price = round($this->pricePerSquareMeter($totalArea), $scale);
-        return bcmul(bcmul($price, $totalArea, $scale), $multiplier, $scale);
+        return $this->mul($this->mul($price, $totalArea, $scale), $multiplier, $scale);
     }
  }

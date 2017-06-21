@@ -2,17 +2,70 @@
 
 namespace App\Services;
 
+use App\Services;
 use Core\Underscore as _;
-use Core\Strings as str;
-use App\View as v;
+use App\View;
 use Core\Nullable as nil;
 use Core\Util;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as v;
 
 class Monitoring {
     private $repo;
 
     function __construct(MonitoringRepo $repo) {
         $this->repo = $repo;
+    }
+
+    function calculate($params) {
+        // TODO improvement: validate reference values
+        $validator = v::allOf(
+            v::key('DESCRIPTION', v::stringType()->notEmpty()),
+            v::key('LOCATION'),
+            v::key('SITE_COUNT', v::intType()->positive()),
+            v::key('DISTANCE_BETWEEN_SITES', $params['SITE_COUNT'] === 1
+                ? v::alwaysValid()
+                : v::notOptional()),
+            v::key('USED_FOR', v::notOptional()),
+            v::key('TOTAL_AREA', v::intType()->positive()),
+            v::key('VOLUME', v::optional(v::intType()->positive())),
+            v::key('FLOORS', v::callback(function($values) {
+                return is_array($values) && _::matches($values, function($v) {
+                    return v::notOptional()->intType()->validate($v);
+                });
+            })),
+            v::key('UNDERGROUND_FLOORS', $params['HAS_UNDERGROUND_FLOORS']
+                ? v::intType()->positive()
+                : v::alwaysValid()),
+            v::key('MONITORING_GOAL', v::notOptional()),
+            v::key('DURATION', v::notOptional()),
+            v::key('TRANSPORT_ACCESSIBILITY', v::notOptional()),
+            v::key('STRUCTURES_TO_MONITOR', $params['PACKAGE_SELECTION'] === 'PACKAGE'
+                ? v::alwaysValid()
+                : v::arrayType()->notEmpty()),
+            v::key('DOCUMENTS', v::arrayType())
+        );
+        $errors = [];
+        try {
+            $validator->assert($params);
+        } catch (NestedValidationException $exception) {
+            $errors = Services::getMessages($exception);
+            // TODO refactor empty checkbox list message
+            $errors = _::update($errors, 'STRUCTURES_TO_MONITOR', _::constantly(Services::EMPTY_LIST_MESSAGE));
+            $errors = _::update($errors, 'FLOORS', _::constantly(''));
+        }
+        $state = [
+            'params' => $params,
+            'errors' => $errors,
+        ];
+        $isValid = _::isEmpty($errors);
+        if ($isValid) {
+            $calculator = new MonitoringCalculator();
+            $multipliers = $calculator->multipliers($params, (new MonitoringRepo)->data());
+            $totalPrice = $calculator->totalPrice($params['TOTAL_AREA'], $multipliers);
+            $state['total_price'] = $totalPrice;
+        }
+        return $state;
     }
 
     function context($service, $state) {
@@ -32,9 +85,7 @@ class Monitoring {
 
     // TODO rename to inputs
     function floorSelects($state) {
-        $siteCountMaybe = nil::map($state['params']['SITE_COUNT'], function($siteCount) {
-            return intval($siteCount);
-        });
+        $siteCountMaybe = $state['params']['SITE_COUNT'];
         $siteCount = nil::get($siteCountMaybe, 1);
         return array_map(function($num) {
             return [
@@ -56,15 +107,10 @@ class Monitoring {
             }, $items);
     }
 
-    function renderCalculator($params) {
-        $siteCount = intval($params['SITE_COUNT']);
-        // TODO state
-        $state = [
-            'params' => $params,
-            'errors' => [
-                'DESCRIPTION' => 'some error'
-            ]
-        ];
+    // TODO refactor
+    function renderCalculator($state) {
+        $params = $state['params'];
+        $siteCount = $params['SITE_COUNT'];
         $distanceSpecialValue = '>3km';
         $options = array_map([$this, 'mapOptions'], $this->repo->options());
         // mutate
@@ -88,17 +134,20 @@ class Monitoring {
                 });
             }, $opts);
         });
+        $durationOpt = _::find($options['DURATION'], function($opt) use ($params) {
+            return $opt['value'] === $params['DURATION'];
+        });
         $context = [
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
             'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
-            // TODO append duration units
             'options' => $options,
             'floorSelects' => $this->floorSelects($state),
             'showDistanceSelect' => $siteCount > 1,
             'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,
-            'showUndergroundFloors' => boolval($params['HAS_UNDERGROUND_FLOORS'])
+            'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
+            'duration' => $durationOpt['text']
         ];
-        return v::render('partials/calculator/monitoring_calculator', $context);
+        return View::render('partials/calculator/monitoring_calculator', $context);
     }
 }

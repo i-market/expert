@@ -154,7 +154,7 @@ class App extends \Core\App {
 class View extends \Core\View {
     use NewsListLike;
 
-    static function render($name, $data = array()) {
+    static function render($name, $data = []) {
         return App::templates()->render($name, $data);
     }
 }

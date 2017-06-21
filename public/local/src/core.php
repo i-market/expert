@@ -119,9 +119,21 @@ class Underscore extends ArraysMethods {
         return array_slice($array, 0, $n);
     }
 
+    static function takeWhile($array, $pred) {
+        $ret = [];
+        foreach ($array as $x) {
+            if (!$pred($x)) {
+                return $ret;
+            }
+            $ret[] = $x;
+        }
+        return $ret;
+    }
+
     static function update($array, $key, $f) {
-        $nullable = nil::map(self::get($array, $key), $f);
-        return $nullable === null ? $array : self::set($array, $key, $nullable);
+        return !self::has($array, $key)
+            ? $array
+            : self::set($array, $key, $f(self::get($array, $key)));
     }
 
     static function isEmpty($x) {

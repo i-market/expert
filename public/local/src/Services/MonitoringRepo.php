@@ -17,7 +17,7 @@ class MonitoringRepo {
         return file_put_contents($this->dataFilePath(), json_encode($data));
     }
 
-    private function data() {
+    function data() {
         if ($this->data !== null) {
             return $this->data;
         }
@@ -33,7 +33,7 @@ class MonitoringRepo {
         });
         return _::map(array_unique($items), function($name, $idx) {
             return [
-                'ID' => $idx,
+                'ID' => strval($idx),
                 'NAME' => $name
             ];
         });

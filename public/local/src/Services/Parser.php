@@ -36,7 +36,10 @@ abstract class Parser {
         $ret = [];
         // TODO expose cut-off column
         foreach ($row->getCellIterator('A', 'Z') as $cell) {
-            $ret[] = $cell->getValue();
+            // this value is not guaranteed to reflect the actual calculated value because it is
+            // possible that auto-calculation was disabled in the original spreadsheet, and underlying data
+            // values used by the formula have changed since it was last calculated
+            $ret[] = nil::get($cell->getOldCalculatedValue(), $cell->getValue());
         }
         return $ret;
     }
@@ -161,23 +164,6 @@ abstract class Parser {
             return false;
         } else {
             return null;
-        }
-    }
-
-    // TODO
-    protected function parseNumericPredicate($str) {
-        if (is_numeric($str)) {
-            return function ($x) use ($str) {
-                return $x == $str;
-            };
-        } else {
-            $matchesRef = [];
-            return preg_match('/(\d+)[-—\s]+(\d+)/', $str, $matchesRef)
-                ? function ($x) use ($matchesRef) {
-                    list($_, $min, $max) = $matchesRef;
-                    return $min <= $x && $x <= $max;
-                }
-                : null;
         }
     }
 

@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Services\MonitoringCalculator;
+use App\Services\MonitoringRepo;
+use Core\Underscore as _;
 use Core\Util;
 use Klein\Klein;
 use App\View as v;
@@ -31,21 +34,27 @@ class Api {
             });
             $router->respond('POST', '/services/monitoring/calculate', function($request, $response) {
                 // TODO sanitize params
+                // TODO refactor
                 $params = $request->params();
+                // TODO extract
+                $parseInt = function($s) {
+                    return str::isEmpty($s) ? null : intval($s);
+                };
+                foreach (['SITE_COUNT', 'TOTAL_AREA', 'UNDERGROUND_FLOORS', 'VOLUME'] as $k) {
+                    $params = _::update($params, $k, $parseInt);
+                }
+                $params = _::update($params, 'FLOORS', function($values) use ($parseInt) {
+                    return array_map($parseInt, $values);
+                });
+                $params = _::update($params, 'HAS_UNDERGROUND_FLOORS', 'boolval');
+                $params = array_merge([
+                    // defaults
+                    'STRUCTURES_TO_MONITOR' => [],
+                    'DOCUMENTS' => []
+                ], $params);
                 $monitoring = App::getInstance()->getMonitoring();
-                return $monitoring->renderCalculator($params);
-            });
-            $router->respond('POST', '/services/monitoring/calculate/floors', function($request, $response) {
-                // TODO sanitize params
-                $params = $request->params();
-                // TODO state
-                $state = [
-                    'params' => $params
-                ];
-                $monitoring = App::getInstance()->getMonitoring();
-                return v::render('partials/calculator/monitoring_floors_group', [
-                    'floorSelects' => $monitoring->floorSelects($state)
-                ]);
+                $state = $monitoring->calculate($params);
+                return $monitoring->renderCalculator($state);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params

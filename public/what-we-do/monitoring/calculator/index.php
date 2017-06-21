@@ -6,12 +6,6 @@ $APPLICATION->SetTitle("Калькулятор стоимости");
 $APPLICATION->SetPageProperty('layout', 'bare')
 ?>
 
-<?
-// TODO stub
-$state = [];
-?>
-<form ic-post-to="/api/services/monitoring/calculate">
-    <?= App::getInstance()->getMonitoring()->renderCalculator([]) ?>
-</form>
+<?= App::getInstance()->getMonitoring()->renderCalculator([]) ?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

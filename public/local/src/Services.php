@@ -18,6 +18,9 @@ use Core\Strings as str;
 Loader::includeModule('iblock');
 
 class Services {
+    // TODO refactor empty checkbox list message
+    const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
+
     static function services() {
         $el = new CIBlockElement();
         $iblockId = IblockTools::find(Iblock::SERVICES_TYPE, Iblock::SERVICES)->id();
@@ -49,12 +52,15 @@ class Services {
     static function translateMessage($template) {
         $ru = [
             '{{name}} must not be empty' => 'Поле не может быть пустым.',
-            '{{name}} must be valid email' => 'Пожалуйста, введите действительный адрес электронной почты.'
+            '{{name}} must be valid email' => 'Пожалуйста, введите действительный адрес электронной почты.',
+            '{{name}} must be positive' => 'Должно быть положительным числом.',
+            '{{name}} must not be optional' => 'Обязательное поле.'
         ];
         // TODO some sort of default error message?
         return _::get($ru, $template, $template);
     }
 
+    // TODO refactor
     static function getMessages(NestedValidationException $exception) {
         $exception->setParam('translator', self::class.'::translateMessage');
         return array_reduce(iterator_to_array($exception->getIterator()), function($acc, $e) {

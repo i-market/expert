@@ -141,7 +141,7 @@ class Monitoring {
         $context = [
             'state' => $state,
             'floorsApiUri' => '/api/services/monitoring/calculate/floors',
-            'heading' => 'Определение стоимости и сроков Обследования конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования',
+            'heading' => 'Определение стоимости<br> проведения мониторинга',
             'options' => $options,
             'floorSelects' => $this->floorSelects($state),
             'showDistanceSelect' => $siteCount > 1,

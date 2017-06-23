@@ -14,6 +14,7 @@ node_modules/
 
 /public/local/reports/
 /public/local/templates/*/build/
+/public/local/scratch.php
 
 *.log
 

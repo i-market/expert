@@ -7,7 +7,7 @@ use App\Templates\CalculatorMacros as macros;
 $macros = new macros($state);
 ?>
 <? // TODO refactor ?>
-<? $apiEndpoint = '/api/services/monitoring/calculate' ?>
+<? $apiEndpoint = '/api/services/monitoring/calculator/calculate' ?>
 <section class="calculator_certain_types calculator--monitoring">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator--monitoring"
@@ -168,28 +168,6 @@ $macros = new macros($state);
                 </button>
             </div>
         </div>
+        <?= v::render('partials/calculator/result_block', ['result' => $result, 'email' => $state['params']['EMAIL']]) ?>
     </form>
-    <? if (!v::isEmpty($state['total_price'])): ?>
-        <? // TODO proposal form ?>
-        <form>
-            <div class="total_price_block">
-                <div class="inner">
-                    <div class="block">
-                        <div class="total_price">
-                            <p>Стоимость работ: <span><?= $formattedTotalPrice ?></span></p>
-                            <p>Продолжительность выполнения работ: <span><?= v::lower($duration) ?></span></p>
-                        </div>
-                        <h4>Получите коммерческое предложение на почту</h4>
-                        <div class="commercial_proposal">
-                            <input type="text" name="EMAIL" placeholder="Введите ваш E-mail">
-                            <label>
-                                <button type="submit">Получить предложение</button>
-                                <span class="ico"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    <? endif ?>
 </section>

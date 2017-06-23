@@ -66,7 +66,7 @@ class EventHandlers {
                 if ($thumbnailMaybe === null) {
                     trigger_error("can't fetch the thumbnail for a youtube video", E_USER_WARNING);
                 }
-                foreach (nil::iterator($thumbnailMaybe) as $thumbnail) {
+                foreach (nil::iter($thumbnailMaybe) as $thumbnail) {
                     $file = CFile::MakeFileArray($thumbnail);
                     if (is_array($file)) {
                         $fieldsRef['PREVIEW_PICTURE'] = $file;

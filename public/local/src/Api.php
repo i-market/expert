@@ -2,12 +2,14 @@
 
 namespace App;
 
-use App\Services\MonitoringCalculator;
-use App\Services\MonitoringRepo;
+use App\Services\Monitoring;
+use Core\Env;
 use Core\Underscore as _;
 use Core\Util;
 use Klein\Klein;
 use App\View as v;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as val;
 use Core\FileUpload;
 use FileUpload\FileSystem;
 use FileUpload\PathResolver;
@@ -32,7 +34,7 @@ class Api {
                     'state' => $state
                 ]);
             });
-            $router->respond('POST', '/services/monitoring/calculate', function($request, $response) {
+            $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
                 // TODO sanitize params
                 // TODO refactor
                 $params = $request->params();
@@ -54,7 +56,63 @@ class Api {
                 ], $params);
                 $monitoring = App::getInstance()->getMonitoring();
                 $state = $monitoring->calculate($params);
-                return $monitoring->renderCalculator($state);
+                $context = $monitoring->calculatorContext($state);
+                if ($request->action === 'calculate') {
+                    return v::render('partials/calculator/monitoring_calculator', $context);
+                } elseif ($request->action === 'proposal') {
+                    $resultCtx = $context['result'];
+                    if (_::get($resultCtx, 'screen') === 'result') {
+                        $errors = [];
+                        try {
+                            val::key('EMAIL', val::email())->assert($params);
+                        } catch (NestedValidationException $exception) {
+                            $errors = Services::getMessages($exception);
+                        }
+                        $resultCtx['errors'] = $errors;
+                        if (_::isEmpty($errors)) {
+                            // TODO
+                            $requestId = 42;
+                            $tables = Monitoring::proposalTables($state);
+                            $path = App::getInstance()->env() !== Env::DEV
+                                ? tempnam(sys_get_temp_dir(), 'proposal')
+                                // for easier debugging
+                                : Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf']);
+                            $proposalParams = Monitoring::proposalParams($requestId, [
+                                'total_price' => $state['result']['total_price'],
+                                'duration' => $resultCtx['duration'],
+                                'tables' => $tables,
+                                'output' => [
+                                    'name' => $path
+                                ]
+                            ]);
+                            $requestCtx  = stream_context_create([
+                                'http' => [
+                                    'method'  => 'POST',
+                                    'header'  => 'Content-type: application/x-www-form-urlencoded',
+                                    'content' => http_build_query($proposalParams)
+                                ]
+                            ]);
+                            // TODO respond with some indication of success
+                            $response = file_get_contents('http://localhost/proposals/', false, $requestCtx);
+                            assert(filesize($path) !== 0);
+                            $event = [
+                                'EMAIL_TO' => $params['EMAIL'],
+                                'FILE' => [$path]
+                            ];
+                            App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
+                            $resultCtx['screen'] = 'sent';
+                        }
+                    }
+                    return v::render('partials/calculator/result_block', [
+                        'result' => $resultCtx,
+                        'email' => $params['EMAIL']
+                    ]);
+
+                } else {
+                    // TODO unsupported action
+                    assert(false);
+                    return '';
+                }
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params

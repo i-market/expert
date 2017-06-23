@@ -18,6 +18,7 @@ table {
 .body table td {
     border: 1px solid black;
     padding: 0 0.2cm;
+    vertical-align: top;
 }
 
 .header .right {

@@ -15,7 +15,10 @@ use Respect\Validation\Validator as v;
 use Core\Underscore as _;
 use Core\Strings as str;
 
-Loader::includeModule('iblock');
+// TODO non-ideal way to distinguish between environments
+if (php_sapi_name() !== 'cli') {
+    Loader::includeModule('iblock');
+}
 
 class Services {
     // TODO refactor empty checkbox list message
@@ -128,6 +131,10 @@ class Services {
         return array_map(function($value) {
             return str::isEmpty($value) ? '—' : $value;
         }, $array);
+    }
+
+    static function formatTotalPrice($totalPrice) {
+        return Util::formatCurrency(round($totalPrice), ['cents' => false]).' руб./мес.';
     }
 
     // TODO refactor: move to `Monitoring`

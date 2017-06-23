@@ -205,7 +205,7 @@ class Nullable {
      * @param $nullable
      * @return \Iterator
      */
-    static function iterator($nullable) {
+    static function iter($nullable) {
         return new ArrayIterator($nullable === null ? [] : [$nullable]);
     }
 }
@@ -345,6 +345,10 @@ class View {
         return join(' ', _::map($map, function($value, $key) {
             return $key.'="'.htmlspecialchars($value).'"';
         }));
+    }
+
+    static function get($collection, $key, $default = null) {
+        return _::get($collection, $key, $default);
     }
 }
 

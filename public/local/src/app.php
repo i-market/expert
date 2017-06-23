@@ -159,6 +159,10 @@ class View extends \Core\View {
     }
 }
 
+class Events {
+    const PROPOSAL = 'PROPOSAL';
+}
+
 class Videos {
     static function youtubeSnippetMaybe($videoId) {
         $query = http_build_query([

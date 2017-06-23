@@ -117,7 +117,7 @@ abstract class Parser {
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
                 $sectionMaybe = $this->findSection($cells, $sections);
-                foreach (nil::iterator($sectionMaybe) as $section) {
+                foreach (nil::iter($sectionMaybe) as $section) {
                     $ret[$section['key']] = [];
                     $state = ['in_section', $section];
                 }
@@ -146,7 +146,7 @@ abstract class Parser {
             if ($worksheetMaybe === null) {
                 $this->log[] = ['error', 'Не могу найти лист "'.$worksheetSpec['name'].'".'];
             }
-            foreach (nil::iterator($worksheetMaybe) as $worksheet) {
+            foreach (nil::iter($worksheetMaybe) as $worksheet) {
                 $ret[$worksheetSpec['key']] = $f($worksheet);
             }
         }

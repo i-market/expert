@@ -44,12 +44,10 @@ class MonitoringCalculator {
             ? $data['MULTIPLE_BUILDINGS']
             : $data['SINGLE_BUILDING'];
         $knownKeys = array_keys($dataSet['MULTIPLIERS']);
-        $missingKeys = array_diff($knownKeys, array_keys($params));
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);
+        $missingKeys = array_diff($requiredKeys, array_keys($params));
         // TODO
-        assert(_::matches($requiredKeys, function($k) use ($params) {
-            return _::has($params, $k);
-        }));
+        assert(_::isEmpty($missingKeys));
         // TODO conditional multipliers
         $multipliers = array_reduce($requiredKeys, function($acc, $k) use ($dataSet, $params) {
             $v = $params[$k];

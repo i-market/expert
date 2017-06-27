@@ -172,17 +172,17 @@ class Monitoring {
         return $context;
     }
 
-    static function proposalTables($state) {
+    static function proposalTables($params) {
         $listHtml = function($values) {
             $items = join('', array_map(function($item) {
                 return "<li>{$item}</li>";
             }, $values));
             return "<ul>{$items}</ul>";
         };
-        $formatRow = function($tuple) use ($state) {
+        $formatRow = function($tuple) use ($params) {
             list($label, $key) = $tuple;
             $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
-            $value = nil::get($state['params'][$key], '');
+            $value = nil::get($params[$key], '');
             return ["<strong>{$label}</strong>", is_callable($funcMaybe) ? $funcMaybe($value) : $value];
         };
         return [

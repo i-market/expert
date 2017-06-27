@@ -72,7 +72,7 @@ class Api {
                         if (_::isEmpty($errors)) {
                             // TODO
                             $requestId = 42;
-                            $tables = Monitoring::proposalTables($state);
+                            $tables = Monitoring::proposalTables($params);
                             $path = App::getInstance()->env() !== Env::DEV
                                 ? tempnam(sys_get_temp_dir(), 'proposal')
                                 // for easier debugging

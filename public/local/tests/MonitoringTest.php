@@ -5,43 +5,36 @@ use PHPUnit\Framework\TestCase;
 use Core\Underscore as _;
 
 class MonitoringTest extends TestCase {
-    static $state = array(
-        'params' =>
+    static $params = array(
+        'STRUCTURES_TO_MONITOR' =>
             array(
-                'STRUCTURES_TO_MONITOR' =>
-                    array(
-                        0 => '0',
-                        1 => '7',
-                    ),
-                'DOCUMENTS' =>
-                    array(
-                        0 => '0',
-                        1 => '5',
-                    ),
-                'DESCRIPTION' => 'desc',
-                'LOCATION' => '2',
-                'ADDRESS' => 'address',
-                'SITE_COUNT' => 2,
-                'DISTANCE_BETWEEN_SITES' => '1',
-                'USED_FOR' => '0',
-                'TOTAL_AREA' => 42,
-                'VOLUME' => 43,
-                'FLOORS' =>
-                    array(
-                        0 => 44,
-                        1 => 45,
-                    ),
-                'HAS_UNDERGROUND_FLOORS' => true,
-                'UNDERGROUND_FLOORS' => 2,
-                'MONITORING_GOAL' => '1',
-                'DURATION' => '1',
-                'TRANSPORT_ACCESSIBILITY' => '1',
-                'PACKAGE_SELECTION' => 'INDIVIDUAL',
+                0 => '0',
+                1 => '7',
             ),
-        'errors' =>
+        'DOCUMENTS' =>
             array(
+                0 => '0',
+                1 => '5',
             ),
-        'total_price' => 16732.800000000003,
+        'DESCRIPTION' => 'desc',
+        'LOCATION' => '2',
+        'ADDRESS' => 'address',
+        'SITE_COUNT' => 2,
+        'DISTANCE_BETWEEN_SITES' => '1',
+        'USED_FOR' => '0',
+        'TOTAL_AREA' => 42,
+        'VOLUME' => 43,
+        'FLOORS' =>
+            array(
+                0 => 44,
+                1 => 45,
+            ),
+        'HAS_UNDERGROUND_FLOORS' => true,
+        'UNDERGROUND_FLOORS' => 2,
+        'MONITORING_GOAL' => '1',
+        'DURATION' => '1',
+        'TRANSPORT_ACCESSIBILITY' => '1',
+        'PACKAGE_SELECTION' => 'INDIVIDUAL',
     );
 
     function testProposalTables() {
@@ -136,8 +129,8 @@ class MonitoringTest extends TestCase {
                         ),
                 ),
         );
-        $this->assertEquals($expected, Monitoring::proposalTables(self::$state));
-        $actual = Monitoring::proposalTables(_::set(self::$state, 'params.VOLUME', null));
+        $this->assertEquals($expected, Monitoring::proposalTables(self::$params));
+        $actual = Monitoring::proposalTables(_::set(self::$params, 'VOLUME', null));
         $this->assertTrue(_::get($actual, '0.rows.6.1') === '');
     }
 

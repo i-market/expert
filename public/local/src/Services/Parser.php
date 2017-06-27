@@ -16,6 +16,15 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 abstract class Parser {
     public $log = [];
 
+    function classifyCells($cells) {
+        return [
+            'metadata' => [
+                'id' => _::first($cells),
+            ],
+            'data' => _::rest($cells)
+        ];
+    }
+
     /**
      * @return Spreadsheet
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
@@ -92,13 +101,13 @@ abstract class Parser {
     protected function parseSimpleSection($rows) {
         $ret = [];
         foreach ($rows as $row) {
-            list($k, $v) = $row['cells'];
-            $ret[$k] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
+            $value = $this->simpleValue($row);
+            $ret[$value['ID']] = $value;
         }
         return $ret;
     }
 
-    function sectionGroups($rowIterator, $sections) {
+    protected function sectionGroups($rowIterator, $sections) {
         $validSectionKeys = join(', ', array_reduce($sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
                 return '"'.$prefix.'"';
@@ -108,11 +117,13 @@ abstract class Parser {
         $state = ['find_section'];
         foreach ($rowIterator as $rowNumber => $sheetRow) {
             $rawCells = $this->cellValues($sheetRow);
-            $cells = array_map('trim', $rawCells);
+            $cellGroups = $this->classifyCells(array_map('trim', $rawCells));
+            $cells = $cellGroups['data'];
             $row = [
                 'object' => $sheetRow,
                 'cells' => $cells,
-                'row_number' => $rowNumber
+                'row_number' => $rowNumber,
+                'metadata' => $cellGroups['metadata']
             ];
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
@@ -136,6 +147,15 @@ abstract class Parser {
             }
         }
         return $ret;
+    }
+
+    protected function simpleValue($row) {
+        list($name, $v) = $row['cells'];
+        $id = $row['metadata']['id'];
+        // TODO log human-readable message
+        assert(!str::isEmpty($id));
+        $multiplier = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
+        return ['ID' => $id, 'NAME' => $name, 'VALUE' => $multiplier];
     }
 
     protected function mapWorksheets($path, $worksheetSpecs, callable $f) {

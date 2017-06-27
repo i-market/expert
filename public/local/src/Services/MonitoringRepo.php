@@ -28,14 +28,11 @@ class MonitoringRepo {
     }
 
     private function fromMultipliers($path) {
-        $items = _::flatMap($this->data(), function($worksheet) use ($path) {
-            return array_keys(_::get($worksheet, array_merge(['MULTIPLIERS'], $path)));
-        });
-        return _::map(array_unique($items), function($name, $idx) {
-            return [
-                'ID' => strval($idx),
-                'NAME' => $name
-            ];
+        return _::flatMap($this->data(), function($worksheet) use ($path) {
+            $values = _::get($worksheet, array_merge(['MULTIPLIERS'], $path));
+            return array_map(function($value) {
+                return _::pick($value, ['ID', 'NAME']);
+            }, $values);
         });
     }
 

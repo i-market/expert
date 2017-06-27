@@ -32,33 +32,45 @@ class MonitoringCalculatorTest extends TestCase {
     }
 
     function testMultipliers() {
-        // TODO use good ids instead of text values
         $calc = new MonitoringCalculator();
         $data = [
             'SINGLE_BUILDING' => [
                 'MULTIPLIERS' => [
-                    'SITE_COUNT' => [
-                        '1' => 1
+                    'FLOORS' => [
+                        '1' => [
+                            'ID' => '1',
+                            'NAME' => '4',
+                            'VALUE' => 1
+                        ]
                     ],
                     'TOTAL_AREA' => [],
                     'LOCATION' => [
-                        'Московская область' => 1.1
+                        '1' => [
+                            'ID' => '1',
+                            'NAME' => 'Московская область',
+                            'VALUE' => 1.1
+                        ]
                     ],
                     'MONITORING_GOAL' => [
-                        'Однаквартирное жилое здание' => 0.8
+                        '1' => [
+                            'ID' => '1',
+                            'NAME' => 'Однаквартирное жилое здание',
+                            'VALUE' => 0.8
+                        ]
                     ]
                 ]
             ]
         ];
         $params = [
             'SITE_COUNT' => 1,
+            'FLOORS' => 1,
             'TOTAL_AREA' => 200000,
-            'LOCATION' => 'Московская область',
-            'MONITORING_GOAL' => 'Однаквартирное жилое здание'
+            'LOCATION' => '1',
+            'MONITORING_GOAL' => '1'
         ];
         $result = $calc->multipliers($params, $data);
         $expected = [
-            'SITE_COUNT' => 1,
+            'FLOORS' => 1,
             'LOCATION' => 1.1,
             'MONITORING_GOAL' => 0.8
         ];

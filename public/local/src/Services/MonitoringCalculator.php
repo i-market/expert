@@ -51,7 +51,7 @@ class MonitoringCalculator {
         // TODO conditional multipliers
         $multipliers = array_reduce($requiredKeys, function($acc, $k) use ($dataSet, $params) {
             $v = $params[$k];
-            return _::set($acc, $k, $dataSet['MULTIPLIERS'][$k][$v]);
+            return _::set($acc, $k, $dataSet['MULTIPLIERS'][$k][$v]['VALUE']);
         }, []);
         return $multipliers;
     }

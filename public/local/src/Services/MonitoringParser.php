@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Core\Strings as str;
 use Core\Underscore as _;
+use Core\Nullable as nil;
 use PhpOffice\PhpSpreadsheet\Worksheet;
 
 class MonitoringParser extends Parser {
@@ -84,11 +85,12 @@ class MonitoringParser extends Parser {
                 'key' => 'DOCUMENTS',
                 'prefix' => 'Наличие документов',
             ],
-            [
-                'key' => 'PRICES',
-                // TODO case-insensitive
-                'prefix' => 'ЦЕНЫ'
-            ]
+            // TODO prices section
+//            [
+//                'key' => 'PRICES',
+//                // TODO case-insensitive
+//                'prefix' => 'ЦЕНЫ'
+//            ]
         ]
     ];
 
@@ -117,14 +119,12 @@ class MonitoringParser extends Parser {
                 } elseif ($isSubsectionName) {
                     $state = ['in_subsection', _::first($cells)];
                 } else {
-                    // simple case
-                    list($k, $v) = $cells;
-                    $value = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
+                    $value = $this->simpleValue($row);
                     if ($stateName === 'in_subsection') {
                         list($_, $subsection) = $state;
-                        $ret = $setSubsectionValue($ret, $subsection, $k, $value);
+                        $ret = $setSubsectionValue($ret, $subsection, $value['ID'], $value);
                     } else {
-                        $ret[$k] = $value;
+                        $ret[$value['ID']] = $value;
                     }
                 }
             } elseif ($stateName === 'in_conditional_multipliers') {
@@ -134,11 +134,13 @@ class MonitoringParser extends Parser {
                     return count($cells) === count($header) + 1;
                 };
                 if ($isConditionalMultiplier($filteredCells)) {
-                    $key = _::first($cells);
+                    $name = _::first($cells);
                     $multipliers = array_map(function($str) use ($row) {
                         return $this->parseFloat($str, $this->defaultMultiplierFn($row['row_number']));
                     }, _::drop($filteredCells, 1));
-                    $ret = $setSubsectionValue($ret, $subsection, $key, array_combine($header, $multipliers));
+                    $id = $row['metadata']['id'];
+                    $value = ['ID' => $id, 'NAME' => $name, 'VALUE' => array_combine($header, $multipliers)];
+                    $ret = $setSubsectionValue($ret, $subsection, $id, $value);
                 }
                 // peek the next row
                 if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {
@@ -157,14 +159,16 @@ class MonitoringParser extends Parser {
             $stateName = _::first($state);
             if ($stateName === 'find_document') {
                 if ($this->parseBoolean(_::first($cells)) === null) {
-                    $state = ['in_document', _::first($cells)];
+                    $document = ['ID' => $row['metadata']['id'], 'NAME' => _::first($cells), 'VALUE' => []];
+                    $ret[$document['ID']] = $document;
+                    $state = ['in_document', $document];
                 }
             } elseif ($stateName === 'in_document') {
                 list($_, $document) = $state;
                 list($k, $v) = $cells;
                 $booleanMaybe = $this->parseBoolean($k);
                 if ($booleanMaybe !== null) {
-                    $ret[$document][$booleanMaybe] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
+                    $ret[$document['ID']]['VALUE'][$booleanMaybe] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
                 } else {
                     // TODO handle the unexpected
                 }

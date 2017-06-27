@@ -8,7 +8,8 @@ use Core\Strings as str;
 
 // TODO unused?
 class Calculator {
-    function parseNumericPredicate($str) {
+    // TODO move to `Parser`?
+    static function parseNumericPredicate($str) {
         if (is_numeric($str)) {
             return function ($x) use ($str) {
                 return is_numeric($x) && $x == $str;

@@ -173,12 +173,6 @@ class Monitoring {
     }
 
     static function proposalTables($state) {
-        // TODO extract
-        $sum = function($xs) {
-            return array_reduce($xs, function($acc, $x) {
-                return $acc + $x;
-            }, 0);
-        };
         $listHtml = function($values) {
             $items = join('', array_map(function($item) {
                 return "<li>{$item}</li>";
@@ -202,7 +196,9 @@ class Monitoring {
                     ['Назначение', 'MONITORING_GOAL'],
                     ['Общая площадь', 'TOTAL_AREA'],
                     ['Строительный объем', 'VOLUME'],
-                    ['Количество надземных этажей', 'FLOORS', $sum],
+                    ['Количество надземных этажей', 'FLOORS', function($values) {
+                        return Util::sum($values);
+                    }],
                     ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', function($bool) {
                         return $bool ? 'Имеется' : 'Не имеется';
                     }],

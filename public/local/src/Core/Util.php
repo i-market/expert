@@ -116,4 +116,16 @@ class Util {
             return self::descendants($children, $childrenFn, array_merge($ret, $children));
         }
     }
+
+    static function sum(array $xs) {
+        return array_reduce($xs, function($acc, $x) {
+            return $acc + $x;
+        }, 0);
+    }
+
+    static function product(array $xs) {
+        return array_reduce($xs, function($acc, $x) {
+            return $acc * $x;
+        }, 1);
+    }
 }

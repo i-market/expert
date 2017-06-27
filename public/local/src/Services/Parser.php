@@ -174,7 +174,7 @@ abstract class Parser {
         return $ret;
     }
 
-    protected function parseBoolean($str) {
+    static function parseBoolean($str) {
         // TODO keywords class property
         $truthy = ['Имеется', 'ЕСТЬ'];
         $falsy = ['Не имеется', 'НЕТ'];

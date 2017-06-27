@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Core\Util as u;
+use Core\Util;
 use Exception;
 use Core\Underscore as _;
 
@@ -38,20 +39,72 @@ class MonitoringCalculator {
     }
 
     function multipliers($params, $data) {
-        $ignoredKeys = ['TOTAL_AREA', 'PRICES'];
-        // TODO double check
+        $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
+        if (!$params['HAS_UNDERGROUND_FLOORS']) {
+            $ignoredKeys[] = 'UNDERGROUND_FLOORS';
+        }
+        if ($params['SITE_COUNT'] === 1) {
+            $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
+        }
         $dataSet = $params['SITE_COUNT'] > 1
             ? $data['MULTIPLE_BUILDINGS']
             : $data['SINGLE_BUILDING'];
         $knownKeys = array_keys($dataSet['MULTIPLIERS']);
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);
         $missingKeys = array_diff($requiredKeys, array_keys($params));
-        // TODO
         assert(_::isEmpty($missingKeys));
-        // TODO conditional multipliers
-        $multipliers = array_reduce($requiredKeys, function($acc, $k) use ($dataSet, $params) {
-            $v = $params[$k];
-            return _::set($acc, $k, $dataSet['MULTIPLIERS'][$k][$v]['VALUE']);
+        // TODO refactor mutation, complexity
+        $multiplierRec = function($val, $field, $dataSet) use (&$multiplierRec) {
+            if ($field === 'FLOORS') {
+                $val = u::sum($val);
+            } elseif ($field === 'STRUCTURES_TO_MONITOR') {
+                // conditional multipliers
+                $entities = _::flatMap($dataSet['MULTIPLIERS'][$field], _::identity());
+                $multipliers = array_map(function($id) use ($entities, $val) {
+                    $entity = _::find($entities, function($entity) use ($id) {
+                        return $entity['ID'] === $id;
+                    });
+                    assert(is_array($entity['VALUE']));
+                    // pick a column based on the number of values
+                    return _::find($entity['VALUE'], function($_, $predStr) use ($val) {
+                        $countPred = Calculator::parseNumericPredicate($predStr);
+                        return $countPred(count($val));
+                    });
+                }, $val);
+                return Util::product($multipliers);
+            } elseif (is_array($val)) {
+                $multipliers = array_map(function($v) use (&$multiplierRec, $field, $dataSet) {
+                    return $multiplierRec($v, $field, $dataSet);
+                }, $val);
+                return Util::product($multipliers);
+            }
+            if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
+                $pred = function($entity) use ($val) {
+                    $f = Calculator::parseNumericPredicate($entity['NAME']);
+                    return $f($val);
+                };
+            } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
+                $pred = function($entity) use ($val) {
+                    $bool = Parser::parseBoolean($entity['NAME']);
+                    return $val === $bool;
+                };
+            } else {
+                $pred = function($entity) use ($val) {
+                    return $entity['ID'] === $val;
+                };
+            }
+            $entities = $dataSet['MULTIPLIERS'][$field];
+            $entity = _::find($entities, $pred);
+            if ($field === 'DOCUMENTS') {
+                $multiplier = $entity['VALUE'][true];
+            } else {
+                $multiplier = $entity['VALUE'];
+            }
+            assert(is_numeric($multiplier));
+            return $multiplier;
+        };
+        $multipliers = array_reduce($requiredKeys, function($acc, $field) use ($dataSet, $params, $multiplierRec) {
+            return _::set($acc, $field, $multiplierRec($params[$field], $field, $dataSet));
         }, []);
         return $multipliers;
     }

@@ -181,8 +181,10 @@ class Underscore extends ArraysMethods {
         return null;
     }
 
-    static function identity($x) {
-        return $x;
+    static function identity() {
+        return function($x) {
+            return $x;
+        };
     }
 
     static function constantly($x) {

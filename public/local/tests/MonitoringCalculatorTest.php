@@ -63,7 +63,8 @@ class MonitoringCalculatorTest extends TestCase {
         ];
         $params = [
             'SITE_COUNT' => 1,
-            'FLOORS' => 1,
+            'HAS_UNDERGROUND_FLOORS' => false,
+            'FLOORS' => [4],
             'TOTAL_AREA' => 200000,
             'LOCATION' => '1',
             'MONITORING_GOAL' => '1'

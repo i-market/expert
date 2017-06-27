@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\Monitoring;
+use App\Services\MonitoringRepo;
 use Core\Env;
 use Core\Underscore as _;
 use Core\Util;
@@ -54,8 +55,10 @@ class Api {
                     'STRUCTURES_TO_MONITOR' => [],
                     'DOCUMENTS' => []
                 ], $params);
+                $data = (new MonitoringRepo)->data();
+                $dataSet = Monitoring::dataSet($data, $params);
                 $monitoring = App::getInstance()->getMonitoring();
-                $state = $monitoring->calculate($params);
+                $state = $monitoring->calculate($params, $dataSet);
                 $context = $monitoring->calculatorContext($state);
                 if ($request->action === 'calculate') {
                     return v::render('partials/calculator/monitoring_calculator', $context);
@@ -72,7 +75,20 @@ class Api {
                         if (_::isEmpty($errors)) {
                             // TODO
                             $requestId = 42;
-                            $tables = Monitoring::proposalTables($params);
+                            $deref = function($val, $k) use (&$deref, $dataSet, $params) {
+                                if (is_int($val)) {
+                                    return $val;
+                                } elseif (is_array($val)) {
+                                    return array_map(function($v) use (&$deref, $k) {
+                                        return $deref($v, $k);
+                                    }, $val);
+                                } else {
+                                    $entityMaybe = Monitoring::findEntity($k, $val, $dataSet);
+                                    return _::get($entityMaybe, 'NAME', $val);
+                                }
+                            };
+                            $derefedParams = _::map($params, $deref);
+                            $tables = Monitoring::proposalTables($derefedParams);
                             $path = App::getInstance()->env() !== Env::DEV
                                 ? tempnam(sys_get_temp_dir(), 'proposal')
                                 // for easier debugging

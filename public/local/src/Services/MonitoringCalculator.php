@@ -38,7 +38,7 @@ class MonitoringCalculator {
         }
     }
 
-    function multipliers($params, $data) {
+    function multipliers($params, $dataSet) {
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
         if (!$params['HAS_UNDERGROUND_FLOORS']) {
             $ignoredKeys[] = 'UNDERGROUND_FLOORS';
@@ -46,9 +46,6 @@ class MonitoringCalculator {
         if ($params['SITE_COUNT'] === 1) {
             $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
         }
-        $dataSet = $params['SITE_COUNT'] > 1
-            ? $data['MULTIPLE_BUILDINGS']
-            : $data['SINGLE_BUILDING'];
         $knownKeys = array_keys($dataSet['MULTIPLIERS']);
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);
         $missingKeys = array_diff($requiredKeys, array_keys($params));
@@ -61,6 +58,7 @@ class MonitoringCalculator {
                 // conditional multipliers
                 $entities = _::flatMap($dataSet['MULTIPLIERS'][$field], _::identity());
                 $multipliers = array_map(function($id) use ($entities, $val) {
+                    // TODO refactor: use `findEntity`
                     $entity = _::find($entities, function($entity) use ($id) {
                         return $entity['ID'] === $id;
                     });

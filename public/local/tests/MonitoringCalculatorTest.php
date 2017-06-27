@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Monitoring;
 use App\Services\MonitoringCalculator;
 use PHPUnit\Framework\TestCase;
 
@@ -69,7 +70,7 @@ class MonitoringCalculatorTest extends TestCase {
             'LOCATION' => '1',
             'MONITORING_GOAL' => '1'
         ];
-        $result = $calc->multipliers($params, $data);
+        $result = $calc->multipliers($params, Monitoring::dataSet($data, $params));
         $expected = [
             'FLOORS' => 1,
             'LOCATION' => 1.1,
@@ -3321,7 +3322,7 @@ class MonitoringCalculatorTest extends TestCase {
             'TRANSPORT_ACCESSIBILITY' => 0.80000000000000004,
             'DOCUMENTS' => 0.96059600999999994,
         );
-        $this->assertEquals($expected, $calc->multipliers($params, $data));
+        $this->assertEquals($expected, $calc->multipliers($params, Monitoring::dataSet($data, $params)));
     }
 
     function testTotalPrice() {

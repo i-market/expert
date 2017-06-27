@@ -19,7 +19,7 @@ class Monitoring {
         $this->repo = $repo;
     }
 
-    function calculate($params) {
+    function calculate($params, $dataSet) {
         // TODO improvement: validate reference values
         $validator = v::allOf(
             v::key('DESCRIPTION', v::stringType()->notEmpty()),
@@ -68,7 +68,7 @@ class Monitoring {
         $isValid = _::isEmpty($errors);
         if ($isValid) {
             $calculator = new MonitoringCalculator();
-            $multipliers = $calculator->multipliers($params, (new MonitoringRepo)->data());
+            $multipliers = $calculator->multipliers($params, $dataSet);
             $totalPrice = $calculator->totalPrice($params['TOTAL_AREA'], $multipliers);
             $state['result'] = [
                 'total_price' => $totalPrice
@@ -218,7 +218,14 @@ class Monitoring {
         ];
     }
 
+    static function dataSet($data, $params) {
+        return $params['SITE_COUNT'] > 1
+            ? $data['MULTIPLE_BUILDINGS']
+            : $data['SINGLE_BUILDING'];
+    }
+
     static function findEntity($field, $val, $dataSet) {
+        $entities = $dataSet['MULTIPLIERS'][$field];
         if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
             $pred = function($entity) use ($val) {
                 $f = Calculator::parseNumericPredicate($entity['NAME']);
@@ -229,12 +236,16 @@ class Monitoring {
                 $bool = Parser::parseBoolean($entity['NAME']);
                 return $val === $bool;
             };
+        } elseif (in_array($field, ['STRUCTURES_TO_MONITOR'])) {
+            $entities = _::flatMap($entities, _::identity());
+            $pred = function($entity) use ($val) {
+                return $entity['ID'] === $val;
+            };
         } else {
             $pred = function($entity) use ($val) {
                 return $entity['ID'] === $val;
             };
         }
-        $entities = $dataSet['MULTIPLIERS'][$field];
         return _::find($entities, $pred);
     }
 

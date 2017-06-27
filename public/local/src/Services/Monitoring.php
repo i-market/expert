@@ -218,6 +218,26 @@ class Monitoring {
         ];
     }
 
+    static function findEntity($field, $val, $dataSet) {
+        if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
+            $pred = function($entity) use ($val) {
+                $f = Calculator::parseNumericPredicate($entity['NAME']);
+                return $f($val);
+            };
+        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
+            $pred = function($entity) use ($val) {
+                $bool = Parser::parseBoolean($entity['NAME']);
+                return $val === $bool;
+            };
+        } else {
+            $pred = function($entity) use ($val) {
+                return $entity['ID'] === $val;
+            };
+        }
+        $entities = $dataSet['MULTIPLIERS'][$field];
+        return _::find($entities, $pred);
+    }
+
     static function proposalParams($requestId, $data, $creationDate = null) {
         assert(_::isEmpty(array_diff(['total_price', 'duration', 'tables'], array_keys($data))));
         if ($creationDate === null) {

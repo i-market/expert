@@ -24,6 +24,10 @@ class Api {
             : sys_get_temp_dir();
     }
 
+    static function parseInt($s) {
+        return str::isEmpty($s) ? null : intval($s);
+    }
+
     static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
@@ -37,17 +41,12 @@ class Api {
             });
             $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
                 // TODO sanitize params
-                // TODO refactor
                 $params = $request->params();
-                // TODO extract
-                $parseInt = function($s) {
-                    return str::isEmpty($s) ? null : intval($s);
-                };
                 foreach (['SITE_COUNT', 'TOTAL_AREA', 'UNDERGROUND_FLOORS', 'VOLUME'] as $k) {
-                    $params = _::update($params, $k, $parseInt);
+                    $params = _::update($params, $k, self::class.'::parseInt');
                 }
-                $params = _::update($params, 'FLOORS', function($values) use ($parseInt) {
-                    return array_map($parseInt, $values);
+                $params = _::update($params, 'FLOORS', function($values) {
+                    return array_map(self::class.'::parseInt', $values);
                 });
                 $params = _::update($params, 'HAS_UNDERGROUND_FLOORS', 'boolval');
                 $params = array_merge([
@@ -113,7 +112,7 @@ class Api {
                             assert(filesize($path) !== 0);
                             $event = [
                                 'EMAIL_TO' => $params['EMAIL'],
-                                'FILE' => [$path]
+                                'FILE' => [$path] // attachment
                             ];
                             App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
                             $resultCtx['screen'] = 'sent';

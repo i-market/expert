@@ -98,9 +98,9 @@ def backup_file(env, path):
     dest = os.path.join(directory, backup_filename(filename))
     if env['local'] and os.path.exists(path):
         shutil.copy(path, dest)
-    elif 'ssh' in env:
-        init_fabric_host(env['ssh'])
-        fab.run('cp {} {}'.format(path, dest))
+    # elif 'ssh' in env:
+    #     init_fabric_host(env['ssh'])
+    #     fab.run('cp {} {}'.format(path, dest))
     else:
         host = ftp_host(env)
         if host.path.exists(path):
@@ -261,7 +261,7 @@ def upload_dir(local, remote, dry_run=False, opts=None):
 def clear_cache(dry_run=False):
     env = environment()
     if 'ssh' in env:
-        # TODO plug host vars into fabric in the global manner
+        init_fabric_host(env['ssh'])
         path = os.path.join(env['ssh']['document_root'], cache_path)
         if console.confirm('remove everything in directory {}?'.format(path), False):
             with cd(path):

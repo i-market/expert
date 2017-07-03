@@ -59,6 +59,10 @@ class Api {
                 ], $params);
                 $data = (new MonitoringRepo)->data();
                 $dataSet = Monitoring::dataSet($data, $params);
+                $packageOptions = $dataSet['MULTIPLIERS']['STRUCTURES_TO_MONITOR']['PACKAGE'];
+                if ($params['PACKAGE_SELECTION'] === 'PACKAGE') {
+                    $params['STRUCTURES_TO_MONITOR'] = _::pluck($packageOptions, 'ID');
+                }
                 $monitoring = App::getInstance()->getMonitoring();
                 $state = $monitoring->calculate($params, $dataSet);
                 $context = $monitoring->calculatorContext($state, $dataSet);

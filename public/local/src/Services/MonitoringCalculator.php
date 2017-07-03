@@ -62,12 +62,15 @@ class MonitoringCalculator {
                     $entity = _::find($entities, function($entity) use ($id) {
                         return $entity['ID'] === $id;
                     });
-                    assert(is_array($entity['VALUE']));
-                    // pick a column based on the number of values
-                    return _::find($entity['VALUE'], function($_, $predStr) use ($val) {
-                        $countPred = Calculator::parseNumericPredicate($predStr);
-                        return $countPred(count($val));
-                    });
+                    if (is_array($entity['VALUE'])) {
+                        // pick a column based on the number of values
+                        return _::find($entity['VALUE'], function($_, $predStr) use ($val) {
+                            $countPred = Calculator::parseNumericPredicate($predStr);
+                            return $countPred(count($val));
+                        });
+                    } else {
+                        return $entity['VALUE'];
+                    }
                 }, $val);
                 return Util::product($multipliers);
             } elseif (is_array($val)) {

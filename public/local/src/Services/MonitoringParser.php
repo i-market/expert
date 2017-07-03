@@ -94,6 +94,7 @@ class MonitoringParser extends Parser {
         ]
     ];
 
+    // TODO use general `Parser/parseStructures`
     private function parseStructuresToMonitor($rows) {
         $setSubsectionValue = function($array, $subsection, $key, $value) {
             $renameSubsection = [
@@ -145,36 +146,6 @@ class MonitoringParser extends Parser {
                 // peek the next row
                 if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {
                     $state = ['default'];
-                }
-            }
-        }
-        return $ret;
-    }
-
-    private function parseDocuments($rows) {
-        $ret = [];
-        $state = ['find_document'];
-        foreach ($rows as $idx => $row) {
-            $cells = $row['cells'];
-            $stateName = _::first($state);
-            if ($stateName === 'find_document') {
-                if ($this->parseBoolean(_::first($cells)) === null) {
-                    $document = ['ID' => $row['metadata']['id'], 'NAME' => _::first($cells), 'VALUE' => []];
-                    $ret[$document['ID']] = $document;
-                    $state = ['in_document', $document];
-                }
-            } elseif ($stateName === 'in_document') {
-                list($_, $document) = $state;
-                list($k, $v) = $cells;
-                $booleanMaybe = $this->parseBoolean($k);
-                if ($booleanMaybe !== null) {
-                    $ret[$document['ID']]['VALUE'][$booleanMaybe] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
-                } else {
-                    // TODO handle the unexpected
-                }
-                // peek the next row
-                if (isset($rows[$idx + 1]) && !$this->parseBoolean(_::first($rows[$idx + 1]))) {
-                    $state = ['find_document'];
                 }
             }
         }

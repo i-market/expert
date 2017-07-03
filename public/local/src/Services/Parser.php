@@ -107,6 +107,88 @@ abstract class Parser {
         return $ret;
     }
 
+    protected function parseDocuments($rows) {
+        $ret = [];
+        $state = ['find_document'];
+        foreach ($rows as $idx => $row) {
+            $cells = $row['cells'];
+            $stateName = _::first($state);
+            if ($stateName === 'find_document') {
+                if ($this->parseBoolean(_::first($cells)) === null) {
+                    $document = ['ID' => $row['metadata']['id'], 'NAME' => _::first($cells), 'VALUE' => []];
+                    $ret[$document['ID']] = $document;
+                    $state = ['in_document', $document];
+                }
+            } elseif ($stateName === 'in_document') {
+                list($_, $document) = $state;
+                list($k, $v) = $cells;
+                $booleanMaybe = $this->parseBoolean($k);
+                if ($booleanMaybe !== null) {
+                    $ret[$document['ID']]['VALUE'][$booleanMaybe] = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
+                } else {
+                    // TODO handle the unexpected
+                }
+                // peek the next row
+                if (isset($rows[$idx + 1]) && !$this->parseBoolean(_::first($rows[$idx + 1]))) {
+                    $state = ['find_document'];
+                }
+            }
+        }
+        return $ret;
+    }
+
+    protected function parseStructures($rows, $renameSubsection, $conditionalSection) {
+        $setSubsectionValue = function($array, $subsection, $key, $value) use ($renameSubsection) {
+            $renamed = _::get($renameSubsection, $subsection, $subsection);
+            return _::set($array, [$renamed, $key], $value);
+        };
+        $ret = [];
+        $state = ['default'];
+        foreach ($rows as $idx => $row) {
+            $cells = $row['cells'];
+            $stateName = _::first($state);
+            if ($stateName === 'default' || $stateName === 'in_subsection') {
+                $isAllCaps = str::upper(_::first($cells)) === _::first($cells);
+                // TODO extract function
+                $isSubsectionName = $isAllCaps;
+                if (_::first($cells) === $conditionalSection) {
+                    $header = _::drop($this->nonEmptyCells($cells), 1);
+                    $state = ['in_conditional_multipliers', _::first($cells), $header];
+                } elseif ($isSubsectionName) {
+                    $state = ['in_subsection', _::first($cells)];
+                } else {
+                    $value = $this->simpleValue($row);
+                    if ($stateName === 'in_subsection') {
+                        list($_, $subsection) = $state;
+                        $ret = $setSubsectionValue($ret, $subsection, $value['ID'], $value);
+                    } else {
+                        $ret[$value['ID']] = $value;
+                    }
+                }
+            } elseif ($stateName === 'in_conditional_multipliers') {
+                list($_, $subsection, $header) = $state;
+                $filteredCells = $this->nonEmptyCells($cells);
+                $isConditionalMultiplier = function($cells) use ($header) {
+                    return count($cells) === count($header) + 1;
+                };
+                if ($isConditionalMultiplier($filteredCells)) {
+                    $name = _::first($cells);
+                    $multipliers = array_map(function($str) use ($row) {
+                        return $this->parseFloat($str, $this->defaultMultiplierFn($row['row_number']));
+                    }, _::drop($filteredCells, 1));
+                    $id = $row['metadata']['id'];
+                    $value = ['ID' => $id, 'NAME' => $name, 'VALUE' => array_combine($header, $multipliers)];
+                    $ret = $setSubsectionValue($ret, $subsection, $id, $value);
+                }
+                // peek the next row
+                if (isset($rows[$idx + 1]) && !$isConditionalMultiplier($this->nonEmptyCells($rows[$idx + 1]['cells']))) {
+                    $state = ['default'];
+                }
+            }
+        }
+        return $ret;
+    }
+
     protected function sectionGroups($rowIterator, $sections) {
         $validSectionKeys = join(', ', array_reduce($sections, function($acc, $section) {
             return array_merge($acc, array_map(function($prefix) {
@@ -153,7 +235,7 @@ abstract class Parser {
         list($name, $v) = $row['cells'];
         $id = $row['metadata']['id'];
         // TODO log human-readable message
-        assert(!str::isEmpty($id));
+        assert(!str::isEmpty($id), "row {$row['row_number']} has no id value");
         $multiplier = $this->parseFloat($v, $this->defaultMultiplierFn($row['row_number']));
         return ['ID' => $id, 'NAME' => $name, 'VALUE' => $multiplier];
     }

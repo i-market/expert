@@ -96,15 +96,10 @@ class Components {
                 $ctx = $monitoring->context($service, Services::initialState(), $dataSet);
                 $form = Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             } else {
-                // TODO
-                $form = '';
+                $form = 'TODO';
             }
             return array_merge($service, ['form' => $form]);
         }, array_values(Services::services()));
-        // TODO tmp filter for development
-        $services = array_filter($services, function($service) {
-            return $service['code'] === 'monitoring';
-        });
         return v::render('partials/services_section', ['services' => $services]);
     }
 }

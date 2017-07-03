@@ -1,4 +1,5 @@
 <?
+use App\Services\MonitoringRepo;
 use App\View as v;
 use App\App;
 
@@ -7,6 +8,8 @@ $APPLICATION->SetTitle("Калькулятор стоимости");
 $APPLICATION->SetPageProperty('layout', 'bare')
 ?>
 
-<?= v::render('partials/calculator/monitoring_calculator', App::getInstance()->getMonitoring()->calculatorContext([])) ?>
+<? $dataSet = (new MonitoringRepo)->defaultDataSet() ?>
+<? $ctx = App::getInstance()->getMonitoring()->calculatorContext([], $dataSet) ?>
+<?= v::render('partials/calculator/monitoring_calculator', $ctx) ?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

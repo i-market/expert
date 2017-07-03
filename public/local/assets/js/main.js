@@ -21,7 +21,8 @@
       $calc.find('input.site-count').on('change', function() {
         var siteCount = parseInt($(this).val(), 10);
         if (siteCount > 1) {
-          Mockup.openBlock($distanceBlock);
+          // wait for a server response
+          // Mockup.openBlock($distanceBlock);
         } else {
           Mockup.closeBlock($distanceBlock);
         }

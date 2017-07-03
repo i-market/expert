@@ -77,8 +77,8 @@ class Monitoring {
         return $state;
     }
 
-    function context($service, $state) {
-        $options = $this->repo->options();
+    function context($service, $state, $dataSet) {
+        $options = $this->repo->options($dataSet);
         return [
             'service' => array_merge($service, [
                 'document_options' => array_map(function($document) {
@@ -105,16 +105,20 @@ class Monitoring {
     }
 
     function mapOptions($items) {
-        // recur
-        if (!_::isIndexed($items)) {
+        $isWrapped = _::matchesAny(array_keys($items), function($x) {
+            // TODO refactor: brittle
+            // non-id
+            return !is_numeric($x);
+        });
+        if ($isWrapped) {
             return array_map([$this, 'mapOptions'], $items);
         }
         return array_map(function($item) {
-                return [
-                    'value' => $item['ID'],
-                    'text' => $item['NAME']
-                ];
-            }, $items);
+            return [
+                'value' => $item['ID'],
+                'text' => $item['NAME']
+            ];
+        }, $items);
     }
 
     function resultBlockContext() {
@@ -123,11 +127,11 @@ class Monitoring {
         ];
     }
 
-    function calculatorContext($state) {
+    function calculatorContext($state, $dataSet) {
         $params = $state['params'];
         $siteCount = $params['SITE_COUNT'];
         $distanceSpecialValue = '>3km';
-        $options = array_map([$this, 'mapOptions'], $this->repo->options());
+        $options = array_map([$this, 'mapOptions'], $this->repo->options($dataSet));
         // mutate
         $options = _::update($options, 'DISTANCE_BETWEEN_SITES', function($opts) use ($distanceSpecialValue) {
             return _::append($opts, [

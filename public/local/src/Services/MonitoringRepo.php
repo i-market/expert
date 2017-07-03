@@ -27,17 +27,18 @@ class MonitoringRepo {
         return $this->data;
     }
 
-    private function fromMultipliers($path) {
-        return _::flatMap($this->data(), function($worksheet) use ($path) {
-            $values = _::get($worksheet, array_merge(['MULTIPLIERS'], $path));
-            return array_map(function($value) {
-                return _::pick($value, ['ID', 'NAME']);
-            }, $values);
-        });
+    function defaultDataSet() {
+        return $this->data()['MULTIPLE_BUILDINGS'];
     }
 
     // TODO refactor: kind of a bad name (collides with view layer "options" for select inputs)
-    function options() {
+    function options($dataSet) {
+        $fromEntities = function($path) use ($dataSet) {
+            $entities = _::get($dataSet, array_merge(['MULTIPLIERS'], $path));
+            return array_map(function($entity) {
+                return _::pick($entity, ['ID', 'NAME']);
+            }, $entities);
+        };
         $keys = [
             'LOCATION',
             'USED_FOR',
@@ -49,12 +50,12 @@ class MonitoringRepo {
             'DURATION',
             'TRANSPORT_ACCESSIBILITY'
         ];
-        $ret = array_reduce($keys, function($acc, $key) {
-            return _::set($acc, $key, $this->fromMultipliers([$key]));
+        $ret = array_reduce($keys, function($acc, $key) use ($fromEntities) {
+            return _::set($acc, $key, $fromEntities([$key]));
         }, []);
         $ret['STRUCTURES_TO_MONITOR'] = [
-            'PACKAGE' => $this->fromMultipliers(['STRUCTURES_TO_MONITOR', 'PACKAGE']),
-            'INDIVIDUAL' => $this->fromMultipliers(['STRUCTURES_TO_MONITOR', 'INDIVIDUAL']),
+            'PACKAGE' => $fromEntities(['STRUCTURES_TO_MONITOR', 'PACKAGE']),
+            'INDIVIDUAL' => $fromEntities(['STRUCTURES_TO_MONITOR', 'INDIVIDUAL']),
         ];
         return $ret;
     }

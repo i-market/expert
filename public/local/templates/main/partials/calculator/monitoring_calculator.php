@@ -41,21 +41,18 @@ $macros = new macros($state);
         <div class="calculator_content">
             <div class="wrap">
                 <div class="left_side">
-                    <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
-                    <? $macros->showSelect('LOCATION', $options['LOCATION'], 'Местонахождение', ['required' => true]) ?>
-                    <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
                     <? $macros->showInput('SITE_COUNT', 'Количество объектов мониторинга', [
                         'required' => true,
                         'type' => 'number',
                         'input_attrs' => v::attrs([
                             'class' => 'site-count',
                             'min' => 1,
-                            'ic-post-to' => $apiEndpoint,
-                            'ic-select-from-response' => '#monitoring-floors-group',
-                            'ic-target' => '#monitoring-floors-group',
-                            'ic-indicator' => '#monitoring-floors-group .loader',
-                            // TODO override parent value
-                            'ic-replace-target' => 'false',
+                            'ic-post-to' => $apiEndpoint.'?hide_errors=1',
+//                            'ic-select-from-response' => '#monitoring-floors-group',
+//                            'ic-target' => '#monitoring-floors-group',
+//                            'ic-indicator' => '#monitoring-floors-group .loader',
+//                            // TODO override parent value
+//                            'ic-replace-target' => 'false',
                         ])
                     ]) ?>
                     <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [
@@ -64,6 +61,9 @@ $macros = new macros($state);
                         'class' => 'distance-between-sites',
                         'show_warning' => $showDistanceWarning
                     ]) ?>
+                    <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
+                    <? $macros->showSelect('LOCATION', $options['LOCATION'], 'Местонахождение', ['required' => true]) ?>
+                    <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
                     <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов) мониторинга', ['required' => true]) ?>
                     <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', [
                         'required' => true,

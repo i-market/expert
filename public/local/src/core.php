@@ -130,7 +130,7 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
-    static function update($array, $key, $f) {
+    static function update($array, $key, callable $f) {
         return !self::has($array, $key)
             ? $array
             : self::set($array, $key, $f(self::get($array, $key)));
@@ -190,6 +190,13 @@ class Underscore extends ArraysMethods {
     static function constantly($x) {
         return function() use ($x) {
             return $x;
+        };
+    }
+
+    static function complement(callable $f) {
+        return function() use ($f) {
+            $result = call_user_func_array($f, func_get_args());
+            return !$result;
         };
     }
 }

@@ -43,7 +43,10 @@ class Api {
                 // TODO sanitize params
                 $params = $request->params();
                 foreach (['SITE_COUNT', 'TOTAL_AREA', 'UNDERGROUND_FLOORS', 'VOLUME'] as $k) {
-                    $params = _::update($params, $k, self::class.'::parseInt');
+                    $params = _::update($params, $k, function($s) {
+                        // TODO why string callable won't work here is beyond me
+                        return self::parseInt($s);
+                    });
                 }
                 $params = _::update($params, 'FLOORS', function($values) {
                     return array_map(self::class.'::parseInt', $values);
@@ -58,7 +61,10 @@ class Api {
                 $dataSet = Monitoring::dataSet($data, $params);
                 $monitoring = App::getInstance()->getMonitoring();
                 $state = $monitoring->calculate($params, $dataSet);
-                $context = $monitoring->calculatorContext($state);
+                $context = $monitoring->calculatorContext($state, $dataSet);
+                if (_::get($params, 'hide_errors', false)) {
+                    $context['state']['errors'] = [];
+                }
                 if ($request->action === 'calculate') {
                     return v::render('partials/calculator/monitoring_calculator', $context);
                 } elseif ($request->action === 'proposal') {
@@ -133,7 +139,9 @@ class Api {
                 // TODO sanitize params
                 $params = $request->params();
                 $state = Services::requestMonitoring($params);
-                $ctx = App::getInstance()->getMonitoring()->context(Services::services()['monitoring'], $state);
+                $repo = new MonitoringRepo();
+                $dataSet = $repo->defaultDataSet();
+                $ctx = App::getInstance()->getMonitoring()->context(Services::services()['monitoring'], $state, $dataSet);
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {

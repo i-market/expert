@@ -68,6 +68,9 @@ return array (
   'app' => array(
     'value' => array(
       'env' => '{{ app_env }}',
+      {% if override_default_email_from %}
+      'override_default_email_from' => '{{ override_default_email_from }}',
+      {% endif %}
       'sentry' => array(
         'enabled' => {{ 'true' if sentry.enabled else 'false' }},
         'dsn' => '{{ sentry.dsn }}',

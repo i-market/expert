@@ -205,7 +205,7 @@ def upload_dir(local, remote, dry_run=False, opts=None):
         args = rsync_opts + ([] if opts is None else opts) + [src, dest]
         rsync_cmd = 'rsync {}'.format(' '.join(args))
         fab.puts(rsync_cmd)
-        proc = pexpect.spawn(rsync_cmd, encoding='utf8', logfile=os.sys.stdout)
+        proc = pexpect.spawn(rsync_cmd, encoding='utf8', logfile=os.sys.stdout, timeout=5*60)
         proc.expect('password')
         proc.sendline(ssh['password'])
         proc.expect(pexpect.EOF)

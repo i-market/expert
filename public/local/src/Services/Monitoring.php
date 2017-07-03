@@ -81,12 +81,7 @@ class Monitoring {
         $options = $this->repo->options($dataSet);
         return [
             'service' => array_merge($service, [
-                'document_options' => array_map(function($document) {
-                    return [
-                        'value' => $document['ID'],
-                        'label' => $document['NAME']
-                    ];
-                }, $options['DOCUMENTS'])
+                'document_options' => $this->mapOptions($options['DOCUMENTS'])
             ]),
             'state' => $state
         ];

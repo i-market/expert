@@ -309,6 +309,11 @@ def ensure_not_dirty():
 
 
 @fab.task
+def upload_upload():
+    fab.execute(upload_dir, '../public/upload', 'upload', opts=['--ignore-existing'])
+
+
+@fab.task
 def deploy():
     env = environment()
     fab.execute(ensure_not_dirty)
@@ -332,7 +337,7 @@ def deploy():
         for rel_path in ['templates/main/build', 'vendor']:
             # TODO optimize composer's vendor sync: look for changes in composer.json?
             fab.execute(upload_dir, '../public/local/' + rel_path, 'local/' + rel_path)
-        fab.execute(upload_dir, '../public/upload', 'upload', opts=['--ignore-existing'])
+        fab.execute(upload_upload)
         # TODO `git-ftp init` for initial deployment?
         # git-ftp push
         fab.execute(git_ftp, 'push')

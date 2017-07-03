@@ -83,6 +83,12 @@ def environment(roles=None, host=None):
     return ret
 
 
+# TODO stop doing it manually
+def init_fabric_host(ssh):
+    fab.env.host_string = '{}@{}'.format(ssh['user'], ssh['host'])
+    fab.env.password = ssh['password']
+
+
 def backup_filename(filename):
     return '{}.{}~'.format(filename, time.strftime('%Y-%m-%d@%H:%M:%S'))
 
@@ -93,6 +99,7 @@ def backup_file(env, path):
     if env['local'] and os.path.exists(path):
         shutil.copy(path, dest)
     elif 'ssh' in env:
+        init_fabric_host(env['ssh'])
         fab.run('cp {} {}'.format(path, dest))
     else:
         host = ftp_host(env)
@@ -256,9 +263,6 @@ def clear_cache(dry_run=False):
     if 'ssh' in env:
         # TODO plug host vars into fabric in the global manner
         path = os.path.join(env['ssh']['document_root'], cache_path)
-        ssh = env['ssh']
-        fab.env.host_string = '{}@{}'.format(ssh['user'], ssh['host'])
-        fab.env.password = ssh['password']
         if console.confirm('remove everything in directory {}?'.format(path), False):
             with cd(path):
                 # removing stuff is spooky, you can't be too paranoid

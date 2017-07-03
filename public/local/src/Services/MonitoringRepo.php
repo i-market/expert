@@ -9,8 +9,7 @@ class MonitoringRepo {
     private $data;
 
     private function dataFilePath() {
-        // TODO tmp implementation for development
-        return Util::joinPath([sys_get_temp_dir(), 'expert-monitoring.json']);
+        return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/data/monitoring.json']);
     }
 
     function save($data) {

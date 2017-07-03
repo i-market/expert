@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\Monitoring;
 use App\Services\MonitoringRepo;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
@@ -89,7 +90,10 @@ class Components {
     static function renderServicesSection() {
         $services = array_map(function($service) {
             if ($service['code'] === 'monitoring') {
-                $ctx = App::getInstance()->container['monitoring']->context($service, Services::initialState());
+                /** @var Monitoring $monitoring */
+                $monitoring = App::getInstance()->container['monitoring'];
+                $dataSet = (new MonitoringRepo)->defaultDataSet();
+                $ctx = $monitoring->context($service, Services::initialState(), $dataSet);
                 $form = Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             } else {
                 // TODO

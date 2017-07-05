@@ -181,6 +181,12 @@ class Underscore extends ArraysMethods {
         return null;
     }
     
+    static function renameKeys(array $map, array $keyMap) {
+        return self::mapKeys($map, function($_, $k) use ($keyMap) {
+            return self::get($keyMap, $k, $k);
+        });
+    }
+
     static function identity() {
         return function($x) {
             return $x;

@@ -204,6 +204,18 @@ class Underscore extends ArraysMethods {
             return !$f(...$args);
         };
     }
+
+    static function partial(callable $f, ...$args) {
+        return function (...$rest) use ($f, $args) {
+            return $f(...array_merge($args, $rest));
+        };
+    }
+
+    static function partialRight(callable $f, ...$args) {
+        return function (...$rest) use ($f, $args) {
+            return $f(...array_merge($rest, $args));
+        };
+    }
 }
 
 class Nullable {

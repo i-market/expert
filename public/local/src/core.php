@@ -200,9 +200,8 @@ class Underscore extends ArraysMethods {
     }
 
     static function complement(callable $f) {
-        return function() use ($f) {
-            $result = call_user_func_array($f, func_get_args());
-            return !$result;
+        return function(...$args) use ($f) {
+            return !$f(...$args);
         };
     }
 }
@@ -255,7 +254,7 @@ trait DynamicMethods {
     function __call($name, $arguments) {
         if (isset(self::$_instance[$name])) {
             $f = \Closure::bind(self::$_instance[$name], $this, __CLASS__);
-            return call_user_func_array($f, $arguments);
+            return $f(...$arguments);
         } else {
             throw new \BadMethodCallException("Call to undefined instance method '{$name}'");
         }
@@ -264,7 +263,7 @@ trait DynamicMethods {
     static function __callStatic($name, $arguments) {
         if (isset(self::$_static[$name])) {
             $f = \Closure::bind(self::$_static[$name], null, __CLASS__);
-            return call_user_func_array($f, $arguments);
+            return $f(...$arguments);
         } else {
             throw new \BadMethodCallException("Call to undefined static method '{$name}'");
         }

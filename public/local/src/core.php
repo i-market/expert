@@ -180,7 +180,7 @@ class Underscore extends ArraysMethods {
         }
         return null;
     }
-
+    
     static function identity() {
         return function($x) {
             return $x;
@@ -237,6 +237,31 @@ class Strings extends StringsMethods {
             $s = preg_replace($pattern, $replacement, $s);
         }
         return $s;
+    }
+}
+
+// TODO warn when used, so we don't leave it in production code
+/** useful for interactive development with a REPL */
+trait DynamicMethods {
+    static $_instance = [];
+    static $_static = [];
+
+    function __call($name, $arguments) {
+        if (isset(self::$_instance[$name])) {
+            $f = \Closure::bind(self::$_instance[$name], $this, __CLASS__);
+            return call_user_func_array($f, $arguments);
+        } else {
+            throw new \BadMethodCallException("Call to undefined instance method '{$name}'");
+        }
+    }
+
+    static function __callStatic($name, $arguments) {
+        if (isset(self::$_static[$name])) {
+            $f = \Closure::bind(self::$_static[$name], null, __CLASS__);
+            return call_user_func_array($f, $arguments);
+        } else {
+            throw new \BadMethodCallException("Call to undefined static method '{$name}'");
+        }
     }
 }
 

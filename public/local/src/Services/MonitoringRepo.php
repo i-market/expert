@@ -30,14 +30,16 @@ class MonitoringRepo {
         return $this->data()['MULTIPLE_BUILDINGS'];
     }
 
-    // TODO refactor: kind of a bad name (collides with view layer "options" for select inputs)
+    /** @deprecated see Services::entities2options */
+    function fromEntities($path, $dataSet) {
+        $entities = _::get($dataSet, array_merge(['MULTIPLIERS'], $path));
+        return array_map(function($entity) {
+            return _::pick($entity, ['ID', 'NAME']);
+        }, $entities);
+    }
+
+    // TODO refactor: not repo's concern
     function options($dataSet) {
-        $fromEntities = function($path) use ($dataSet) {
-            $entities = _::get($dataSet, array_merge(['MULTIPLIERS'], $path));
-            return array_map(function($entity) {
-                return _::pick($entity, ['ID', 'NAME']);
-            }, $entities);
-        };
         $keys = [
             'LOCATION',
             'USED_FOR',
@@ -49,12 +51,12 @@ class MonitoringRepo {
             'DURATION',
             'TRANSPORT_ACCESSIBILITY'
         ];
-        $ret = array_reduce($keys, function($acc, $key) use ($fromEntities) {
-            return _::set($acc, $key, $fromEntities([$key]));
+        $ret = array_reduce($keys, function($acc, $key) use ($dataSet) {
+            return _::set($acc, $key, $this->fromEntities([$key], $dataSet));
         }, []);
         $ret['STRUCTURES_TO_MONITOR'] = [
-            'PACKAGE' => $fromEntities(['STRUCTURES_TO_MONITOR', 'PACKAGE']),
-            'INDIVIDUAL' => $fromEntities(['STRUCTURES_TO_MONITOR', 'INDIVIDUAL']),
+            'PACKAGE' => $this->fromEntities(['STRUCTURES_TO_MONITOR', 'PACKAGE'], $dataSet),
+            'INDIVIDUAL' => $this->fromEntities(['STRUCTURES_TO_MONITOR', 'INDIVIDUAL'], $dataSet),
         ];
         return $ret;
     }

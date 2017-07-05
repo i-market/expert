@@ -51,6 +51,15 @@ class Services {
         ];
     }
 
+    static function floorInputs($params) {
+        $siteCount = _::get($params, 'SITE_COUNT', 1);
+        return array_map(function($num) {
+            return [
+                'label' => 'Строение '.$num,
+            ];
+        }, range(1, $siteCount));
+    }
+
     // TODO refactor
     static function translateMessage($template) {
         $ru = [
@@ -219,5 +228,21 @@ class Services {
             $state['screen'] = 'success';
         }
         return $state;
+    }
+
+    static function entities2options($path, $dataSet) {
+        $entities = _::get($dataSet, array_merge(['MULTIPLIERS'], $path));
+        return array_map(function($entity) {
+            return [
+                'value' => $entity['ID'],
+                'text' => $entity['NAME']
+            ];
+        }, $entities);
+    }
+
+    static function dataSet($data, $params) {
+        return $params['SITE_COUNT'] > 1
+            ? $data['MULTIPLE_BUILDINGS']
+            : $data['SINGLE_BUILDING'];
     }
 }

@@ -89,6 +89,9 @@ class Monitoring {
 
     // TODO rename to inputs
     // TODO inline
+    /**
+     * @deprecated
+     */
     function floorSelects($state) {
         $siteCountMaybe = $state['params']['SITE_COUNT'];
         $siteCount = nil::get($siteCountMaybe, 1);
@@ -162,7 +165,8 @@ class Monitoring {
             'state' => $state,
             'heading' => 'Определение стоимости<br> проведения мониторинга',
             'options' => $options,
-            'floorSelects' => $this->floorSelects($state),
+            // TODO rename to floorInputs
+            'floorSelects' => Services::floorInputs($params),
             'showDistanceSelect' => $siteCount > 1,
             'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,
             'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
@@ -217,10 +221,9 @@ class Monitoring {
         ];
     }
 
+    /** @deprecated use Services::dataSet */
     static function dataSet($data, $params) {
-        return $params['SITE_COUNT'] > 1
-            ? $data['MULTIPLE_BUILDINGS']
-            : $data['SINGLE_BUILDING'];
+        return Services::dataSet($data, $params);
     }
 
     static function findEntity($field, $val, $dataSet) {

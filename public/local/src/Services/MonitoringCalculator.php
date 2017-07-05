@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use Core\Util as u;
-use Core\Util;
 use Exception;
 use Core\Underscore as _;
 
-class MonitoringCalculator {
+class MonitoringCalculator extends Calculator {
     function pricePerSquareMeter($sqMeters) {
         $x = $sqMeters;
         if ($x < 500 && $x > 0) {
@@ -25,16 +24,6 @@ class MonitoringCalculator {
             return 3;
         } else {
             throw new Exception('input is outside of the function domain. perhaps the function is not continuous.');
-        }
-    }
-
-    // TODO no need for bc math?
-    function mul($x, $y, $scale) {
-        if (extension_loaded('bcmath')) {
-            return bcmul($x, $y, $scale);
-        } else {
-            trigger_error('bcmath extension is not loaded, calculations are going to be less precise', E_USER_NOTICE);
-            return $x * $y;
         }
     }
 
@@ -72,12 +61,12 @@ class MonitoringCalculator {
                         return $entity['VALUE'];
                     }
                 }, $val);
-                return Util::product($multipliers);
+                return u::product($multipliers);
             } elseif (is_array($val)) {
                 $multipliers = array_map(function($v) use (&$multiplierRec, $field, $dataSet) {
                     return $multiplierRec($v, $field, $dataSet);
                 }, $val);
-                return Util::product($multipliers);
+                return u::product($multipliers);
             }
             $entity = Monitoring::findEntity($field, $val, $dataSet);
             if ($field === 'DOCUMENTS') {
@@ -92,14 +81,5 @@ class MonitoringCalculator {
             return _::set($acc, $field, $multiplierRec($params[$field], $field, $dataSet));
         }, []);
         return $multipliers;
-    }
-
-    function totalPrice($totalArea, $multipliers) {
-        $scale = 2; // копейки
-        $multiplier = array_reduce(array_values($multipliers), function($acc, $x) {
-            return $acc + $x;
-        }, 0);
-        $price = round($this->pricePerSquareMeter($totalArea), $scale);
-        return $this->mul($this->mul($price, $totalArea, $scale), $multiplier, $scale);
     }
  }

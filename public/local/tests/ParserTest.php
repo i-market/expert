@@ -1,16 +1,15 @@
 <?php
 
-use App\Services\Calculator;
+use App\Services\Parser;
 use PHPUnit\Framework\TestCase;
 
-class CalculatorTest extends TestCase {
+class ParserTest extends TestCase {
     function testParseNumericPredicate() {
-        $calc = new Calculator();
-        $pred = $calc->parseNumericPredicate('Более 30');
+        $pred = Parser::parseNumericPredicate('Более 30');
         $this->assertFalse($pred('invalid arg'));
         $this->assertFalse($pred(29));
         $this->assertFalse($pred(30));
         $this->assertTrue($pred(31));
-        $this->assertNull($calc->parseNumericPredicate('Менее 30'));
+        $this->assertNull(Parser::parseNumericPredicate('Менее 30'));
     }
 }

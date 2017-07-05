@@ -179,4 +179,58 @@ class CalculatorMacros {
         </div>
         <?
     }
+
+    function showPackageSelector($name, $label, $groups) {
+        list($value, $error) = $this->valueErrorPair($name);
+        $rootName = 'PACKAGE_SELECTION';
+        $rootValue = _::get($this->state, ['params', $rootName]);
+        ?>
+        <div class="wrap_calc_item">
+            <div class="inner">
+                <div class="left">
+                    <p class="title"><?= $label.':'.self::$requiredMark ?></p>
+                </div>
+                <div class="right">
+                    <? $this->showTooltip($rootName) ?>
+                </div>
+            </div>
+        </div>
+        <? foreach ($groups as $idx => $group): ?>
+            <?
+            $checked = $rootValue !== null ? $rootValue === $group['value'] : $idx === 0;
+            $id = $rootName.'_'.$idx;
+            $blockId = $id.'_block';
+            $displayBlock = $checked;
+            $classes = ['group_'.$rootName, $blockId];
+            if (!v::isEmpty($error)) {
+                $classes[] = 'error';
+            }
+            ?>
+            <div class="wrap_calc_item hidden_block">
+                <input type="radio"
+                       hidden="hidden"
+                       name="<?= $rootName ?>"
+                       value="<?= $group['value'] ?>"
+                       <?= $checked ? 'checked' : '' ?>
+                       id="<?= $id ?>"
+                       class="open_block"
+                       data-name="<?= $blockId ?>"
+                       data-group="<?= $rootName ?>">
+                <label for="<?= $id ?>" class="radio_label"><?= $group['text'] ?></label>
+            </div>
+            <div class="<?= join(' ', $classes) ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
+                 style="display: <?= $displayBlock ? 'block' : 'none' ?>">
+                <? foreach ($group['options'] as $i => $option): ?>
+                    <? $checkboxId = "{$id}_{$i}" ?>
+                    <? $checked = in_array($option['value'], $value) ?>
+                    <div class="wrap_checkbox">
+                        <input type="checkbox" name="<?= $name.'[]' ?>" value="<?= $option['value'] ?>"<?= $checked ? ' checked' : '' ?> hidden="hidden" id="<?= $checkboxId ?>">
+                        <label for="<?= $checkboxId ?>"><?= $option['text'] ?></label>
+                    </div>
+                <? endforeach ?>
+                <div class="error-message"><?= $error ?></div>
+            </div>
+        <? endforeach ?>
+        <?
+    }
 }

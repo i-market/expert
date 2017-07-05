@@ -269,6 +269,32 @@ abstract class Parser {
         }
     }
 
+    static function parseNumericPredicate($str) {
+        if (is_numeric($str)) {
+            return function ($x) use ($str) {
+                return is_numeric($x) && $x == $str;
+            };
+        } else {
+            $matchesRef = [];
+            // names
+            $isMatch = preg_match('/более\s+(\d+)/', str::lower($str), $matchesRef);
+            if ($isMatch) {
+                return function($x) use ($matchesRef) {
+                    list($_, $minExclusive) = $matchesRef;
+                    return is_numeric($x) && $x > $minExclusive;
+                };
+            } else {
+                // table headers
+                return preg_match('/(\d+)[-—\s]+(\d+)/', $str, $matchesRef)
+                    ? function ($x) use ($matchesRef) {
+                        list($_, $min, $max) = $matchesRef;
+                        return is_numeric($x) && $min <= $x && $x <= $max;
+                    }
+                    : null;
+            }
+        }
+    }
+
     protected function nonEmptyCells($cells) {
         return _::takeWhile($cells, function ($cell) {
             return !str::isEmpty($cell);

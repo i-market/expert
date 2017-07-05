@@ -129,10 +129,10 @@ $macros = new macros($state);
                         </div>
                     </div>
                     <div class="wrap_calc_item hidden_block">
-                        <input type="radio" hidden="hidden" checked name="<?= $packageSelection ?>" value="PACKAGE"<?= $state['params'][$packageSelection] === 'PACKAGE' ? ' checked' : '' ?> id="some_3" data-name="package-selection-individual">
+                        <input type="radio" hidden="hidden" name="<?= $packageSelection ?>" value="PACKAGE"<?= in_array(v::get($state, ['params', $packageSelection]), [null, 'PACKAGE']) ? ' checked' : '' ?> id="some_3" data-name="package-selection-individual">
                         <label for="some_3" class="radio_label">Комплексный мониторинг состояния строительных конструкций, зданий и сооружений</label>
                         <input type="radio" hidden="hidden" name="<?= $packageSelection ?>" value="INDIVIDUAL"<?= $state['params'][$packageSelection] === 'INDIVIDUAL' ? ' checked' : '' ?> id="some_4" data-name="package-selection-individual" class="open_block">
-                        <label for="some_4" class="radio_label">Выборочное обследование</label>
+                        <label for="some_4" class="radio_label">Выборочный мониторинг</label>
                     </div>
                     <? $value = $state['params']['STRUCTURES_TO_MONITOR'] ?>
                     <? $error = $state['errors']['STRUCTURES_TO_MONITOR'] ?>

@@ -17,6 +17,10 @@
     var sel = '.calculator--monitoring, .calculator--inspection';
     $scope.find(sel).addBack(sel).each(function() {
       var $calc = $(this);
+      $calc.find('input[type=radio][data-group]').on('change', function() {
+        var group = $(this).data('group');
+        $('.group_' + group).find('input[type=checkbox]').prop('checked', false);
+      });
       var $distanceBlock = $calc.find('.distance-between-sites');
       $calc.find('input.site-count').on('change', function() {
         var siteCount = parseInt($(this).val(), 10);

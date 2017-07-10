@@ -72,7 +72,7 @@ class InspectionCalculator extends Calculator {
                 }, $val);
                 return u::product($multipliers);
             }
-            $entity = Inspection::findEntity($field, $val, $dataSet);
+            $entity = (new Inspection)->findEntity($field, $val, $dataSet);
             if ($field === 'DOCUMENTS') {
                 $multiplier = $entity['VALUE'][true];
             } else {

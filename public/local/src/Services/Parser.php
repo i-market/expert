@@ -15,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 abstract class Parser {
     public $log = [];
+    protected $keyValueSections = ['СРОКИ' => 'TIME'];
 
     function classifyCells($cells) {
         return [
@@ -210,9 +211,19 @@ abstract class Parser {
             $stateName = _::first($state);
             if ($stateName === 'find_section') {
                 $sectionMaybe = $this->findSection($cells, $sections);
-                foreach (nil::iter($sectionMaybe) as $section) {
-                    $ret[$section['key']] = [];
-                    $state = ['in_section', $section];
+                if ($sectionMaybe !== null) {
+                    $ret[$sectionMaybe['key']] = [];
+                    $state = ['in_section', $sectionMaybe];
+                } else {
+                    // TODO refactor
+                    $kvSectionMaybe = _::find(array_keys($this->keyValueSections), function($str) use ($cells) {
+                        return $str === _::first($cells);
+                    });
+                    if ($kvSectionMaybe !== null) {
+                        $key = $this->keyValueSections[$kvSectionMaybe];
+                        $ret[$key] = [];
+                        $state = ['in_key_value_section', $key];
+                    }
                 }
                 if ($sectionMaybe === null && !$this->isEmptyRow($cells)) {
                     $msg = "Не могу найти заголовок раздела в строке номер {$rowNumber}. "
@@ -225,6 +236,14 @@ abstract class Parser {
                     $state = ['find_section'];
                 } else {
                     $ret[$section['key']][] = $row;
+                }
+            } elseif ($stateName === 'in_key_value_section') {
+                list($_, $sectionKey) = $state;
+                if ($this->isEmptyRow($cells)) {
+                    $state = ['find_section'];
+                } else {
+                    list($k, $v) = $cells;
+                    $ret[$sectionKey][$k] = $v;
                 }
             }
         }
@@ -293,6 +312,21 @@ abstract class Parser {
                     : null;
             }
         }
+    }
+
+    static function parseRangeText($str, $defaults) {
+        $keywords = [
+            'от' => 'min',
+            'до' => 'max',
+            'более' => 'min'
+        ];
+        $keywordsOr = join('|', array_keys($keywords));
+        $matchesRef = [];
+        preg_match_all('/('.$keywordsOr.')\s*([\d\s]+)/', $str, $matchesRef);
+        list($words, $rawNumbers) = _::rest($matchesRef);
+        $numbers = array_map(_::compose('intval', _::partial('preg_replace', '/\s/', '')), $rawNumbers);
+        $range = array_combine(array_map(_::partial([_::class, 'get'], $keywords), $words), $numbers);
+        return array_merge($defaults, $range);
     }
 
     protected function nonEmptyCells($cells) {

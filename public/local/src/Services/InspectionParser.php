@@ -96,12 +96,16 @@ class InspectionParser extends Parser {
     function parseFile($path) {
         return $this->mapWorksheets($path, $this->spec['worksheets'], function(Worksheet $worksheet) {
             $sectionGroups = $this->sectionGroups($worksheet->getRowIterator(), $this->spec['sections']);
+            // TODO refactor: split sections by type
             return [
-                'MULTIPLIERS' => _::map($sectionGroups, function ($rows, $sectionKey) {
+                'TIME' => $sectionGroups['TIME'],
+                'MULTIPLIERS' => _::map(_::remove($sectionGroups, 'TIME'), function ($rows, $sectionKey) {
                     if ($sectionKey === 'STRUCTURES_TO_INSPECT') {
                         return $this->parseStructuresToInspect($rows);
                     } elseif ($sectionKey === 'DOCUMENTS') {
                         return $this->parseDocuments($rows);
+                    } elseif (in_array($sectionKey, $this->keyValueSections)) {
+                        return $rows;
                     } else {
                         return $this->parseSimpleSection($rows);
                     }

@@ -5,6 +5,7 @@ use App\View as v;
     'required' => true,
     'type' => 'number',
     'input_attrs' => v::attrs([
+        'class' => 'site-count',
         'min' => 1,
         'ic-post-to' => $apiEndpoint.'?hide_errors=1'
     ])

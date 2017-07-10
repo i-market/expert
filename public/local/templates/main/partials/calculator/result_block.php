@@ -1,29 +1,35 @@
 <? use App\View as v; ?>
 
-<? if (isset($result['screen'])): ?>
+<? if ($screen !== 'hidden'): ?>
     <div class="total_price_block">
         <div class="inner">
             <div class="block">
-                <? if ($result['screen'] === 'sent'): ?>
+                <? if ($screen === 'sent'): ?>
                     <? // TODO improve ux ?>
                     <h4 class="message">Коммерческое предложение отправлено.</h4>
-                <? elseif ($result['screen'] === 'result'): ?>
+                <? elseif ($screen === 'result'): ?>
                     <div class="total_price">
-                        <p>Стоимость работ: <span><?= $result['formatted_total_price'] ?></span></p>
-                        <p>Продолжительность выполнения работ: <span><?= v::lower($result['duration']) ?></span></p>
+                        <p>Стоимость работ: <span><?= $result['total_price'] ?></span></p>
+                        <? foreach ($result['summary_values'] as $label => $value): ?>
+                            <? // TODO lower first letter only ?>
+                            <p><?= $label.':' ?> <span><?= v::lower($value) ?></span></p>
+                        <? endforeach ?>
                     </div>
                     <h4>Получите коммерческое предложение на почту</h4>
                     <div class="commercial_proposal error">
-                        <input type="text" name="EMAIL" value="<?= isset($email) ? $email : '' ?>" placeholder="Введите ваш E-mail">
+                        <input type="text" name="EMAIL" value="<?= $params['EMAIL'] ?>" placeholder="Введите ваш E-mail">
                         <label>
                             <? // TODO api uri ?>
-                            <button ic-post-to="<?= $result['api_uri'] ?>"
-                                    ic-target="closest .total_price_block">
+                            <button ic-post-to="<?= $apiUri ?>"
+                                    ic-select-from-response=".total_price_block"
+                                    ic-target="closest .total_price_block"
+                                    <? // TODO override inherited value ?>
+                                    ic-replace-target="false">
                                 Получить предложение
                             </button>
                             <span class="ico"></span>
                         </label>
-                        <div class="error-message"><?= v::get($result['errors'], 'EMAIL', '') ?></div>
+                        <div class="error-message"><?= v::get($errors, 'EMAIL', '') ?></div>
                     </div>
                 <? endif ?>
             </div>

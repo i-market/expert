@@ -24,6 +24,7 @@ table {
 .header .right {
     text-align: right;
     vertical-align: top;
+    font-size: 8pt;
 }
 
 .header table,

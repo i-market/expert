@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Services\Inspection;
+use App\Services\InspectionParser;
 use App\Services\Monitoring;
 use App\Services\MonitoringRepo;
 use Core\Env;
@@ -28,6 +30,20 @@ class Api {
         return str::isEmpty($s) ? null : intval($s);
     }
 
+    static function normalizeParams($params) {
+        foreach (['SITE_COUNT', 'TOTAL_AREA', 'UNDERGROUND_FLOORS', 'VOLUME'] as $k) {
+            $params = _::update($params, $k, [self::class, 'parseInt']);
+        }
+        $params = _::update($params, 'FLOORS', function($values) {
+            return array_map([self::class, 'parseInt'], $values);
+        });
+        $params = _::update($params, 'HAS_UNDERGROUND_FLOORS', 'boolval');
+        $params = array_merge([
+            'DOCUMENTS' => []
+        ], $params);
+        return $params;
+    }
+
     static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
@@ -40,23 +56,10 @@ class Api {
                 ]);
             });
             $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
-                // TODO sanitize params
-                $params = $request->params();
-                foreach (['SITE_COUNT', 'TOTAL_AREA', 'UNDERGROUND_FLOORS', 'VOLUME'] as $k) {
-                    $params = _::update($params, $k, function($s) {
-                        // TODO why string callable won't work here is beyond me
-                        return self::parseInt($s);
-                    });
-                }
-                $params = _::update($params, 'FLOORS', function($values) {
-                    return array_map(self::class.'::parseInt', $values);
-                });
-                $params = _::update($params, 'HAS_UNDERGROUND_FLOORS', 'boolval');
-                $params = array_merge([
-                    // defaults
-                    'STRUCTURES_TO_MONITOR' => [],
-                    'DOCUMENTS' => []
-                ], $params);
+                $defaults = [
+                    'STRUCTURES_TO_MONITOR' => []
+                ];
+                $params = array_merge($defaults, self::normalizeParams($request->params()));
                 $data = (new MonitoringRepo)->data();
                 $dataSet = Monitoring::dataSet($data, $params);
                 $packageOptions = $dataSet['MULTIPLIERS']['STRUCTURES_TO_MONITOR']['PACKAGE'];
@@ -100,7 +103,6 @@ class Api {
                             $tables = Monitoring::proposalTables($derefedParams);
                             $path = App::getInstance()->env() !== Env::DEV
                                 ? tempnam(sys_get_temp_dir(), 'proposal')
-                                // for easier debugging
                                 : Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf']);
                             $proposalParams = Monitoring::proposalParams($requestId, [
                                 'total_price' => $state['result']['total_price'],
@@ -138,6 +140,33 @@ class Api {
                     assert(false);
                     return '';
                 }
+            });
+            $router->respond('POST', '/services/inspection/calculator/[:action]', function($request, $response) {
+                $defaults = [
+                    'STRUCTURES_TO_INSPECT' => []
+                ];
+                $params = array_merge($defaults, self::normalizeParams($request->params()));
+                // TODO tmp
+                $data = (new InspectionParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Обследование калькуляторы.xlsx']));
+                $state = Inspection::state($params, $data);
+                // TODO handle this in the view layer?
+//                if (_::get($params, 'hide_errors', false)) {
+//                    $context['state']['errors'] = [];
+//                }
+                $context = Inspection::calculatorContext($state);
+                if ($request->action === 'proposal' && _::isEmpty($context['resultBlock']['errors'])) {
+                    // TODO
+                    $outgoingId = '42/42/42';
+                    $opts = App::getInstance()->env() === Env::DEV
+                        ? ['output' => ['debug' => true]]
+                        : [];
+                    $proposalParams = Inspection::proposalParams($state, $outgoingId, $opts);
+                    $path = Services::generateProposalFile($proposalParams);
+                    assert($path !== false);
+                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    $context['resultBlock']['screen'] = 'sent';
+                }
+                return v::render('partials/calculator/inspection_calculator', $context);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 // TODO sanitize params

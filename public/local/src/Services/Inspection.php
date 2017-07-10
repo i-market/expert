@@ -4,11 +4,155 @@ namespace App\Services;
 
 use App\Services;
 use Core\Underscore as _;
+use Core\Util;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Inspection {
+    private static $distanceSpecialValue = '>3km';
+
+    static function initialState($data) {
+        return [
+            'data_set' => $data['SINGLE_BUILDING'],
+            'params' => [],
+            'errors' => [],
+        ];
+    }
+
+    static function state($params, $data) {
+        $dataSet = $params['SITE_COUNT'] > 1
+            ? $data['MULTIPLE_BUILDINGS']
+            : $data['SINGLE_BUILDING'];
+        // TODO refactor deref
+        $deref = function($val, $k) use (&$deref, $dataSet, $params) {
+            if (is_int($val)) {
+                return $val;
+            } elseif (is_array($val)) {
+                return array_map(function($v) use (&$deref, $k) {
+                    return $deref($v, $k);
+                }, $val);
+            } else {
+                $entityMaybe = self::findEntity($k, $val, $dataSet);
+                return $entityMaybe ? _::pick($entityMaybe, ['ID' , 'NAME']) : $val;
+            }
+        };
+        $errors = self::validateParams($params);
+        $state = [
+            'data_set' => $dataSet,
+            'params' => $params,
+            'errors' => $errors
+        ];
+        if (_::isEmpty($errors)) {
+            $model = _::map($params, $deref);
+            // TODO extract?
+            $model['TIME'] = _::find($dataSet['TIME'], function($_, $rangeText) use ($model) {
+                $range = Parser::parseRangeText($rangeText, ['min' => 0, 'max' => PHP_INT_MAX]);
+                return Util::inRange($model['TOTAL_AREA'], $range['min'], $range['max']);
+            });
+            $calculator = new InspectionCalculator();
+            // TODO use the model to get multipliers
+            $multipliers = $calculator->multipliers($params, $dataSet);
+            $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
+            $state['model'] = $model;
+            $state['result'] = [
+                'total_price' => $totalPrice
+            ];
+        }
+        return $state;
+    }
+
+    static function calculatorContext($state) {
+        $params = $state['params'];
+        $siteCount = _::get($params, 'SITE_COUNT', 1);
+        $floorInputs = array_map(function($num) {
+            return ['label' => "Строение {$num}"];
+        }, range(1, $siteCount));
+        $resultBlock = isset($state['result'])
+            ? [
+                'screen' => 'result',
+                'result' => [
+                    'total_price' => Services::formatTotalPrice($state['result']['total_price']),
+                    'summary_values' => [
+                        'Срок выполнения' => $state['model']['TIME']
+                    ]
+                ],
+                'params' => _::pick($params, ['EMAIL']),
+                'errors' => Services::validateEmail($params)
+            ]
+            : [
+                'screen' => 'hidden',
+            ];
+        $resultBlock['apiUri'] = '/api/services/inspection/calculator/proposal';
+        return [
+            'apiEndpoint' => '/api/services/inspection/calculator/calculate',
+            'state' => $state,
+            'options' => self::options($state['data_set']),
+            // TODO move it to the template?
+            'heading' => 'Определение стоимости<br> проведения обследования',
+            'floorInputs' => $floorInputs,
+            'showDistanceSelect' => $siteCount > 1,
+            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === self::$distanceSpecialValue,
+            'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
+            'resultBlock' => $resultBlock
+        ];
+    }
+
+    static function proposalParams($state, $outgoingId, $opts = []) {
+        assert(isset($state['result']));
+        $creationDate = isset($opts['creation_date'])
+            ? $opts['creation_date']
+            : new \DateTime();
+        $d = clone $creationDate;
+        $endingDate = $d->add(new \DateInterval('P3M'));
+        return [
+            'type' => 'inspection',
+            // TODO move it to the template?
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение обследования',
+            'outgoingId' => $outgoingId,
+            'date' => Services::formatFullDate($creationDate),
+            'endingDate' => Services::formatFullDate($endingDate),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'time' => $state['model']['TIME'],
+            'tables' => self::proposalTables($state['model']),
+            'output' => array_merge([
+                'dest' => 'F'
+            ], _::get($opts, 'output' ,[]))
+        ];
+    }
+
+    static function options($dataSet) {
+        // TODO refactor: could be simpler. just use entities directly
+        $keys = [
+            'SITE_COUNT',
+            'DISTANCE_BETWEEN_SITES',
+            'LOCATION',
+            'USED_FOR',
+            'FLOORS',
+            'DOCUMENTS',
+            'INSPECTION_GOAL',
+            'TRANSPORT_ACCESSIBILITY'
+        ];
+        $options = array_reduce($keys, function($acc, $key) use ($dataSet) {
+            return _::set($acc, $key, Services::entities2options([$key], $dataSet));
+        }, []);
+        $options['STRUCTURES_TO_INSPECT'] = [
+            'PACKAGE' => Services::entities2options(['STRUCTURES_TO_INSPECT', 'PACKAGE'], $dataSet),
+            'INDIVIDUAL' => Services::entities2options(['STRUCTURES_TO_INSPECT', 'INDIVIDUAL'], $dataSet),
+        ];
+        $options = _::update($options, 'DISTANCE_BETWEEN_SITES', function($opts) {
+            return _::append($opts, [
+                'value' => self::$distanceSpecialValue,
+                'text' => 'Расстояние между объектами более 3 км'
+            ]);
+        });
+        return $options;
+    }
+
+    // TODO refactor: extract common cases
     static function findEntity($field, $val, $dataSet) {
+        if (!isset($dataSet['MULTIPLIERS'][$field])) {
+            return null;
+        }
         $entities = $dataSet['MULTIPLIERS'][$field];
         if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
             $pred = function($entity) use ($val) {
@@ -33,49 +177,22 @@ class Inspection {
         return _::find($entities, $pred);
     }
 
-    static function calculate($params, $dataSet) {
-        // TODO refactor: unwrap key validator
-        // TODO extract
-        $validators = [
-            'SITE_COUNT' => v::key('SITE_COUNT', v::intType()->positive()),
-            'DISTANCE_BETWEEN_SITES' => v::key(
-                'DISTANCE_BETWEEN_SITES',
-                $params['SITE_COUNT'] === 1
-                    ? v::alwaysValid()
-                    : v::notOptional()
-            ),
-            'DESCRIPTION' => v::key('DESCRIPTION', v::stringType()->notEmpty()),
-            'LOCATION' => v::key('LOCATION', v::notOptional()),
-            'USED_FOR' => v::key('USED_FOR', v::notOptional()),
-            'TOTAL_AREA' => v::key('TOTAL_AREA', v::intType()->positive()),
-            'VOLUME' => v::key('VOLUME', v::optional(v::intType()->positive())),
-            // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
-            'FLOORS' => v::key('FLOORS', v::callback(function($values) {
-                return is_array($values) && _::matches($values, function($v) {
-                    return v::notOptional()->intType()->validate($v);
-                });
-            })),
-            'UNDERGROUND_FLOORS' => v::key('UNDERGROUND_FLOORS',
-                $params['HAS_UNDERGROUND_FLOORS']
-                    ? v::intType()->positive()
-                    : v::alwaysValid()),
-            'DURATION' => v::key('DURATION', v::notOptional()),
-            'TRANSPORT_ACCESSIBILITY' => v::key('TRANSPORT_ACCESSIBILITY', v::notOptional()),
-            'DOCUMENTS' => v::key('DOCUMENTS', v::arrayType())
-        ];
+    static function validateParams($params) {
         $validator = v::allOf(
-            $validators['SITE_COUNT'],
-            $validators['DISTANCE_BETWEEN_SITES'],
-            $validators['DESCRIPTION'],
-            $validators['LOCATION'],
-            $validators['USED_FOR'],
-            $validators['TOTAL_AREA'],
-            $validators['VOLUME'],
-            $validators['FLOORS'],
-            $validators['UNDERGROUND_FLOORS'],
-            $validators['TRANSPORT_ACCESSIBILITY'],
+            Services::keyValidator('SITE_COUNT', $params),
+            // TODO check for self::$distanceSpecialValue
+            Services::keyValidator('DISTANCE_BETWEEN_SITES', $params),
+            Services::keyValidator('DESCRIPTION', $params),
+            Services::keyValidator('LOCATION', $params),
+            Services::keyValidator('USED_FOR', $params),
+            Services::keyValidator('TOTAL_AREA', $params),
+            Services::keyValidator('VOLUME', $params),
+            Services::keyValidator('FLOORS', $params),
+            Services::keyValidator('UNDERGROUND_FLOORS', $params),
+            v::key('INSPECTION_GOAL', v::notOptional()),
+            Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params),
             v::key('STRUCTURES_TO_INSPECT', v::arrayType()->notEmpty()),
-            $validators['DOCUMENTS']
+            Services::keyValidator('DOCUMENTS', $params)
         );
         $errors = [];
         try {
@@ -84,22 +201,42 @@ class Inspection {
             $errors = Services::getMessages($exception);
             // TODO refactor: custom messages
             $errors = _::update($errors, 'STRUCTURES_TO_INSPECT', _::constantly(Services::EMPTY_LIST_MESSAGE));
-            $errors = _::update($errors, 'FLOORS', _::constantly('В каждом поле должно быть положительное число.'));
         }
-        $state = [
-            'params' => $params,
-            'errors' => $errors,
-            'result' => []
+        return $errors;
+    }
+
+    static function proposalTables($model) {
+        $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
+        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $listFn = function($entities) use ($nameFn) {
+            return Services::listHtml(array_map($nameFn, $entities));
+        };
+        return [
+            [
+                'heading' => 'Сведения об объекте (объектах) обследования',
+                'rows' => array_map($formatRow, [
+                    ['Описание объекта (объектов)', 'DESCRIPTION'],
+                    ['Количество зданий, сооружений, строений, помещений', 'SITE_COUNT'],
+                    ['Местонахождение', 'LOCATION', $nameFn],
+                    ['Адрес (адреса)', 'ADDRESS'],
+                    ['Назначение', 'USED_FOR', $nameFn],
+                    ['Общая площадь', 'TOTAL_AREA'],
+                    ['Строительный объем', 'VOLUME'],
+                    ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
+                    ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
+                    ['Количество подземных этажей', 'UNDERGROUND_FLOORS'],
+                    ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
+                    ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
+                    ['Наличие документов', 'DOCUMENTS', $listFn]
+                ])
+            ],
+            [
+                'heading' => 'Цели обследования и конструкции подлежащие обследованию',
+                'rows' => array_map($formatRow, [
+                    ['Цели обследования', 'INSPECTION_GOAL', $nameFn],
+                    ['Конструкции подлежащие обследованию', 'STRUCTURES_TO_INSPECT', $listFn]
+                ])
+            ]
         ];
-        $isValid = _::isEmpty($errors);
-        if ($isValid) {
-            $calculator = new InspectionCalculator();
-            $multipliers = $calculator->multipliers($params, $dataSet);
-            $totalPrice = $calculator->totalPrice($params['TOTAL_AREA'], $multipliers);
-            $state['result'] = [
-                'total_price' => $totalPrice
-            ];
-        }
-        return $state;
     }
 }

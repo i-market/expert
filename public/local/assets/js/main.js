@@ -14,7 +14,7 @@
   function init($scope) {
     // calculators
 
-    var sel = '.calculator--monitoring';
+    var sel = '.calculator--monitoring, .calculator--inspection';
     $scope.find(sel).addBack(sel).each(function() {
       var $calc = $(this);
       var $distanceBlock = $calc.find('.distance-between-sites');

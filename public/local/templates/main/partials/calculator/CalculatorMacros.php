@@ -197,6 +197,7 @@ class CalculatorMacros {
         </div>
         <? foreach ($groups as $idx => $group): ?>
             <?
+            // TODO don't check first radio button by default?
             $checked = $rootValue !== null ? $rootValue === $group['value'] : $idx === 0;
             $id = $rootName.'_'.$idx;
             $blockId = $id.'_block';

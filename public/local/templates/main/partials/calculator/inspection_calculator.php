@@ -7,9 +7,7 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
-<? // TODO refactor ?>
-<? $apiEndpoint = '/api/services/inspection/calculator/calculate' ?>
-<section class="calculator_certain_types .calculator--inspection">
+<section class="calculator_certain_types calculator--inspection">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator--inspection"
           ic-replace-target="true"
@@ -107,6 +105,6 @@ $macros = new macros($state);
                 </button>
             </div>
         </div>
-        <?= v::render('partials/calculator/result_block', ['result' => $result, 'email' => $state['params']['EMAIL']]) ?>
+        <?= v::render('partials/calculator/result_block', $resultBlock) ?>
     </form>
 </section>

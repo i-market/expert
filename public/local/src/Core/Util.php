@@ -43,6 +43,11 @@ class Util {
         return round($size, $precision).' '.$units[$i];
     }
 
+    static function monthRu($n) {
+        $months = explode('|', '|января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря');
+        return $months[$n];
+    }
+
     static function splitFileExtension($path) {
         $filename = str::contains($path, DIRECTORY_SEPARATOR)
             ? self::basename($path)

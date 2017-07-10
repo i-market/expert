@@ -11,7 +11,6 @@ use CFile;
 use CIBlock;
 use Closure;
 use Core\Underscore as _;
-use Core\Nullable as nil;
 use Underscore\Methods\ArraysMethods;
 use Underscore\Methods\StringsMethods;
 use Pimple\Container;
@@ -199,6 +198,13 @@ class Underscore extends ArraysMethods {
         };
     }
 
+    // TODO varargs
+    static function compose(callable $f, callable $g) {
+        return function(...$args) use ($f, $g) {
+            return $f($g(...$args));
+        };
+    }
+
     static function complement(callable $f) {
         return function(...$args) use ($f) {
             return !$f(...$args);
@@ -215,6 +221,20 @@ class Underscore extends ArraysMethods {
         return function (...$rest) use ($f, $args) {
             return $f(...array_merge($rest, $args));
         };
+    }
+
+    /** useful for inline type hints */
+    static function func(callable $x) {
+        return $x;
+    }
+
+    /**
+     * @param $array
+     * @param Closure $closure
+     * @return mixed
+     */
+    static function find($array, Closure $closure) {
+        return parent::find($array, $closure);
     }
 }
 

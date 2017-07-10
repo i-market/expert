@@ -21,6 +21,8 @@ if (php_sapi_name() !== 'cli') {
 }
 
 class Services {
+    private static $data = [];
+
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
 
@@ -44,6 +46,7 @@ class Services {
         }, $elements));
     }
 
+    // TODO review
     static function initialState() {
         return [
             'params' => [],
@@ -51,6 +54,7 @@ class Services {
         ];
     }
 
+    // TODO unused?
     static function floorInputs($params) {
         $siteCount = _::get($params, 'SITE_COUNT', 1);
         return array_map(function($num) {
@@ -75,14 +79,15 @@ class Services {
     // TODO refactor
     static function getMessages(NestedValidationException $exception) {
         $exception->setParam('translator', self::class.'::translateMessage');
-        return array_reduce(iterator_to_array($exception->getIterator()), function($acc, $e) {
+        $ret = array_reduce(iterator_to_array($exception->getIterator()), function($acc, $e) {
             /** @var $e \Respect\Validation\Exceptions\ValidationException */
             // TODO full path name (contact[person] instead of person)
             return _::set($acc, $e->getName(), $e->getMessage());
         }, []);
+        $ret = _::update($ret, 'FLOORS', _::constantly('В каждом поле должно быть положительное число.'));
+        return $ret;
     }
 
-    // TODO move to core?
     private static function findEventMessageTemplate($eventName) {
         return EventMessageTable::query()
             ->setSelect(['*'])
@@ -105,6 +110,7 @@ class Services {
         }, $fileIds);
     }
 
+    // TODO should save structured data. no need for template rendering, etc.
     private function saveServiceRequest($serviceCode, $name, $message, $params, $propertyValues) {
         $iblockId = IblockTools::find(Iblock::INBOX_TYPE, Iblock::SERVICE_REQUESTS)->id();
         $section = SectionTable::query()
@@ -146,6 +152,7 @@ class Services {
         return Util::formatCurrency(round($totalPrice), ['cents' => false]).' руб./мес.';
     }
 
+    // TODO unused?
     // TODO refactor: move to `Monitoring`
     static function requestMonitoring($params) {
         $contactValidator = v::allOf(
@@ -240,9 +247,133 @@ class Services {
         }, $entities);
     }
 
+    // TODO unused?
     static function dataSet($data, $params) {
         return $params['SITE_COUNT'] > 1
             ? $data['MULTIPLE_BUILDINGS']
             : $data['SINGLE_BUILDING'];
+    }
+
+    // TODO refactor
+    static function validateEmail($params) {
+        $errors = [];
+        try {
+            v::key('EMAIL', v::email())->assert($params);
+        } catch (NestedValidationException $exception) {
+            $errors = Services::getMessages($exception);
+        }
+        return $errors;
+    }
+
+    static function keyValidator($key, $params) {
+        $validators = [
+            'SITE_COUNT' => v::intType()->positive(),
+            'DISTANCE_BETWEEN_SITES' =>
+                $params['SITE_COUNT'] === 1
+                    ? v::alwaysValid()
+                    : v::notOptional(),
+            'DESCRIPTION' => v::stringType()->notEmpty(),
+            'LOCATION' => v::notOptional(),
+            'USED_FOR' => v::notOptional(),
+            'TOTAL_AREA' => v::intType()->positive(),
+            'VOLUME' => v::optional(v::intType()->positive()),
+            // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
+            'FLOORS' => v::callback(function($values) {
+                return is_array($values) && _::matches($values, function($v) {
+                    return v::notOptional()->intType()->validate($v);
+                });
+            }),
+            'UNDERGROUND_FLOORS' =>
+                $params['HAS_UNDERGROUND_FLOORS']
+                    ? v::intType()->positive()
+                    : v::alwaysValid(),
+            'DURATION' => v::notOptional(),
+            'TRANSPORT_ACCESSIBILITY' => v::notOptional(),
+            'DOCUMENTS' => v::arrayType()
+        ];
+        assert(isset($validators[$key]));
+        return v::key($key, $validators[$key]);
+    }
+
+    /// proposal
+
+    static function listHtml($values) {
+        $items = join('', array_map(function($item) {
+            return "<li>{$item}</li>";
+        }, $values));
+        return "<ul>{$items}</ul>";
+    }
+
+    static function formatRow($tuple, $model) {
+        list($label, $key) = $tuple;
+        $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
+        $value = _::get($model, $key);
+        $formattedValue = is_callable($funcMaybe)
+            ? $funcMaybe($value)
+            : (in_array($value, ['', null]) ? '—' : $value);
+        return ["<strong>{$label}</strong>", $formattedValue];
+    }
+
+    // TODO unused?
+    static function dereferenceParams($params, $dataSet, callable $findEntity) {
+        $deref = function($val, $k) use (&$deref, $dataSet, $params, $findEntity) {
+            if (is_int($val)) {
+                return $val;
+            } elseif (is_array($val)) {
+                return array_map(function($v) use (&$deref, $k) {
+                    return $deref($v, $k);
+                }, $val);
+            } else {
+                $entityMaybe = $findEntity($k, $val, $dataSet);
+                return _::get($entityMaybe, 'NAME', $val);
+            }
+        };
+        return _::map($params, $deref);
+    }
+
+    static function generateProposalFile($proposalParams, $host = 'localhost') {
+        $requestCtx = stream_context_create([
+            'http' => [
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'content' => http_build_query($proposalParams)
+            ]
+        ]);
+        // have to do it through http request because pdf generation requires bitrix-incompatible php configuration
+        $response = file_get_contents("http://{$host}/proposals/", false, $requestCtx);
+        return $response;
+    }
+
+    static function sendProposalEmail($emailTo, $attachmentPaths) {
+        $event = [
+            'EMAIL_TO' => $emailTo,
+            'FILE' => $attachmentPaths
+        ];
+        return App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
+    }
+
+    static function formatFullDate(\DateTime $datetime) {
+        $ts = $datetime->getTimestamp();
+        $month = Util::monthRu(intval(date('n', $ts)));
+        return join(' ', [date('d', $ts), $month, date('Y', $ts), 'г.']);
+    }
+
+    private static function dataFilePath($type) {
+        return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], "local/data/{$type}.json"]);
+    }
+
+    function save($type, $data) {
+        return file_put_contents(self::dataFilePath($type), json_encode($data));
+    }
+
+    function data($type) {
+        $dataMaybe = _::get(self::$data, $type);
+        if ($dataMaybe !== null) {
+            return $dataMaybe;
+        }
+        $content = file_get_contents(self::dataFilePath($type));
+        assert($content !== false);
+        self::$data[$type] = json_decode($content, true);
+        return self::$data[$type];
     }
 }

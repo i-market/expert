@@ -14,6 +14,10 @@ $pdf = new mPDF('UTF-8');
 $stylesPath = View::template('pdf/proposal/proposal.css');
 $styles = file_get_contents(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $stylesPath]));
 $pdf->WriteHTML($styles, 1);
+// "Keep-with-table"
+// automatically set $page-break-inside=avoid for any H1-H6 header that immediately precedes a table,
+// thus keeping the heading together with the table.
+$pdf->use_kwt = true;
 $params = $_REQUEST;
 $validator = v::allOf(
     v::key('type')
@@ -48,8 +52,12 @@ if ($params['example']) {
 }
 $html = View::render("pdf/proposal/{$params['type']}", $params);
 $pdf->WriteHTML($html, 2);
-// TODO name
-$name = _::get($params, 'output.name', '');
-// TODO security
+$path = _::get($params, 'output.debug', false)
+    ? Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf'])
+    : tempnam(sys_get_temp_dir(), 'proposal');
 $dest = _::get($params, 'output.dest', '');
-$pdf->Output($name, $dest);
+$pdf->Output($path, $dest);
+
+if ($dest === 'F') {
+    echo $path;
+}

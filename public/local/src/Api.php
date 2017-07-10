@@ -56,6 +56,7 @@ class Api {
                 ]);
             });
             $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
+                // TODO inspection-like
                 $defaults = [
                     'STRUCTURES_TO_MONITOR' => []
                 ];
@@ -146,21 +147,15 @@ class Api {
                     'STRUCTURES_TO_INSPECT' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                // TODO tmp
+                // TODO tmp data
                 $data = (new InspectionParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Обследование калькуляторы.xlsx']));
-                $state = Inspection::state($params, $data);
-                // TODO handle this in the view layer?
-//                if (_::get($params, 'hide_errors', false)) {
-//                    $context['state']['errors'] = [];
-//                }
+                $state = Inspection::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Inspection::calculatorContext($state);
-                if ($request->action === 'proposal' && _::isEmpty($context['resultBlock']['errors'])) {
-                    // TODO
-                    $outgoingId = '42/42/42';
+                if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Inspection::proposalParams($state, $outgoingId, $opts);
+                    $proposalParams = Inspection::proposalParams($state, Services::outgoingId('inspection'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
                     Services::sendProposalEmail($params['EMAIL'], [$path]);

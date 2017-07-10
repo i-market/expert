@@ -9,8 +9,6 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Inspection {
-    private static $distanceSpecialValue = '>3km';
-
     static function initialState($data) {
         return [
             'data_set' => $data['SINGLE_BUILDING'],
@@ -19,31 +17,22 @@ class Inspection {
         ];
     }
 
-    static function state($params, $data) {
+    static function state($params, $action, $data, $validate = true) {
         $dataSet = $params['SITE_COUNT'] > 1
             ? $data['MULTIPLE_BUILDINGS']
             : $data['SINGLE_BUILDING'];
-        // TODO refactor deref
-        $deref = function($val, $k) use (&$deref, $dataSet, $params) {
-            if (is_int($val)) {
-                return $val;
-            } elseif (is_array($val)) {
-                return array_map(function($v) use (&$deref, $k) {
-                    return $deref($v, $k);
-                }, $val);
-            } else {
-                $entityMaybe = self::findEntity($k, $val, $dataSet);
-                return $entityMaybe ? _::pick($entityMaybe, ['ID' , 'NAME']) : $val;
-            }
-        };
-        $errors = self::validateParams($params);
         $state = [
             'data_set' => $dataSet,
             'params' => $params,
-            'errors' => $errors
+            'errors' => [],
+            'action' => $action
         ];
-        if (_::isEmpty($errors)) {
-            $model = _::map($params, $deref);
+        if (!$validate) {
+            return $state;
+        }
+        $state['errors'] = self::validateParams($params);
+        if (_::isEmpty($state['errors'])) {
+            $model = Services::dereferenceParams($params, $dataSet, [Services::class, 'findEntity']);
             // TODO extract?
             $model['TIME'] = _::find($dataSet['TIME'], function($_, $rangeText) use ($model) {
                 $range = Parser::parseRangeText($rangeText, ['min' => 0, 'max' => PHP_INT_MAX]);
@@ -67,31 +56,18 @@ class Inspection {
         $floorInputs = array_map(function($num) {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
-        $resultBlock = isset($state['result'])
-            ? [
-                'screen' => 'result',
-                'result' => [
-                    'total_price' => Services::formatTotalPrice($state['result']['total_price']),
-                    'summary_values' => [
-                        'Срок выполнения' => $state['model']['TIME']
-                    ]
-                ],
-                'params' => _::pick($params, ['EMAIL']),
-                'errors' => Services::validateEmail($params)
-            ]
-            : [
-                'screen' => 'hidden',
-            ];
-        $resultBlock['apiUri'] = '/api/services/inspection/calculator/proposal';
+        $resultBlock = Services::resultBlockContext($state, '/api/services/inspection/calculator/send_proposal', [
+            'Срок выполнения' => $state['model']['TIME']
+        ]);
         return [
             'apiEndpoint' => '/api/services/inspection/calculator/calculate',
             'state' => $state,
-            'options' => self::options($state['data_set']),
+            'options' => self::options($state['data_set']['MULTIPLIERS']),
             // TODO move it to the template?
             'heading' => 'Определение стоимости<br> проведения обследования',
             'floorInputs' => $floorInputs,
             'showDistanceSelect' => $siteCount > 1,
-            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === self::$distanceSpecialValue,
+            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === Services::$distanceSpecialValue,
             'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
             'resultBlock' => $resultBlock
         ];
@@ -120,61 +96,13 @@ class Inspection {
         ];
     }
 
-    static function options($dataSet) {
-        // TODO refactor: could be simpler. just use entities directly
-        $keys = [
-            'SITE_COUNT',
-            'DISTANCE_BETWEEN_SITES',
-            'LOCATION',
-            'USED_FOR',
-            'FLOORS',
-            'DOCUMENTS',
-            'INSPECTION_GOAL',
-            'TRANSPORT_ACCESSIBILITY'
-        ];
-        $options = array_reduce($keys, function($acc, $key) use ($dataSet) {
-            return _::set($acc, $key, Services::entities2options([$key], $dataSet));
-        }, []);
-        $options['STRUCTURES_TO_INSPECT'] = [
-            'PACKAGE' => Services::entities2options(['STRUCTURES_TO_INSPECT', 'PACKAGE'], $dataSet),
-            'INDIVIDUAL' => Services::entities2options(['STRUCTURES_TO_INSPECT', 'INDIVIDUAL'], $dataSet),
-        ];
-        $options = _::update($options, 'DISTANCE_BETWEEN_SITES', function($opts) {
+    static function options($entities) {
+        return _::update(Services::entities2options($entities), 'DISTANCE_BETWEEN_SITES', function($opts) {
             return _::append($opts, [
-                'value' => self::$distanceSpecialValue,
+                'value' => Services::$distanceSpecialValue,
                 'text' => 'Расстояние между объектами более 3 км'
             ]);
         });
-        return $options;
-    }
-
-    // TODO refactor: extract common cases
-    static function findEntity($field, $val, $dataSet) {
-        if (!isset($dataSet['MULTIPLIERS'][$field])) {
-            return null;
-        }
-        $entities = $dataSet['MULTIPLIERS'][$field];
-        if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
-            $pred = function($entity) use ($val) {
-                $f = Parser::parseNumericPredicate($entity['NAME']);
-                return $f($val);
-            };
-        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
-            $pred = function($entity) use ($val) {
-                $bool = Parser::parseBoolean($entity['NAME']);
-                return $val === $bool;
-            };
-        } elseif (in_array($field, ['STRUCTURES_TO_INSPECT'])) {
-            $entities = _::flatMap($entities, _::identity());
-            $pred = function($entity) use ($val) {
-                return $entity['ID'] === $val;
-            };
-        } else {
-            $pred = function($entity) use ($val) {
-                return $entity['ID'] === $val;
-            };
-        }
-        return _::find($entities, $pred);
     }
 
     static function validateParams($params) {

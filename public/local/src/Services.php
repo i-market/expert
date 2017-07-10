@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\Parser;
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Iblock\SectionTable;
 use Bitrix\Main\Mail\Internal\EventMessageTable;
@@ -21,10 +22,32 @@ if (php_sapi_name() !== 'cli') {
 }
 
 class Services {
+    // fields that act the same most of the time
+    static $structures = ['STRUCTURES_TO_MONITOR', 'STRUCTURES_TO_INSPECT'];
+    static $distanceSpecialValue = '>3km';
     private static $data = [];
 
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
+
+    private static function dataFilePath($type) {
+        return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], "local/data/{$type}.json"]);
+    }
+
+    function save($type, $data) {
+        return file_put_contents(self::dataFilePath($type), json_encode($data));
+    }
+
+    function data($type) {
+        $dataMaybe = _::get(self::$data, $type);
+        if ($dataMaybe !== null) {
+            return $dataMaybe;
+        }
+        $content = file_get_contents(self::dataFilePath($type));
+        assert($content !== false);
+        self::$data[$type] = json_decode($content, true);
+        return self::$data[$type];
+    }
 
     static function services() {
         $el = new CIBlockElement();
@@ -152,6 +175,38 @@ class Services {
         return Util::formatCurrency(round($totalPrice), ['cents' => false]).' руб./мес.';
     }
 
+    static function resultBlockContext($state, $apiUri, $summaryValues) {
+        $ret = [
+            'apiUri' => $apiUri,
+            'screen' => 'hidden'
+        ];
+        if (isset($state['result'])) {
+            $ret = array_merge($ret, [
+                'screen' => 'result',
+                'result' => [
+                    'total_price' => Services::formatTotalPrice($state['result']['total_price']),
+                    'summary_values' => $summaryValues
+                ],
+                'params' => ['EMAIL' => _::get($state, 'params.EMAIL', '')],
+                'errors' => $state['action'] === 'send_proposal'
+                    ? Services::validateEmail($state['params'])
+                    : []
+            ]);
+        }
+        return $ret;
+    }
+
+    static function formatDuration($text) {
+        return preg_replace_callback('/(\pL+\s+)?(\d+)$/u', function($matches) {
+            list($match, $word, $number) = $matches;
+            $units = $word !== ''
+                // e.g. более n месяцев
+                ? Util::units($number, 'месяца', 'месяцев', 'месяцев')
+                : Util::units($number, 'месяц', 'месяца', 'месяцев');
+            return $match.' '.$units;
+        }, $text);
+    }
+
     // TODO unused?
     // TODO refactor: move to `Monitoring`
     static function requestMonitoring($params) {
@@ -237,14 +292,14 @@ class Services {
         return $state;
     }
 
-    static function entities2options($path, $dataSet) {
-        $entities = _::get($dataSet, array_merge(['MULTIPLIERS'], $path));
-        return array_map(function($entity) {
-            return [
-                'value' => $entity['ID'],
-                'text' => $entity['NAME']
-            ];
-        }, $entities);
+    static function entities2options($x) {
+        if (isset($x['ID'])) {
+            return ['value' => $x['ID'], 'text' => $x['NAME']];
+        } elseif (is_array($x)) {
+            return array_map([self::class, 'entities2options'], $x);
+        } else {
+            return $x;
+        }
     }
 
     // TODO unused?
@@ -295,9 +350,57 @@ class Services {
         return v::key($key, $validators[$key]);
     }
 
+    static function dereferenceParams($params, $dataSet, callable $findEntity) {
+        $deref = function($val, $k) use (&$deref, $dataSet, $params, $findEntity) {
+            // TODO refactor
+            if (is_int($val)) {
+                return $val;
+            } elseif (is_array($val)) {
+                return array_map(function($v) use (&$deref, $k) {
+                    return $deref($v, $k);
+                }, $val);
+            } else {
+                $entityMaybe = $findEntity($k, $val, $dataSet);
+                return $entityMaybe ? _::pick($entityMaybe, ['ID' , 'NAME']) : $val;
+            }
+        };
+        return _::map($params, $deref);
+    }
+
+    static function findEntity($field, $val, $dataSet) {
+        if (!isset($dataSet['MULTIPLIERS'][$field])) {
+            return null;
+        }
+        $entities = $dataSet['MULTIPLIERS'][$field];
+        if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
+            $pred = function($entity) use ($val) {
+                $f = Parser::parseNumericPredicate($entity['NAME']);
+                return $f($val);
+            };
+        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
+            $pred = function($entity) use ($val) {
+                $bool = Parser::parseBoolean($entity['NAME']);
+                return $val === $bool;
+            };
+        } elseif (in_array($field, self::$structures)) {
+            $entities = _::flatMap($entities, _::identity());
+            $pred = function($entity) use ($val) {
+                return $entity['ID'] === $val;
+            };
+        } else {
+            $pred = function($entity) use ($val) {
+                return $entity['ID'] === $val;
+            };
+        }
+        return _::find($entities, $pred);
+    }
+
     /// proposal
 
     static function listHtml($values) {
+        if (_::isEmpty($values)) {
+            return '';
+        }
         $items = join('', array_map(function($item) {
             return "<li>{$item}</li>";
         }, $values));
@@ -308,27 +411,8 @@ class Services {
         list($label, $key) = $tuple;
         $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
         $value = _::get($model, $key);
-        $formattedValue = is_callable($funcMaybe)
-            ? $funcMaybe($value)
-            : (in_array($value, ['', null]) ? '—' : $value);
-        return ["<strong>{$label}</strong>", $formattedValue];
-    }
-
-    // TODO unused?
-    static function dereferenceParams($params, $dataSet, callable $findEntity) {
-        $deref = function($val, $k) use (&$deref, $dataSet, $params, $findEntity) {
-            if (is_int($val)) {
-                return $val;
-            } elseif (is_array($val)) {
-                return array_map(function($v) use (&$deref, $k) {
-                    return $deref($v, $k);
-                }, $val);
-            } else {
-                $entityMaybe = $findEntity($k, $val, $dataSet);
-                return _::get($entityMaybe, 'NAME', $val);
-            }
-        };
-        return _::map($params, $deref);
+        $html = is_callable($funcMaybe) ? $funcMaybe($value) : $value;
+        return ["<strong>{$label}</strong>", in_array($html, ['', null]) ? '—' : $html];
     }
 
     static function generateProposalFile($proposalParams, $host = 'localhost') {
@@ -358,22 +442,15 @@ class Services {
         return join(' ', [date('d', $ts), $month, date('Y', $ts), 'г.']);
     }
 
-    private static function dataFilePath($type) {
-        return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], "local/data/{$type}.json"]);
-    }
-
-    function save($type, $data) {
-        return file_put_contents(self::dataFilePath($type), json_encode($data));
-    }
-
-    function data($type) {
-        $dataMaybe = _::get(self::$data, $type);
-        if ($dataMaybe !== null) {
-            return $dataMaybe;
-        }
-        $content = file_get_contents(self::dataFilePath($type));
-        assert($content !== false);
-        self::$data[$type] = json_decode($content, true);
-        return self::$data[$type];
+    static function outgoingId($serviceType, $id = null) {
+        // TODO next outgoing id
+        $nextId = _::constantly('4242');
+        $prefix = [
+            'monitoring' => '0611-1',
+            'inspection' => '2411-5'
+            // TODO the rest
+        ];
+        assert(in_array($serviceType, array_keys($prefix)));
+        return $prefix[$serviceType].'/'.($id ?: $nextId());
     }
 }

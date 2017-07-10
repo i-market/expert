@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services;
 use Core\Util as u;
 use Exception;
 use Core\Underscore as _;
@@ -31,6 +32,7 @@ class InspectionCalculator extends Calculator {
         }
     }
 
+    // TODO refactor: use model instead of params
     function multipliers($params, $dataSet) {
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
         if (!$params['HAS_UNDERGROUND_FLOORS']) {
@@ -72,7 +74,7 @@ class InspectionCalculator extends Calculator {
                 }, $val);
                 return u::product($multipliers);
             }
-            $entity = (new Inspection)->findEntity($field, $val, $dataSet);
+            $entity = Services::findEntity($field, $val, $dataSet);
             if ($field === 'DOCUMENTS') {
                 $multiplier = $entity['VALUE'][true];
             } else {

@@ -90,7 +90,8 @@ abstract class Parser {
         });
     }
 
-    protected function parseFloat($str, $defaultFn) {
+    /** private */
+    function parseFloat($str, $defaultFn) {
         $normalized = str::replace($str, ',', '.');
         if (!is_numeric($normalized)) {
             return $defaultFn($normalized);
@@ -250,8 +251,12 @@ abstract class Parser {
         return $ret;
     }
 
-    protected function simpleValue($row) {
-        list($name, $v) = $row['cells'];
+    /** private. simple key-value pair entity. */
+    function simpleValue($row) {
+        $pair = _::clean(_::take($row['cells'], 2));
+        // TODO report to the user
+        assert(count($pair) === 2, var_export(_::set($row, 'object', '[hidden]'), true));
+        list($name, $v) = $pair;
         $id = $row['metadata']['id'];
         // TODO log human-readable message
         assert(!str::isEmpty($id), "row {$row['row_number']} has no id value");
@@ -329,6 +334,7 @@ abstract class Parser {
         return array_merge($defaults, $range);
     }
 
+    /** take while not empty */
     protected function nonEmptyCells($cells) {
         return _::takeWhile($cells, function ($cell) {
             return !str::isEmpty($cell);

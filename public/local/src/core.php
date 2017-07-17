@@ -310,6 +310,7 @@ class Env {
 
 class App {
     private static $instance;
+    /** @deprecated */
     public $container;
 
     static function getInstance() {

@@ -12,7 +12,6 @@
 node_modules/
 .sass-cache/
 
-/public/local/data/
 /public/local/reports/
 /public/local/templates/*/build/
 /public/local/scratch.php

@@ -5,7 +5,11 @@ namespace App;
 use App\Services\Inspection;
 use App\Services\InspectionParser;
 use App\Services\Monitoring;
+use App\Services\MonitoringParser;
 use App\Services\MonitoringRepo;
+use App\Services\MonitoringRequest;
+use CFile;
+use CIBlockElement;
 use Core\Env;
 use Core\Underscore as _;
 use Core\Util;
@@ -26,6 +30,11 @@ class Api {
             : sys_get_temp_dir();
     }
 
+    static function uploadedFileArray($fileId) {
+        $absPath = Util::joinPath([self::fileuploadDir(), $fileId]);
+        return CFile::MakeFileArray($absPath);
+    }
+
     static function parseInt($s) {
         return str::isEmpty($s) ? null : intval($s);
     }
@@ -44,6 +53,7 @@ class Api {
         return $params;
     }
 
+    // TODO sanitize params
     static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
@@ -56,91 +66,25 @@ class Api {
                 ]);
             });
             $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
-                // TODO inspection-like
                 $defaults = [
                     'STRUCTURES_TO_MONITOR' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                $data = (new MonitoringRepo)->data();
-                $dataSet = Monitoring::dataSet($data, $params);
-                $packageOptions = $dataSet['MULTIPLIERS']['STRUCTURES_TO_MONITOR']['PACKAGE'];
-                if ($params['PACKAGE_SELECTION'] === 'PACKAGE') {
-                    $params['STRUCTURES_TO_MONITOR'] = _::pluck($packageOptions, 'ID');
+                // TODO tmp data
+                $data = (new MonitoringParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Мониторинг калькуляторы.xlsx']));
+                $state = Monitoring::state($params, $request->action, $data, _::get($params, 'validate', true));
+                $context = Monitoring::calculatorContext($state);
+                if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
+                    $opts = App::getInstance()->env() === Env::DEV
+                        ? ['output' => ['debug' => true]]
+                        : [];
+                    $proposalParams = Monitoring::proposalParams($state, Services::outgoingId('monitoring'), $opts);
+                    $path = Services::generateProposalFile($proposalParams);
+                    assert($path !== false);
+                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    $context['resultBlock']['screen'] = 'sent';
                 }
-                $monitoring = App::getInstance()->getMonitoring();
-                $state = $monitoring->calculate($params, $dataSet);
-                $context = $monitoring->calculatorContext($state, $dataSet);
-                if (_::get($params, 'hide_errors', false)) {
-                    $context['state']['errors'] = [];
-                }
-                if ($request->action === 'calculate') {
-                    return v::render('partials/calculator/monitoring_calculator', $context);
-                } elseif ($request->action === 'proposal') {
-                    $resultCtx = $context['result'];
-                    if (_::get($resultCtx, 'screen') === 'result') {
-                        $errors = [];
-                        try {
-                            val::key('EMAIL', val::email())->assert($params);
-                        } catch (NestedValidationException $exception) {
-                            $errors = Services::getMessages($exception);
-                        }
-                        $resultCtx['errors'] = $errors;
-                        if (_::isEmpty($errors)) {
-                            // TODO
-                            $requestId = 42;
-                            $deref = function($val, $k) use (&$deref, $dataSet, $params) {
-                                if (is_int($val)) {
-                                    return $val;
-                                } elseif (is_array($val)) {
-                                    return array_map(function($v) use (&$deref, $k) {
-                                        return $deref($v, $k);
-                                    }, $val);
-                                } else {
-                                    $entityMaybe = Monitoring::findEntity($k, $val, $dataSet);
-                                    return _::get($entityMaybe, 'NAME', $val);
-                                }
-                            };
-                            $derefedParams = _::map($params, $deref);
-                            $tables = Monitoring::proposalTables($derefedParams);
-                            $path = App::getInstance()->env() !== Env::DEV
-                                ? tempnam(sys_get_temp_dir(), 'proposal')
-                                : Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf']);
-                            $proposalParams = Monitoring::proposalParams($requestId, [
-                                'total_price' => $state['result']['total_price'],
-                                'duration' => $resultCtx['duration'],
-                                'tables' => $tables,
-                                'output' => [
-                                    'name' => $path
-                                ]
-                            ]);
-                            $requestCtx  = stream_context_create([
-                                'http' => [
-                                    'method'  => 'POST',
-                                    'header'  => 'Content-type: application/x-www-form-urlencoded',
-                                    'content' => http_build_query($proposalParams)
-                                ]
-                            ]);
-                            // TODO respond with some indication of success
-                            $response = file_get_contents('http://localhost/proposals/', false, $requestCtx);
-                            assert(filesize($path) !== 0);
-                            $event = [
-                                'EMAIL_TO' => $params['EMAIL'],
-                                'FILE' => [$path] // attachment
-                            ];
-                            App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
-                            $resultCtx['screen'] = 'sent';
-                        }
-                    }
-                    return v::render('partials/calculator/result_block', [
-                        'result' => $resultCtx,
-                        'email' => $params['EMAIL']
-                    ]);
-
-                } else {
-                    // TODO unsupported action
-                    assert(false);
-                    return '';
-                }
+                return v::render('partials/calculator/monitoring_calculator', $context);
             });
             $router->respond('POST', '/services/inspection/calculator/[:action]', function($request, $response) {
                 $defaults = [
@@ -164,12 +108,12 @@ class Api {
                 return v::render('partials/calculator/inspection_calculator', $context);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
-                // TODO sanitize params
                 $params = $request->params();
-                $state = Services::requestMonitoring($params);
-                $repo = new MonitoringRepo();
-                $dataSet = $repo->defaultDataSet();
-                $ctx = App::getInstance()->getMonitoring()->context(Services::services()['monitoring'], $state, $dataSet);
+                $state = MonitoringRequest::state($params, Services::data('monitoring'));
+                $ctx = MonitoringRequest::context($state, Services::services()['monitoring']);
+                if (_::isEmpty($state['errors'])) {
+                    // TODO side effects
+                }
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {

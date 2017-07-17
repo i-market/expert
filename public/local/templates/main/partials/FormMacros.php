@@ -49,7 +49,7 @@ class FormMacros {
         <?
     }
 
-    function showCheckbox($name, $value, $label, $id, $opts) {
+    function showCheckbox($name, $value, $label, $id, $opts = []) {
         list($checkedValuesRaw, $_) = $this->valueErrorPair($name);
         $checkedValues = array_map('intval', $checkedValuesRaw);
         $checked = $opts['checked'] || in_array($value, $checkedValues);

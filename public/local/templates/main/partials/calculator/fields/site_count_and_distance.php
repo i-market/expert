@@ -7,7 +7,7 @@ use App\View as v;
     'input_attrs' => v::attrs([
         'class' => 'site-count',
         'min' => 1,
-        'ic-post-to' => $apiEndpoint.'?hide_errors=1'
+        'ic-post-to' => $apiEndpoint.'?validate=0'
     ])
 ]) ?>
 <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [

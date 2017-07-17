@@ -1,11 +1,13 @@
 <?php
 
 use App\Services\Monitoring;
+use App\Services\MonitoringParser;
+use Core\Util;
 use PHPUnit\Framework\TestCase;
 use Core\Underscore as _;
 
 class MonitoringTest extends TestCase {
-    static $params = array(
+    static $derefedParams = array(
         'STRUCTURES_TO_MONITOR' =>
             array(
                 0 => '0',
@@ -29,7 +31,7 @@ class MonitoringTest extends TestCase {
                 0 => 44,
                 1 => 45,
             ),
-        'HAS_UNDERGROUND_FLOORS' => true,
+        'HAS_UNDERGROUND_FLOORS' => 'Имеется',
         'UNDERGROUND_FLOORS' => 2,
         'MONITORING_GOAL' => '1',
         'DURATION' => '1',
@@ -37,129 +39,145 @@ class MonitoringTest extends TestCase {
         'PACKAGE_SELECTION' => 'INDIVIDUAL',
     );
 
+    function testCalculatorContext() {
+        $params = [
+            "STRUCTURES_TO_MONITOR" => [
+                "1",
+                "2",
+            ],
+            "DOCUMENTS" => [
+                "1",
+                "2",
+            ],
+            "DESCRIPTION" => "desc",
+            "LOCATION" => "1",
+            "ADDRESS" => "address",
+            "SITE_COUNT" => 2,
+            "DISTANCE_BETWEEN_SITES" => "1",
+            "USED_FOR" => "1",
+            "TOTAL_AREA" => 42,
+            "VOLUME" => 43,
+            "FLOORS" => [
+                44,
+                45,
+            ],
+            "HAS_UNDERGROUND_FLOORS" => true,
+            "UNDERGROUND_FLOORS" => 2,
+            "MONITORING_GOAL" => "1",
+            "DURATION" => "1",
+            "TRANSPORT_ACCESSIBILITY" => "1",
+            "PACKAGE_SELECTION" => "INDIVIDUAL",
+        ];
+        $expected = [
+            "apiEndpoint" => "/api/services/monitoring/calculator/calculate",
+            "state" => [
+                "action" => "calculate",
+                "params" => $params,
+                "errors" => [],
+                "model" => [
+                    "STRUCTURES_TO_MONITOR" => [
+                        [
+                            "ID" => "1",
+                            "NAME" => "комплексный мониторинг состояния строительных конструкций зданий и сооружений",
+                        ],
+                        [
+                            "ID" => "2",
+                            "NAME" => "мониторинг состояния фундаментов",
+                        ],
+                    ],
+                    "DOCUMENTS" => [
+                        [
+                            "ID" => "1",
+                            "NAME" => "Результаты выполненых обследований или экспертиз",
+                        ],
+                        [
+                            "ID" => "2",
+                            "NAME" => "Результаты ранее проведенного мониторинга",
+                        ],
+                    ],
+                    "DESCRIPTION" => "desc",
+                    "LOCATION" => [
+                        "ID" => "1",
+                        "NAME" => "Москва",
+                    ],
+                    "ADDRESS" => "address",
+                    "SITE_COUNT" => 2,
+                    "DISTANCE_BETWEEN_SITES" => [
+                        "ID" => "1",
+                        "NAME" => "Объекты находятся в одном месте",
+                    ],
+                    "USED_FOR" => [
+                        "ID" => "1",
+                        "NAME" => "Однаквартирные жилые здания",
+                    ],
+                    "TOTAL_AREA" => 42,
+                    "VOLUME" => 43,
+                    "FLOORS" => [
+                        44,
+                        45,
+                    ],
+                    "HAS_UNDERGROUND_FLOORS" => [
+                        "ID" => "1",
+                        "NAME" => "Имеется",
+                    ],
+                    "UNDERGROUND_FLOORS" => 2,
+                    "MONITORING_GOAL" => [
+                        "ID" => "1",
+                        "NAME" => "Реконструкция или капитальный ремонт",
+                    ],
+                    "DURATION" => [
+                        "ID" => "1",
+                        "NAME" => "1",
+                    ],
+                    "TRANSPORT_ACCESSIBILITY" => [
+                        "ID" => "1",
+                        "NAME" => "Зона действия общественного транспорта",
+                    ],
+                    "PACKAGE_SELECTION" => "INDIVIDUAL",
+                ],
+                "result" => [
+                    "total_price" => 57658.104,
+                ],
+            ],
+            "heading" => "Определение стоимости<br> проведения мониторинга",
+            "floorInputs" => [
+                [
+                    "label" => "Строение 1",
+                ],
+                [
+                    "label" => "Строение 2",
+                ],
+            ],
+            "showDistanceSelect" => true,
+            "showDistanceWarning" => false,
+            "showUndergroundFloors" => true,
+            "resultBlock" => [
+                "apiUri" => "/api/services/monitoring/calculator/send_proposal",
+                "screen" => "result",
+                "result" => [
+                    "total_price" => "57 658 руб./мес.",
+                    "summary_values" => [
+                        "Продолжительность выполнения работ" => "1 месяц",
+                    ],
+                ],
+                "params" => [
+                    "EMAIL" => "",
+                ],
+                "errors" => [],
+            ],
+        ];
+        $parser = new MonitoringParser();
+        $data = $parser->parseFile(Util::joinPath([__DIR__, '../fixtures/calculator/Мониторинг калькуляторы.xlsx']));
+        $ctx = Monitoring::calculatorContext(Monitoring::state($params, 'calculate', $data));
+        $actual = array_reduce(['state.data_set', 'options'], [_::class, 'remove'], $ctx);
+        $this->assertEquals($expected, $actual);
+    }
+
     function testProposalTables() {
-        $expected = array (
-            0 =>
-                array (
-                    'heading' => 'Сведения об объекте (объектах) мониторинга',
-                    'rows' =>
-                        array (
-                            0 =>
-                                array (
-                                    0 => '<strong>Описание объекта (объектов)</strong>',
-                                    1 => 'desc',
-                                ),
-                            1 =>
-                                array (
-                                    0 => '<strong>Количество зданий, сооружений, строений, помещений</strong>',
-                                    1 => 2,
-                                ),
-                            2 =>
-                                array (
-                                    0 => '<strong>Местонахождение</strong>',
-                                    1 => '2',
-                                ),
-                            3 =>
-                                array (
-                                    0 => '<strong>Адрес (адреса)</strong>',
-                                    1 => 'address',
-                                ),
-                            4 =>
-                                array (
-                                    0 => '<strong>Назначение</strong>',
-                                    1 => '1',
-                                ),
-                            5 =>
-                                array (
-                                    0 => '<strong>Общая площадь</strong>',
-                                    1 => 42,
-                                ),
-                            6 =>
-                                array (
-                                    0 => '<strong>Строительный объем</strong>',
-                                    1 => 43,
-                                ),
-                            7 =>
-                                array (
-                                    0 => '<strong>Количество надземных этажей</strong>',
-                                    1 => 89,
-                                ),
-                            8 =>
-                                array (
-                                    0 => '<strong>Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов</strong>',
-                                    1 => 'Имеется',
-                                ),
-                            9 =>
-                                array (
-                                    0 => '<strong>Количество подземных этажей</strong>',
-                                    1 => 2,
-                                ),
-                            10 =>
-                                array (
-                                    0 => '<strong>Удаленность объектов друг от друга</strong>',
-                                    1 => '1',
-                                ),
-                            11 =>
-                                array (
-                                    0 => '<strong>Транспортная доступность</strong>',
-                                    1 => '1',
-                                ),
-                            12 =>
-                                array (
-                                    0 => '<strong>Наличие документов</strong>',
-                                    1 => '<ul><li>0</li><li>5</li></ul>',
-                                ),
-                        ),
-                ),
-            1 =>
-                array (
-                    'heading' => 'Цели мониторинга и конструкции подлежащие мониторингу',
-                    'rows' =>
-                        array (
-                            0 =>
-                                array (
-                                    0 => '<strong>Цели мониторинга</strong>',
-                                    1 => '1',
-                                ),
-                            1 =>
-                                array (
-                                    0 => '<strong>Конструкции подлежащие мониторингу</strong>',
-                                    1 => '<ul><li>0</li><li>7</li></ul>',
-                                ),
-                        ),
-                ),
-        );
-        $this->assertEquals($expected, Monitoring::proposalTables(self::$params));
-        $actual = Monitoring::proposalTables(_::set(self::$params, 'VOLUME', null));
-        $this->assertTrue(_::get($actual, '0.rows.6.1') === '');
+        // TODO implement
     }
 
     function testProposalParams() {
-        $date = new DateTime('2017-06-23');
-        $tables = [];
-        $path = 'php://memory';
-        $expected = [
-            'type' => 'monitoring',
-            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение мониторинга',
-            'outgoingId' => '0611-1/43',
-            'date' => '23 июня 2017 г.',
-            'endingDate' => '23 сентября 2017 г.',
-            'totalPrice' => '150 000 руб./мес.',
-            'duration' => '18 месяцев',
-            'tables' => $tables,
-            'output' => [
-                'name' => $path,
-                'dest' => 'F'
-            ]
-        ];
-        $data = [
-            'total_price' => 150000,
-            'duration' => '18 месяцев',
-            'tables' => $tables,
-            'output' => [
-                'name' => $path
-            ]
-        ];
-        $this->assertEquals($expected, Monitoring::proposalParams(43, $data, $date));
+        // TODO implement
     }
 }

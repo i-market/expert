@@ -15,6 +15,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 use Core\Underscore as _;
 use Core\Strings as str;
+use Core\Nullable as nil;
 
 // TODO non-ideal way to distinguish between environments
 if (php_sapi_name() !== 'cli') {
@@ -30,23 +31,51 @@ class Services {
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
 
+    static function saveServiceRequest($modelFields, $fileIds) {
+        $fields = self::markEmptyStrings(array_merge(_::flatten($modelFields, '_'), [
+            // TODO add files prop to db migration
+            'FILES' => array_map([Api::class, 'uploadedFileArray'], $fileIds)
+        ]));
+        $el = new CIBlockElement();
+        $elementId = $el->Add($fields);
+        $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
+//        $savedFiles = array_map([CFile::class, 'GetFileArray'], $element['PROPERTIES']['FILES']['VALUE']);
+        return $element;
+    }
+
     private static function dataFilePath($type) {
         return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], "local/data/{$type}.json"]);
     }
 
-    function save($type, $data) {
+    static function save($type, $data) {
         return file_put_contents(self::dataFilePath($type), json_encode($data));
     }
 
-    function data($type) {
-        $dataMaybe = _::get(self::$data, $type);
-        if ($dataMaybe !== null) {
-            return $dataMaybe;
+    static function data($type) {
+        // TODO implement storage
+        $tmp = true;
+        if ($tmp || App::getInstance()->env() === Env::DEV) {
+            // use fixtures for development convenience
+            $pair = [
+                'monitoring' => [Services\MonitoringParser::class, 'Мониторинг калькуляторы.xlsx'],
+                'inspection' => [Services\InspectionParser::class, 'Обследование калькуляторы.xlsx'],
+                'examination' => [Services\ExaminationParser::class, 'Экспертиза калькуляторы.xlsx']
+            ];
+            list($class, $file) = $pair[$type];
+            /** @var callable $parseFile */
+            $parseFile = [new $class, 'parseFile'];
+            return $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $file]));
+        } else {
+            throw new \Exception('not implemented');
         }
-        $content = file_get_contents(self::dataFilePath($type));
-        assert($content !== false);
-        self::$data[$type] = json_decode($content, true);
-        return self::$data[$type];
+//        $dataMaybe = _::get(self::$data, $type);
+//        if ($dataMaybe !== null) {
+//            return $dataMaybe;
+//        }
+//        $content = file_get_contents(self::dataFilePath($type));
+//        assert($content !== false);
+//        self::$data[$type] = json_decode($content, true);
+//        return self::$data[$type];
     }
 
     static function services() {
@@ -126,6 +155,7 @@ class Services {
         return 'NEW_SERVICE_REQUEST_'.str::upper($serviceCode);
     }
 
+    /** @deprecated */
     private static function uploadedFileArrays($fileIds) {
         return array_map(function($fileId) {
             $absPath = Util::joinPath([Api::fileuploadDir(), $fileId]);
@@ -133,41 +163,41 @@ class Services {
         }, $fileIds);
     }
 
-    // TODO should save structured data. no need for template rendering, etc.
-    private function saveServiceRequest($serviceCode, $name, $message, $params, $propertyValues) {
-        $iblockId = IblockTools::find(Iblock::INBOX_TYPE, Iblock::SERVICE_REQUESTS)->id();
-        $section = SectionTable::query()
-            ->setSelect(['ID'])
-            ->setFilter([
-                'IBLOCK_ID' => $iblockId,
-                'CODE' => $serviceCode
-            ])
-            ->exec()->fetch();
-        $el = new CIBlockElement();
-        $fields = [
-            'IBLOCK_ID' => $iblockId,
-            'IBLOCK_SECTION_ID' => $section['ID'],
-            'NAME' => $name,
-            'PREVIEW_TEXT' => $message,
-            'DETAIL_TEXT' => json_encode(['params' => $params]),
-            'PROPERTY_VALUES' => $propertyValues
-        ];
-        $elementId = $el->Add($fields);
-        if (!is_numeric($elementId)) {
-            trigger_error("can't add `service_request` element: {$el->LAST_ERROR}", E_USER_WARNING);
-        }
-        return $elementId;
-    }
+    // TODO unused
+//    private function saveServiceRequest($serviceCode, $name, $message, $params, $propertyValues) {
+//        $iblockId = IblockTools::find(Iblock::INBOX_TYPE, Iblock::SERVICE_REQUESTS)->id();
+//        $section = SectionTable::query()
+//            ->setSelect(['ID'])
+//            ->setFilter([
+//                'IBLOCK_ID' => $iblockId,
+//                'CODE' => $serviceCode
+//            ])
+//            ->exec()->fetch();
+//        $el = new CIBlockElement();
+//        $fields = [
+//            'IBLOCK_ID' => $iblockId,
+//            'IBLOCK_SECTION_ID' => $section['ID'],
+//            'NAME' => $name,
+//            'PREVIEW_TEXT' => $message,
+//            'DETAIL_TEXT' => json_encode(['params' => $params]),
+//            'PROPERTY_VALUES' => $propertyValues
+//        ];
+//        $elementId = $el->Add($fields);
+//        if (!is_numeric($elementId)) {
+//            trigger_error("can't add `service_request` element: {$el->LAST_ERROR}", E_USER_WARNING);
+//        }
+//        return $elementId;
+//    }
 
-    private static function formatList($items) {
+    static function formatList($items) {
         return join("\n", array_map(function($item) {
             return '✓ '.$item;
         }, $items));
     }
 
-    private static function markEmptyStrings($array) {
+    static function markEmptyStrings($array) {
         return array_map(function($value) {
-            return str::isEmpty($value) ? '—' : $value;
+            return is_string($value) && str::isEmpty($value) ? '—' : $value;
         }, $array);
     }
 
@@ -188,7 +218,7 @@ class Services {
                     'summary_values' => $summaryValues
                 ],
                 'params' => ['EMAIL' => _::get($state, 'params.EMAIL', '')],
-                'errors' => $state['action'] === 'send_proposal'
+                'errors' => _::get($state, 'action') === 'send_proposal'
                     ? Services::validateEmail($state['params'])
                     : []
             ]);
@@ -207,8 +237,8 @@ class Services {
         }, $text);
     }
 
-    // TODO unused?
-    // TODO refactor: move to `Monitoring`
+    // TODO unused
+    /** @deprecated */
     static function requestMonitoring($params) {
         $contactValidator = v::allOf(
             v::key('ORGANIZATION', v::stringType()),
@@ -415,7 +445,8 @@ class Services {
         return ["<strong>{$label}</strong>", in_array($html, ['', null]) ? '—' : $html];
     }
 
-    static function generateProposalFile($proposalParams, $host = 'localhost') {
+    static function generateProposalFile($proposalParams, $host = null) {
+        $host = nil::get($host, $_SERVER['SERVER_NAME']);
         $requestCtx = stream_context_create([
             'http' => [
                 'method'  => 'POST',

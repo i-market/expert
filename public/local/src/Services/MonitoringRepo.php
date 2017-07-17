@@ -5,6 +5,7 @@ namespace App\Services;
 use Core\Util;
 use Core\Underscore as _;
 
+/** @deprecated */
 class MonitoringRepo {
     private $data;
 
@@ -12,10 +13,12 @@ class MonitoringRepo {
         return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/data/monitoring.json']);
     }
 
+    /** @deprecated see Services */
     function save($data) {
         return file_put_contents($this->dataFilePath(), json_encode($data));
     }
 
+    /** @deprecated see Services */
     function data() {
         if ($this->data !== null) {
             return $this->data;
@@ -26,6 +29,7 @@ class MonitoringRepo {
         return $this->data;
     }
 
+    /** @deprecated */
     function defaultDataSet() {
         return $this->data()['MULTIPLE_BUILDINGS'];
     }
@@ -39,6 +43,7 @@ class MonitoringRepo {
     }
 
     // TODO refactor: not repo's concern
+    /** @deprecated */
     function options($dataSet) {
         $keys = [
             'LOCATION',

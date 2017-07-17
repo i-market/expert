@@ -6,8 +6,6 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
-<? // TODO refactor ?>
-<? $apiEndpoint = '/api/services/monitoring/calculator/calculate' ?>
 <section class="calculator_certain_types calculator--monitoring">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator--monitoring"
@@ -41,26 +39,11 @@ $macros = new macros($state);
         <div class="calculator_content">
             <div class="wrap">
                 <div class="left_side">
-                    <? $macros->showInput('SITE_COUNT', 'Количество объектов мониторинга', [
-                        'required' => true,
-                        'type' => 'number',
-                        'input_attrs' => v::attrs([
-                            'class' => 'site-count',
-                            'min' => 1,
-                            'ic-post-to' => $apiEndpoint.'?hide_errors=1',
-//                            'ic-select-from-response' => '#monitoring-floors-group',
-//                            'ic-target' => '#monitoring-floors-group',
-//                            'ic-indicator' => '#monitoring-floors-group .loader',
-//                            // TODO override parent value
-//                            'ic-replace-target' => 'false',
-                        ])
-                    ]) ?>
-                    <? $macros->showOptionalSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [
-                        'required' => true,
-                        'show' => $showDistanceSelect,
-                        'class' => 'distance-between-sites',
-                        'show_warning' => $showDistanceWarning
-                    ]) ?>
+                    <?= v::render('partials/calculator/fields/site_count_and_distance', array_merge(get_defined_vars(), [
+                        'site_count' => [
+                            'label' => 'Количество объектов мониторинга'
+                        ]
+                    ])) ?>
                     <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) мониторинга', ['required' => true]) ?>
                     <? $macros->showSelect('LOCATION', $options['LOCATION'], 'Местонахождение', ['required' => true]) ?>
                     <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
@@ -79,76 +62,32 @@ $macros = new macros($state);
                         ])
                     ]) ?>
                     <div id="monitoring-floors-group">
-                        <? $macros->showInputGroup('FLOORS[]', $floorSelects, 'Количество надземных этажей', [
+                        <? $macros->showInputGroup('FLOORS[]', $floorInputs, 'Количество надземных этажей', [
                             'required' => true,
                             'type' => 'number',
                             'input_attrs' => v::attrs([
                                 'min' => 0
                             ])
                         ]) ?>
-                        <div class="loader inline" style="display: none"></div>
                     </div>
-                    <? $hasUndergroundFloors = 'HAS_UNDERGROUND_FLOORS' ?>
-                    <div class="wrap_calc_item">
-                        <p class="title">Наличие подполья, подвала, подземных этажей</p>
-                        <div class="inner">
-                            <div class="left left--radio hidden_block">
-                                <input name="<?= $hasUndergroundFloors ?>" value="1"<?= $state['params'][$hasUndergroundFloors] ? ' checked' : '' ?> type="radio" hidden="hidden" id="some_111" data-name="underground_floors" class="open_block">
-                                <label for="some_111" class="radio_label">Да</label>
-                                <input name="<?= $hasUndergroundFloors ?>" value="0"<?= !$state['params'][$hasUndergroundFloors] ? ' checked' : '' ?> type="radio" hidden="hidden" id="some_222" data-name="underground_floors">
-                                <label for="some_222" class="radio_label">Нет</label>
-                            </div>
-                            <div class="right">
-                                <? $macros->showTooltip($hasUndergroundFloors) ?>
-                            </div>
-                        </div>
-                    </div>
-                    <? $macros->showConditionalInput('UNDERGROUND_FLOORS', 'Количество подземных этажей', [
-                        'required' => true,
-                        'class' => 'underground_floors',
-                        'show' => $showUndergroundFloors,
-                        'type' => 'number',
-                        'input_attrs' => v::attrs([
-                            'min' => 1
-                        ])
-                    ]) ?>
+                    <?= v::render('partials/calculator/fields/underground_floors', get_defined_vars()) ?>
                     <? $macros->showSelect('MONITORING_GOAL', $options['MONITORING_GOAL'], 'Цели мониторинга', ['required' => true]) ?>
                     <? $macros->showSelect('DURATION', $options['DURATION'], 'Продолжительность мониторинга', ['required' => true]) ?>
                     <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доступность', ['required' => true]) ?>
                 </div>
                 <div class="right_side">
-                    <? $packageSelection = 'PACKAGE_SELECTION' ?>
-                    <div class="wrap_calc_item">
-                        <div class="inner">
-                            <div class="left">
-                                <p class="title">Конструкции подлежащие мониторингу: <span class="red">*</span></p>
-                            </div>
-                            <div class="right">
-                                <? $macros->showTooltip($packageSelection) ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="wrap_calc_item hidden_block">
-                        <input type="radio" hidden="hidden" name="<?= $packageSelection ?>" value="PACKAGE"<?= in_array(v::get($state, ['params', $packageSelection]), [null, 'PACKAGE']) ? ' checked' : '' ?> id="some_3" data-name="package-selection-individual">
-                        <label for="some_3" class="radio_label">Комплексный мониторинг состояния строительных конструкций, зданий и сооружений</label>
-                        <input type="radio" hidden="hidden" name="<?= $packageSelection ?>" value="INDIVIDUAL"<?= $state['params'][$packageSelection] === 'INDIVIDUAL' ? ' checked' : '' ?> id="some_4" data-name="package-selection-individual" class="open_block">
-                        <label for="some_4" class="radio_label">Выборочный мониторинг</label>
-                    </div>
-                    <? $value = $state['params']['STRUCTURES_TO_MONITOR'] ?>
-                    <? $error = $state['errors']['STRUCTURES_TO_MONITOR'] ?>
-                    <div class="wrap_calc_item_block wrap_calc_item_block--checkbox package-selection-individual<?= !v::isEmpty($error) ? ' error' : '' ?>"
-                         style="display: <?= $state['params']['PACKAGE_SELECTION'] === 'INDIVIDUAL' ? 'block' : 'none' ?>">
-                        <? $prefix = \Core\Util::uniqueId().'_STRUCTURES_TO_MONITOR_INDIVIDUAL' ?>
-                        <? foreach ($options['STRUCTURES_TO_MONITOR']['INDIVIDUAL'] as $idx => $option): ?>
-                            <? $id = "{$prefix}_{$idx}" ?>
-                            <? $checked = in_array($option['value'], $value) ?>
-                            <div class="wrap_checkbox">
-                                <input type="checkbox" name="STRUCTURES_TO_MONITOR[]" value="<?= $option['value'] ?>"<?= $checked ? ' checked' : '' ?> hidden="hidden" id="<?= $id ?>">
-                                <label for="<?= $id ?>"><?= $option['text'] ?></label>
-                            </div>
-                        <? endforeach ?>
-                        <div class="error-message"><?= $error ?></div>
-                    </div>
+                    <? $macros->showPackageSelector('STRUCTURES_TO_MONITOR', 'Конструкции подлежащие мониторингу', [
+                        [
+                            'value' => 'PACKAGE',
+                            'text' => 'Комплексный мониторинг',
+                            'options' => $options['STRUCTURES_TO_MONITOR']['PACKAGE']
+                        ],
+                        [
+                            'value' => 'INDIVIDUAL',
+                            'text' => 'Выборочный мониторинг',
+                            'options' => $options['STRUCTURES_TO_MONITOR']['INDIVIDUAL']
+                        ]
+                    ]) ?>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>
             </div>
@@ -168,6 +107,6 @@ $macros = new macros($state);
                 </button>
             </div>
         </div>
-        <?= v::render('partials/calculator/result_block', ['result' => $result, 'email' => $state['params']['EMAIL']]) ?>
+        <?= v::render('partials/calculator/result_block', $resultBlock) ?>
     </form>
 </section>

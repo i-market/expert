@@ -4,52 +4,31 @@ namespace App\Services;
 
 use App\Services;
 use Core\Underscore as _;
-use App\View;
-use Core\Nullable as nil;
-use Core\Util;
-use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Validator as v;
 use DateInterval;
 use DateTime;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as v;
 
 class Monitoring {
+    // TODO deprecated
     private $repo;
 
-    function __construct(MonitoringRepo $repo) {
-        $this->repo = $repo;
-    }
-
-    function calculate($params, $dataSet) {
-        // TODO improvement: validate reference values
+    static function validateParams($params) {
         $validator = v::allOf(
-            v::key('DESCRIPTION', v::stringType()->notEmpty()),
-            v::key('LOCATION', v::notOptional()),
-            v::key('SITE_COUNT', v::intType()->positive()),
-            v::key('DISTANCE_BETWEEN_SITES',
-                $params['SITE_COUNT'] === 1
-                    ? v::alwaysValid()
-                    : v::notOptional()),
-            v::key('USED_FOR', v::notOptional()),
-            v::key('TOTAL_AREA', v::intType()->positive()),
-            v::key('VOLUME', v::optional(v::intType()->positive())),
-            // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
-            v::key('FLOORS', v::callback(function($values) {
-                return is_array($values) && _::matches($values, function($v) {
-                    return v::notOptional()->intType()->validate($v);
-                });
-            })),
-            v::key('UNDERGROUND_FLOORS',
-                $params['HAS_UNDERGROUND_FLOORS']
-                    ? v::intType()->positive()
-                    : v::alwaysValid()),
+            Services::keyValidator('SITE_COUNT', $params),
+            // TODO check for self::$distanceSpecialValue
+            Services::keyValidator('DISTANCE_BETWEEN_SITES', $params),
+            Services::keyValidator('DESCRIPTION', $params),
+            Services::keyValidator('LOCATION', $params),
+            Services::keyValidator('USED_FOR', $params),
+            Services::keyValidator('TOTAL_AREA', $params),
+            Services::keyValidator('VOLUME', $params),
+            Services::keyValidator('FLOORS', $params),
+            Services::keyValidator('UNDERGROUND_FLOORS', $params),
             v::key('MONITORING_GOAL', v::notOptional()),
-            v::key('DURATION', v::notOptional()),
-            v::key('TRANSPORT_ACCESSIBILITY', v::notOptional()),
-            v::key('STRUCTURES_TO_MONITOR',
-                $params['PACKAGE_SELECTION'] === 'PACKAGE'
-                    ? v::alwaysValid()
-                    : v::arrayType()->notEmpty()),
-            v::key('DOCUMENTS', v::arrayType())
+            Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params),
+            v::key('STRUCTURES_TO_MONITOR', v::arrayType()->notEmpty()),
+            Services::keyValidator('DOCUMENTS', $params)
         );
         $errors = [];
         try {
@@ -58,18 +37,38 @@ class Monitoring {
             $errors = Services::getMessages($exception);
             // TODO refactor: custom messages
             $errors = _::update($errors, 'STRUCTURES_TO_MONITOR', _::constantly(Services::EMPTY_LIST_MESSAGE));
-            $errors = _::update($errors, 'FLOORS', _::constantly('В каждом поле должно быть положительное число.'));
         }
-        $state = [
-            'params' => $params,
-            'errors' => $errors,
-            'result' => []
+        return $errors;
+    }
+
+    static function initialState($data) {
+        return [
+            'data_set' => $data['SINGLE_BUILDING'],
+            'params' => [],
+            'errors' => [],
         ];
-        $isValid = _::isEmpty($errors);
-        if ($isValid) {
+    }
+
+    static function state($params, $action, $data, $validate = true) {
+        $dataSet = $params['SITE_COUNT'] > 1
+            ? $data['MULTIPLE_BUILDINGS']
+            : $data['SINGLE_BUILDING'];
+        $state = [
+            'data_set' => $dataSet,
+            'params' => $params,
+            'errors' => [],
+            'action' => $action
+        ];
+        if (!$validate) {
+            return $state;
+        }
+        $state['errors'] = self::validateParams($params);
+        if (_::isEmpty($state['errors'])) {
+            $model = Services::dereferenceParams($params, $dataSet, [Services::class, 'findEntity']);
             $calculator = new MonitoringCalculator();
             $multipliers = $calculator->multipliers($params, $dataSet);
-            $totalPrice = $calculator->totalPrice($params['TOTAL_AREA'], $multipliers);
+            $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
+            $state['model'] = $model;
             $state['result'] = [
                 'total_price' => $totalPrice
             ];
@@ -77,6 +76,49 @@ class Monitoring {
         return $state;
     }
 
+    static function options($entities) {
+        return _::update(Services::entities2options($entities), 'DISTANCE_BETWEEN_SITES', function($opts) {
+            return _::append($opts, [
+                'value' => Services::$distanceSpecialValue,
+                'text' => 'Расстояние между объектами более 3 км'
+            ]);
+        });
+    }
+
+    static function calculatorContext($state) {
+        $params = $state['params'];
+        $siteCount = _::get($params, 'SITE_COUNT', 1);
+        $floorInputs = array_map(function($num) {
+            return ['label' => "Строение {$num}"];
+        }, range(1, $siteCount));
+        $resultBlock = Services::resultBlockContext($state, '/api/services/monitoring/calculator/send_proposal', [
+            'Продолжительность выполнения работ' => Services::formatDuration($state['model']['DURATION']['NAME'])
+        ]);
+        $options = _::update(self::options($state['data_set']['MULTIPLIERS']), 'DURATION', function($opts) {
+            return array_map(function($opt) {
+                return _::update($opt, 'text', [Services::class, 'formatDuration']);
+            }, $opts);
+        });
+        return [
+            'apiEndpoint' => '/api/services/monitoring/calculator/calculate',
+            'state' => $state,
+            'options' => $options,
+            // TODO move it to the template?
+            'heading' => 'Определение стоимости<br> проведения мониторинга',
+            'floorInputs' => $floorInputs,
+            'showDistanceSelect' => $siteCount > 1,
+            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === Services::$distanceSpecialValue,
+            'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
+            'resultBlock' => $resultBlock
+        ];
+    }
+
+    /** @deprecated */
+    function __construct(MonitoringRepo $repo) {
+        $this->repo = $repo;
+    }
+
+    /** @deprecated */
     function context($service, $state, $dataSet) {
         $options = $this->repo->options($dataSet);
         return [
@@ -87,21 +129,7 @@ class Monitoring {
         ];
     }
 
-    // TODO rename to inputs
-    // TODO inline
-    /**
-     * @deprecated
-     */
-    function floorSelects($state) {
-        $siteCountMaybe = $state['params']['SITE_COUNT'];
-        $siteCount = nil::get($siteCountMaybe, 1);
-        return array_map(function($num) {
-            return [
-                'label' => 'Строение '.$num,
-            ];
-        }, range(1, $siteCount));
-    }
-
+    /** @deprecated */
     function mapOptions($items) {
         $isWrapped = _::matchesAny(array_keys($items), function($x) {
             // TODO refactor: brittle
@@ -119,74 +147,11 @@ class Monitoring {
         }, $items);
     }
 
-    function resultBlockContext() {
-        return [
-            'api_uri' => '/api/services/monitoring/calculator/proposal'
-        ];
-    }
-
-    function calculatorContext($state, $dataSet) {
-        $params = $state['params'];
-        $siteCount = $params['SITE_COUNT'];
-        $distanceSpecialValue = '>3km';
-        $options = array_map([$this, 'mapOptions'], $this->repo->options($dataSet));
-        // mutate
-        $options = _::update($options, 'DISTANCE_BETWEEN_SITES', function($opts) use ($distanceSpecialValue) {
-            return _::append($opts, [
-                'value' => $distanceSpecialValue,
-                'text' => 'Расстояние между объектами более 3 км'
-            ]);
-        });
-        $options = _::update($options, 'DURATION', function($opts) {
-            return array_map(function($opt) {
-                return _::update($opt, 'text', function($text) {
-                    return preg_replace_callback('/(\pL+\s+)?(\d+)$/u', function($matches) {
-                        list($match, $word, $number) = $matches;
-                        $units = $word !== ''
-                            // e.g. более n месяцев
-                            ? Util::units($number, 'месяца', 'месяцев', 'месяцев')
-                            : Util::units($number, 'месяц', 'месяца', 'месяцев');
-                        return $match.' '.$units;
-                    }, $text);
-                });
-            }, $opts);
-        });
-        $resultMaybe = nil::map(_::get($state, 'result.total_price'), function($totalPrice) use ($options, $params) {
-            $durationOpt = _::find($options['DURATION'], function($opt) use ($params) {
-                return $opt['value'] === $params['DURATION'];
-            });
-            return [
-                'screen' => 'result',
-                'formatted_total_price' => Services::formatTotalPrice($totalPrice),
-                'duration' => $durationOpt['text']
-            ];
-        });
-        $context = [
-            'state' => $state,
-            'heading' => 'Определение стоимости<br> проведения мониторинга',
-            'options' => $options,
-            // TODO rename to floorInputs
-            'floorSelects' => Services::floorInputs($params),
-            'showDistanceSelect' => $siteCount > 1,
-            'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === $distanceSpecialValue,
-            'showUndergroundFloors' => $params['HAS_UNDERGROUND_FLOORS'],
-            'result' => array_merge(self::resultBlockContext(), nil::get($resultMaybe, []))
-        ];
-        return $context;
-    }
-
-    static function proposalTables($params) {
-        $listHtml = function($values) {
-            $items = join('', array_map(function($item) {
-                return "<li>{$item}</li>";
-            }, $values));
-            return "<ul>{$items}</ul>";
-        };
-        $formatRow = function($tuple) use ($params) {
-            list($label, $key) = $tuple;
-            $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
-            $value = nil::get($params[$key], '');
-            return ["<strong>{$label}</strong>", is_callable($funcMaybe) ? $funcMaybe($value) : $value];
+    static function proposalTables($model) {
+        $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
+        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $listFn = function($entities) use ($nameFn) {
+            return Services::listHtml(array_map($nameFn, $entities));
         };
         return [
             [
@@ -194,28 +159,24 @@ class Monitoring {
                 'rows' => array_map($formatRow, [
                     ['Описание объекта (объектов)', 'DESCRIPTION'],
                     ['Количество зданий, сооружений, строений, помещений', 'SITE_COUNT'],
-                    ['Местонахождение', 'LOCATION'],
+                    ['Местонахождение', 'LOCATION', $nameFn],
                     ['Адрес (адреса)', 'ADDRESS'],
-                    ['Назначение', 'MONITORING_GOAL'],
+                    ['Назначение', 'USED_FOR', $nameFn],
                     ['Общая площадь', 'TOTAL_AREA'],
                     ['Строительный объем', 'VOLUME'],
-                    ['Количество надземных этажей', 'FLOORS', function($values) {
-                        return Util::sum($values);
-                    }],
-                    ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', function($bool) {
-                        return $bool ? 'Имеется' : 'Не имеется';
-                    }],
+                    ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
+                    ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
                     ['Количество подземных этажей', 'UNDERGROUND_FLOORS'],
-                    ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES'],
-                    ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY'],
-                    ['Наличие документов', 'DOCUMENTS', $listHtml]
+                    ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
+                    ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
+                    ['Наличие документов', 'DOCUMENTS', $listFn]
                 ])
             ],
             [
                 'heading' => 'Цели мониторинга и конструкции подлежащие мониторингу',
                 'rows' => array_map($formatRow, [
                     ['Цели мониторинга', 'MONITORING_GOAL'],
-                    ['Конструкции подлежащие мониторингу', 'STRUCTURES_TO_MONITOR', $listHtml]
+                    ['Конструкции подлежащие мониторингу', 'STRUCTURES_TO_MONITOR', _::func([Services::class, 'listHtml'])]
                 ])
             ]
         ];
@@ -226,67 +187,25 @@ class Monitoring {
         return Services::dataSet($data, $params);
     }
 
-    static function findEntity($field, $val, $dataSet) {
-        $entities = $dataSet['MULTIPLIERS'][$field];
-        if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
-            $pred = function($entity) use ($val) {
-                $f = Calculator::parseNumericPredicate($entity['NAME']);
-                return $f($val);
-            };
-        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
-            $pred = function($entity) use ($val) {
-                $bool = Parser::parseBoolean($entity['NAME']);
-                return $val === $bool;
-            };
-        } elseif (in_array($field, ['STRUCTURES_TO_MONITOR'])) {
-            $entities = _::flatMap($entities, _::identity());
-            $pred = function($entity) use ($val) {
-                return $entity['ID'] === $val;
-            };
-        } else {
-            $pred = function($entity) use ($val) {
-                return $entity['ID'] === $val;
-            };
-        }
-        return _::find($entities, $pred);
-    }
-
-    static function proposalParams($requestId, $data, $creationDate = null) {
-        assert(_::isEmpty(array_diff(['total_price', 'duration', 'tables'], array_keys($data))));
-        if ($creationDate === null) {
-            $creationDate = new DateTime();
-        }
-        // TODO extract
-        $nextProposalOutgoingId = function($type, $requestId) {
-            $typeNumber = [
-                'monitoring' => '1'
-            ];
-            assert(in_array($type, array_keys($typeNumber)));
-            return "0611-{$typeNumber[$type]}/{$requestId}";
-        };
-        $formatDate = function(DateTime $datetime) {
-            $monthRu = function($n) {
-                $months = explode('|', '|января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря');
-                return $months[$n];
-            };
-            $ts = $datetime->getTimestamp();
-            $month = $monthRu(intval(date('n', $ts)));
-            return join(' ', [date('d', $ts), $month, date('Y', $ts), 'г.']);
-        };
+    static function proposalParams($state, $outgoingId, $opts = []) {
+        assert(isset($state['result']));
+        $creationDate = isset($opts['creation_date'])
+            ? $opts['creation_date']
+            : new \DateTime();
         $d = clone $creationDate;
-        $endingDate = $d->add(new DateInterval('P3M'));
+        $endingDate = $d->add(new \DateInterval('P3M'));
         return [
             'type' => 'monitoring',
             'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение мониторинга',
-            'outgoingId' => $nextProposalOutgoingId('monitoring', $requestId),
-            'date' => $formatDate($creationDate),
-            'endingDate' => $formatDate($endingDate),
-            'totalPrice' => Services::formatTotalPrice($data['total_price']),
-            'duration' => $data['duration'],
-            'tables' => $data['tables'],
+            'outgoingId' => $outgoingId,
+            'date' => Services::formatFullDate($creationDate),
+            'endingDate' => Services::formatFullDate($endingDate),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'duration' => $state['model']['DURATION'],
+            'tables' => self::proposalTables($state['model']),
             'output' => array_merge([
                 'dest' => 'F'
-            ], $data['output'])
+            ], _::get($opts, 'output' ,[]))
         ];
     }
 }

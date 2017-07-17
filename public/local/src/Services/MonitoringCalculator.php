@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services;
 use Core\Util as u;
 use Exception;
 use Core\Underscore as _;
@@ -27,6 +28,7 @@ class MonitoringCalculator extends Calculator {
         }
     }
 
+    // TODO refactor: use model instead of params
     function multipliers($params, $dataSet) {
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
         if (!$params['HAS_UNDERGROUND_FLOORS']) {
@@ -54,7 +56,7 @@ class MonitoringCalculator extends Calculator {
                     if (is_array($entity['VALUE'])) {
                         // pick a column based on the number of values
                         return _::find($entity['VALUE'], function($_, $predStr) use ($val) {
-                            $countPred = Calculator::parseNumericPredicate($predStr);
+                            $countPred = Parser::parseNumericPredicate($predStr);
                             return $countPred(count($val));
                         });
                     } else {
@@ -68,7 +70,7 @@ class MonitoringCalculator extends Calculator {
                 }, $val);
                 return u::product($multipliers);
             }
-            $entity = Monitoring::findEntity($field, $val, $dataSet);
+            $entity = Services::findEntity($field, $val, $dataSet);
             if ($field === 'DOCUMENTS') {
                 $multiplier = $entity['VALUE'][true];
             } else {

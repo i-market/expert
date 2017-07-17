@@ -1,15 +1,16 @@
 <?
-use App\Services\MonitoringRepo;
+use App\Services\Monitoring;
+use App\Services\MonitoringParser;
 use App\View as v;
-use App\App;
+use Core\Util;
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Калькулятор стоимости");
 $APPLICATION->SetPageProperty('layout', 'bare')
 ?>
 
-<? $dataSet = (new MonitoringRepo)->defaultDataSet() ?>
-<? $ctx = App::getInstance()->getMonitoring()->calculatorContext([], $dataSet) ?>
-<?= v::render('partials/calculator/monitoring_calculator', $ctx) ?>
+<? // TODO tmp ?>
+<? $data = (new MonitoringParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Мониторинг калькуляторы.xlsx'])); ?>
+<?= v::render('partials/calculator/monitoring_calculator', Monitoring::calculatorContext(Monitoring::initialState($data))) ?>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

@@ -8,6 +8,7 @@ use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
 use Core\Util;
+use App\Services\MonitoringRequest;
 
 class Components {
     static function showBannersSection($iblockSection) {
@@ -90,16 +91,18 @@ class Components {
     static function renderServicesSection() {
         $services = array_map(function($service) {
             if ($service['code'] === 'monitoring') {
-                /** @var Monitoring $monitoring */
-                $monitoring = App::getInstance()->container['monitoring'];
-                $dataSet = (new MonitoringRepo)->defaultDataSet();
-                $ctx = $monitoring->context($service, Services::initialState(), $dataSet);
+                $data = Services::data('monitoring');
+                $ctx = MonitoringRequest::context(MonitoringRequest::initialState($data), Services::services()['monitoring']);
                 $form = Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             } else {
-                $form = 'TODO';
+                $form = 'Извините, раздел находится в разработке.';
             }
             return array_merge($service, ['form' => $form]);
         }, array_values(Services::services()));
+        // TODO tmp: filter out services that are not implemented yet
+        $services = array_filter($services, function($service) {
+            return in_array($service['code'], ['monitoring', 'inspection' /*, 'examination' */]);
+        });
         return v::render('partials/services_section', ['services' => $services]);
     }
 }

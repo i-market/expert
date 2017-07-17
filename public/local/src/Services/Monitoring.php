@@ -175,8 +175,8 @@ class Monitoring {
             [
                 'heading' => 'Цели мониторинга и конструкции подлежащие мониторингу',
                 'rows' => array_map($formatRow, [
-                    ['Цели мониторинга', 'MONITORING_GOAL'],
-                    ['Конструкции подлежащие мониторингу', 'STRUCTURES_TO_MONITOR', _::func([Services::class, 'listHtml'])]
+                    ['Цели мониторинга', 'MONITORING_GOAL', $nameFn],
+                    ['Конструкции подлежащие мониторингу', 'STRUCTURES_TO_MONITOR', $listFn]
                 ])
             ]
         ];
@@ -201,7 +201,7 @@ class Monitoring {
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
-            'duration' => $state['model']['DURATION'],
+            'duration' => Services::formatDuration($state['model']['DURATION']['NAME']),
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([
                 'dest' => 'F'

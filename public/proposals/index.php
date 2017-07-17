@@ -52,10 +52,12 @@ if ($params['example']) {
 }
 $html = View::render("pdf/proposal/{$params['type']}", $params);
 $pdf->WriteHTML($html, 2);
-$path = _::get($params, 'output.debug', false)
-    ? Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf'])
-    : tempnam(sys_get_temp_dir(), 'proposal');
 $dest = _::get($params, 'output.dest', '');
+$path = $dest === ''
+    ? ''
+    : (_::get($params, 'output.debug', false)
+        ? Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf'])
+        : tempnam(sys_get_temp_dir(), 'proposal'));
 $pdf->Output($path, $dest);
 
 if ($dest === 'F') {

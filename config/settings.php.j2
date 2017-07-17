@@ -68,7 +68,7 @@ return array (
   'app' => array(
     'value' => array(
       'env' => '{{ app_env }}',
-      {% if override_default_email_from %}
+      {% if override_default_email_from is defined %}
       'override_default_email_from' => '{{ override_default_email_from }}',
       {% endif %}
       'sentry' => array(

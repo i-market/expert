@@ -6,28 +6,22 @@ use App\Services\Inspection;
 use App\Services\InspectionParser;
 use App\Services\Monitoring;
 use App\Services\MonitoringParser;
-use App\Services\MonitoringRepo;
 use App\Services\MonitoringRequest;
+use App\View as v;
 use CFile;
-use CIBlockElement;
 use Core\Env;
+use Core\FileUpload;
+use Core\Strings as str;
 use Core\Underscore as _;
 use Core\Util;
-use Klein\Klein;
-use App\View as v;
-use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Validator as val;
-use Core\FileUpload;
 use FileUpload\FileSystem;
 use FileUpload\PathResolver;
-use Core\Strings as str;
+use Klein\Klein;
 
 class Api {
     static function fileuploadDir() {
         // TODO ok tmp dir?
-        return ini_get('upload_tmp_dir')
-            ? ini_get('upload_tmp_dir')
-            : sys_get_temp_dir();
+        return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
     }
 
     static function uploadedFileArray($fileId) {

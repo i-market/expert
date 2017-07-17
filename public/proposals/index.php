@@ -67,11 +67,13 @@ if ($params['example']) {
 $html = View::render("pdf/proposal/{$params['type']}", $params);
 $pdf->WriteHTML($html, 2);
 $dest = _::get($params, 'output.dest', '');
+// TODO ok tmp dir?
+$tmpPath = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
 $path = $dest === ''
     ? ''
     : (_::get($params, 'output.debug', false)
         ? Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf'])
-        : tempnam(sys_get_temp_dir(), 'proposal'));
+        : tempnam($tmpPath, 'proposal'));
 $pdf->Output($path, $dest);
 
 if ($dest === 'F') {

@@ -7,6 +7,20 @@ use App\View;
 use Respect\Validation\Validator as v;
 use Core\Underscore as _;
 
+$config = require realpath(__DIR__.'/../bitrix/.settings.php');
+$appConfig = _::get($config, 'app.value');
+if (_::get($appConfig, 'sentry.enabled', false)) {
+    $dsn = _::get($appConfig, 'sentry.dsn');
+    /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+    $client = new Raven_Client($dsn, [
+        'environment' => _::get($appConfig, 'env')
+    ]);
+    $handler = new Raven_ErrorHandler($client);
+    $handler->registerExceptionHandler();
+    $handler->registerErrorHandler();
+    $handler->registerShutdownFunction();
+}
+
 define('SITE_TEMPLATE_PATH', '/local/templates/main');
 
 $pdf = new mPDF('UTF-8');

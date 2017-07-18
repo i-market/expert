@@ -15,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 abstract class Parser {
     public $log = [];
+    /** @deprecated */
     protected $keyValueSections = ['СРОКИ' => 'TIME'];
 
     function classifyCells($cells) {

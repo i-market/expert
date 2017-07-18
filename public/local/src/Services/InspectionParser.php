@@ -104,8 +104,6 @@ class InspectionParser extends Parser {
                         return $this->parseStructuresToInspect($rows);
                     } elseif ($sectionKey === 'DOCUMENTS') {
                         return $this->parseDocuments($rows);
-                    } elseif (in_array($sectionKey, $this->keyValueSections)) {
-                        return $rows;
                     } else {
                         return $this->parseSimpleSection($rows);
                     }

@@ -24,15 +24,22 @@ class ExaminationParserTest extends TestCase {
         $parser = new ExaminationParser();
         $path = __DIR__.'/../fixtures/calculator/Экспертиза калькуляторы.xlsx';
         $result = $parser->parseFile($path);
-        foreach ($result as $worksheetResult) {
+        foreach ($result as $k => $worksheetResult) {
             $multipliers = $worksheetResult['MULTIPLIERS'];
             $missingSections = array_diff(_::pluck($parser->spec['sections'], 'key'), array_keys($multipliers));
-            $this->assertTrue(_::isEmpty($missingSections));
+            $this->assertEquals([], $missingSections, $k);
             $maxId = $reduceEntities(0, $worksheetResult['MULTIPLIERS']['GOALS'], function($acc, $x) {
                 return max($acc, $x['ID']);
             });
             $this->assertEquals($maxId, $countEntities($worksheetResult['MULTIPLIERS']['GOALS']));
         }
+        // TODO extract
+        $mapValidator = function(array $map) use (&$mapValidator) {
+            $keyValidator = function($v, $k) use (&$mapValidator) {
+                return v::key($k, is_array($v) ? $mapValidator($v) : v::equals($v));
+            };
+            return v::allOf(...array_values(_::map($map, $keyValidator)));
+        };
         // TODO basic entity validator
         $entities = v::arrayType()->notEmpty();
         // covers only the harder cases
@@ -46,7 +53,7 @@ class ExaminationParserTest extends TestCase {
                             v::key('Конструкции зданий, сооружений', v::allOf(
                                 $entities,
                                 // first entity of a nesting table
-                                v::key('12', v::equals([
+                                v::key('12', $mapValidator([
                                     "ID" => "12",
                                     "NAME" => "14.1.12. - экспертиза технического состояния оснований и фундаментов",
                                     "VALUE" => [
@@ -63,7 +70,7 @@ class ExaminationParserTest extends TestCase {
                             // first entity of a nested ("child") table
                             v::key('Внутренние инженерные сети и оборудование', v::allOf(
                                 $entities,
-                                v::key('30', v::equals([
+                                v::key('30', $mapValidator([
                                     "ID" => "30",
                                     "NAME" => "14.1.30. - экспертиза технического состояния систем внутреннего горячего и(или) холодного водоснабжения",
                                     "VALUE" => [
@@ -80,7 +87,7 @@ class ExaminationParserTest extends TestCase {
                             v::key('Дороги, дорожные покрытия', v::allOf(
                                 $entities,
                                 // simple key-value pair
-                                v::key('39', v::equals([
+                                v::key('39', $mapValidator([
                                     "ID" => "39",
                                     "NAME" => "14.1.39. - экспертиза технического состояния конструкций дорог и(или) дорожных покрытий",
                                     "VALUE" => 0.6,
@@ -102,7 +109,7 @@ class ExaminationParserTest extends TestCase {
                         v::key('ЭКСПЕРТИЗА РАЗДЕЛОВ РАБОЧЕЙ ДОКУМЕНТАЦИИ', $entities),
                         v::key('ЭКСПЕРТИЗА ПРИНЯТЫХ ПРОЕКТНЫХ РЕШЕНИЙ', v::allOf(
                             $entities,
-                            v::key('128', v::equals([
+                            v::key('128', $mapValidator([
                                 "ID" => "128",
                                 "NAME" => "14.3.48. - экспертиза качества принятых проектных решений по устройству оснований и фундаментов",
                                 "VALUE" => [

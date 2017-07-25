@@ -351,15 +351,17 @@ class Services {
     }
 
     static function keyValidator($key, $params) {
+        $requiredId = v::notOptional();
         $validators = [
             'SITE_COUNT' => v::intType()->positive(),
+            'SITE_CATEGORY' => $requiredId,
             'DISTANCE_BETWEEN_SITES' =>
                 $params['SITE_COUNT'] === 1
                     ? v::alwaysValid()
-                    : v::notOptional(),
+                    : $requiredId,
             'DESCRIPTION' => v::stringType()->notEmpty(),
-            'LOCATION' => v::notOptional(),
-            'USED_FOR' => v::notOptional(),
+            'LOCATION' => $requiredId,
+            'USED_FOR' => $requiredId,
             'TOTAL_AREA' => v::intType()->positive(),
             'VOLUME' => v::optional(v::intType()->positive()),
             // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
@@ -372,8 +374,8 @@ class Services {
                 $params['HAS_UNDERGROUND_FLOORS']
                     ? v::intType()->positive()
                     : v::alwaysValid(),
-            'DURATION' => v::notOptional(),
-            'TRANSPORT_ACCESSIBILITY' => v::notOptional(),
+            'DURATION' => $requiredId,
+            'TRANSPORT_ACCESSIBILITY' => $requiredId,
             'DOCUMENTS' => v::arrayType()
         ];
         assert(isset($validators[$key]));
@@ -402,6 +404,18 @@ class Services {
             return null;
         }
         $entities = $dataSet['MULTIPLIERS'][$field];
+        $findRec = function($xs, $pred) {
+            $reducer = function($result, $x) use (&$reducer, $xs, $pred) {
+                if (isset($x['ID']) && $pred($x)) {
+                    return $x;
+                } elseif (is_array($x)) {
+                    return array_reduce($x, $reducer, $result);
+                } else {
+                    return $result;
+                }
+            };
+            return array_reduce($xs, $reducer, null);
+        };
         if (in_array($field, ['FLOORS', 'SITE_COUNT', 'UNDERGROUND_FLOORS'])) {
             $pred = function($entity) use ($val) {
                 $f = Parser::parseNumericPredicate($entity['NAME']);
@@ -412,15 +426,11 @@ class Services {
                 $bool = Parser::parseBoolean($entity['NAME']);
                 return $val === $bool;
             };
-        } elseif (in_array($field, self::$structures)) {
-            $entities = _::flatMap($entities, _::identity());
-            $pred = function($entity) use ($val) {
-                return $entity['ID'] === $val;
-            };
         } else {
             $pred = function($entity) use ($val) {
                 return $entity['ID'] === $val;
             };
+            return $findRec($entities, $pred);
         }
         return _::find($entities, $pred);
     }

@@ -18,6 +18,8 @@ abstract class Parser {
     /** @deprecated */
     protected $keyValueSections = ['СРОКИ' => 'TIME'];
 
+    abstract function parseFile($path);
+
     function classifyCells($cells) {
         return [
             'metadata' => [
@@ -25,6 +27,16 @@ abstract class Parser {
             ],
             'data' => _::rest($cells)
         ];
+    }
+
+    /**
+     * maps abstracted row.cells indices to the real excel coordinates
+     */
+    function cellCoordinate($idx, $rowIdx) {
+        // see `classifyCells`
+        $columns = range('B', 'Z');
+        assert(isset($columns[$idx]), 'index is out of range');
+        return $columns[$idx].$rowIdx;
     }
 
     /**

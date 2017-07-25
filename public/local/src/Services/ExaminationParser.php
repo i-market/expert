@@ -5,12 +5,14 @@ namespace App\Services;
 use Core\Hierarchy as h;
 use Core\Underscore as _;
 use Core\Strings as str;
+use Core\Nullable as nil;
 use PhpOffice\PhpSpreadsheet\Cell;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 class ExaminationParser extends Parser {
-    use \Core\DynamicMethods;
+    use \Core\DynamicMethods; // TODO tmp for dev
     public $spec = [
         'worksheets' => [
             [
@@ -35,7 +37,10 @@ class ExaminationParser extends Parser {
             ],
             [
                 'key' => 'SITE_CATEGORY',
-                'prefix' => 'Категория объекта экспертизы'
+                'prefix' => [
+                    'Категория объекта экспертизы',
+                    'Категория экспертизы'
+                ]
             ],
             [
                 'key' => 'NEEDS_VISIT',
@@ -48,15 +53,24 @@ class ExaminationParser extends Parser {
             // 7. Адрес
             [
                 'key' => 'USED_FOR',
-                'prefix' => 'Назначение объекта экспертизы'
+                'prefix' => [
+                    'Назначение объекта экспертизы',
+                    'Назначение объектов экспертизы'
+                ]
             ],
             [
                 'key' => 'TOTAL_AREA',
-                'prefix' => 'Общая площадь объекта (кв.м.)'
+                'prefix' => [
+                    'Общая площадь объекта (кв.м.)',
+                    'Общая площадь объектов (кв.м.)'
+                ]
             ],
             [
                 'key' => 'VOLUME',
-                'prefix' => 'Строительный объем объекта (куб. м.)'
+                'prefix' => [
+                    'Строительный объем объекта (куб. м.)',
+                    'Строительный объем объектов (куб. м.)'
+                ]
             ],
             [
                 'key' => 'FLOORS',
@@ -178,6 +192,8 @@ class ExaminationParser extends Parser {
         foreach ($rows as $idx => $row) {
             $parseMultiplier = _::partialRight([$this, 'parseFloat'], $this->defaultMultiplierFn($row['row_number']));
             $cells = $row['cells'];
+            /** @var Row $rowObj */
+            $rowObj = $row['object'];
             $stateName = _::first($state);
             $type = $rowType($row);
             if ($stateName === 'find_subsection') {
@@ -194,7 +210,7 @@ class ExaminationParser extends Parser {
                     if (h::isa($h, $type, 'table_header')) {
                         $header = $tableHeader($row, $type);
                         if (h::isa($h, $type, 'nesting_table_header')) {
-                            $state = ['in_nesting_table', $nextPath, $header];
+                            $state = ['in_nesting_table', $nextPath, $header, []];
                         } else {
                             // not used right now, stays in the `in_nesting_table` state
                             // $state = ['in_table', $nextPath, $header];
@@ -209,28 +225,47 @@ class ExaminationParser extends Parser {
                 }
             } elseif ($stateName === 'in_nesting_table') {
                 // once entered stays in this state forever
-                list($_, $path, $header) = $state;
+                list($_, $path, $header, $metadata) = $state;
                 if (h::isa($h, $type, 'subsection_name')) {
                     $subsection = _::first($cells);
                     $nextPath = $getNextPath($path, $subsection);
                     $nextHeader = h::isa($h, $type, 'table_header')
                         ? $tableHeader($row, $type)
                         : $header;
-                    $state = ['in_nesting_table', $nextPath, $nextHeader];
+                    $state = ['in_nesting_table', $nextPath, $nextHeader, _::remove($metadata, 'RANGE_BOUNDARY')];
                 } else {
                     $name = _::first($cells);
-                    // this will take empty columns for the "narrower" nested tables
-                    $columns = _::take(_::drop($cells, 1), count($header));
+                    $dataCells = _::drop($cells, 1);
+                    // this will take empty columns for "narrower" nested tables
+                    $multCells = _::take($dataCells, count($header));
                     // TODO feels hacky
-                    $isSimpleEntity = count(_::clean($columns)) === 1;
+                    $isSimpleEntity = count(_::clean($multCells)) === 1;
                     if ($isSimpleEntity) {
                         $value = $this->simpleValue($row);
                     } else {
-                        $multipliers = array_map($parseMultiplier, $columns);
-                        $id = $row['metadata']['id'];
-                        $value = ['ID' => $id, 'NAME' => $name, 'VALUE' => array_combine($header, $multipliers)];
+                        $multipliers = array_map($parseMultiplier, $multCells);
+                        if (!isset($metadata['RANGE_BOUNDARY'])) {
+                            // ranges that are used in the multiplier selection business logic.
+                            // `row.cell` index. assume all ranges start from the beginning.
+                            $metadata['RANGE_BOUNDARY'] = _::find(range(1, count($multCells)), function($idx) use ($rowObj) {
+                                $style = $rowObj->getWorksheet()->getStyle($this->cellCoordinate($idx, $rowObj->getRowIndex()));
+                                $hasRightBorder = $style->getBorders()->getRight()->getBorderStyle() !== Border::BORDER_NONE;
+                                return $hasRightBorder;
+                            });
+                        }
+                        $value = [
+                            'ID' => $row['metadata']['id'],
+                            'NAME' => $name,
+                            'VALUE' => array_combine($header, $multipliers),
+                            // convert row.cell index to entity `VALUE` index
+                            'RANGE_BOUNDARY' => nil::map(_::get($metadata, 'RANGE_BOUNDARY'), function($rangeBoundary) {
+                                return $rangeBoundary - 1;
+                            }),
+                            'NUMBERING' => array_filter(_::drop($dataCells, count($header)), _::complement([str::class, 'isEmpty']))
+                        ];
                     }
                     $ret = _::set($ret, _::append($path, $value['ID']), $value);
+                    $state = ['in_nesting_table', $path, $header, $metadata];
                 }
             } else {
                 throw new \Exception('unknown state');

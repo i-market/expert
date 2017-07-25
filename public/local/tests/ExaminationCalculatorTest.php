@@ -1,9 +1,32 @@
 <?php
 
 use App\Services\ExaminationCalculator;
+use Core\Underscore as _;
 use PHPUnit\Framework\TestCase;
 
 class ExaminationCalculatorTest extends TestCase {
+    function testGroupWithNumbering() {
+        $data = [
+            // note the order of "numbering"
+            [[1   ], 1],
+            [[2   ], 2],
+            [[3, 1], 3],
+            [[4, 2], 4],
+            [[5, 1], 5]
+        ];
+        $expected = [
+            // grouped by level
+            0 => [[1, 2, 3, 4, 5]],
+            1 => [[3, 4], [5]]
+        ];
+        $calc = new ExaminationCalculator();
+        $this->assertEquals($expected, $calc->groupWithNumbering($data, [_::class, 'first'], [_::class, 'last']));
+    }
+
+    function testGoalMultipliers() {
+        // TODO implement
+    }
+
     /** @dataProvider priceProvider */
     function testPricePerSquareMeter($sqMeters, $expected) {
         $calc = new ExaminationCalculator();

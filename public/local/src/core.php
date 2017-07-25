@@ -58,6 +58,7 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    // TODO string callables support
     static function map($array, $f) {
         $ret = [];
         foreach ($array as $k => $v) {
@@ -114,8 +115,8 @@ class Underscore extends ArraysMethods {
         return array_slice($array, $n);
     }
 
-    static function take($array, $n) {
-        return array_slice($array, 0, $n);
+    static function take($array, $n, $preserveKeys = null) {
+        return array_slice($array, 0, $n, $preserveKeys ?: !self::isIndexed($array));
     }
 
     static function takeWhile($array, $pred) {
@@ -153,6 +154,18 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    static function minBy($array, callable $f) {
+        return array_reduce($array, function($ret, $x) use ($f) {
+            return $ret === null || $f($x) < $f($ret) ? $x : $ret;
+        });
+    }
+
+    static function maxBy($array, callable $f) {
+        return array_reduce($array, function($ret, $x) use ($f) {
+            return $ret === null || $f($x) > $f($ret) ? $x : $ret;
+        });
+    }
+
     // TODO inconsistent argument ordering
     static function keyBy($by, $array) {
         // TODO add callable support
@@ -186,6 +199,7 @@ class Underscore extends ArraysMethods {
         });
     }
 
+    // TODO refactor: unwrap
     static function identity() {
         return function($x) {
             return $x;
@@ -203,6 +217,16 @@ class Underscore extends ArraysMethods {
         return function(...$args) use ($f, $g) {
             return $f($g(...$args));
         };
+    }
+
+    /** aka juxtapose */
+    static function over($fns, ...$args) {
+        $ret = function(...$args) use ($fns) {
+            return array_map(function($f) use ($args) {
+                return $f(...$args);
+            }, $fns);
+        };
+        return self::isEmpty($args) ? $ret : $ret(...$args);
     }
 
     static function complement(callable $f) {

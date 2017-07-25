@@ -78,6 +78,18 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    static function flattenDeep($array, callable $pred = null) {
+        $pred = $pred ?: self::complement('is_array');
+        $reducer = function($acc, $x) use (&$reducer, $pred) {
+            if ($pred($x)) {
+                return self::append($acc, $x);
+            } else {
+                return array_merge($acc, array_reduce($x, $reducer, []));
+            }
+        };
+        return array_reduce($array, $reducer, []);
+    }
+
     static function mapKeys($array, $f) {
         $ret = [];
         foreach ($array as $k => $v) {

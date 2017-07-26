@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Core\Util as u;
 use Core\Underscore as _;
-use Core\Util;
+use FunctionalPHP\Trampoline as t;
 use Exception;
 
 class ExaminationCalculator extends Calculator {
@@ -62,69 +62,95 @@ class ExaminationCalculator extends Calculator {
         return $byLevel;
     }
 
+    /** transform flat parser output of nesting tables into higher level representation to be used in business logic */
     function goalViews($dataSet) {
-        // TODO extract
-        $reduceEntities = function($acc, $xs, $f) use (&$reduceEntities) {
-            if (isset($xs['ID'])) {
-                return $f($acc, $xs);
-            } elseif (is_array($xs)) {
-                return array_reduce($xs, _::partialRight($reduceEntities, $f), $acc);
-            } else {
-                return $acc;
-            }
-        };
-        $flatten = function($xs) use ($reduceEntities) {
-            return $reduceEntities([], $xs, [_::class, 'append']);
-        };
         $numberingFn = function($entity) {
             return array_reverse(array_map('intval', $entity['NUMBERING']));
         };
-        $entities = array_filter($flatten($dataSet['MULTIPLIERS']['GOALS']), function($entity) {
-            return isset($entity['NUMBERING']) && !_::isEmpty($entity['NUMBERING']);
+        $isTable = function($x) {
+            return _::has(_::first($x), 'ID');
+        };
+        $tables = _::flattenDeep($dataSet['MULTIPLIERS']['GOALS'], $isTable);
+        list($nestingTables, $simpleTables) = _::groupBy($tables, function($entities) {
+            return !_::isEmpty(_::get(_::first($entities), 'NUMBERING', [])) ? 0 : 1;
         });
-        $byLevel = $this->groupWithNumbering($entities, $numberingFn, _::identity());
-        $views = _::flatMap($byLevel, function($views, $level) {
+        $byLevel = $this->groupWithNumbering(_::flatMap($nestingTables, _::identity()), $numberingFn, _::identity());
+        $nestingViews = _::flatMap($byLevel, function($views, $level) {
             return _::map($views, function($view) use ($level) {
                 $entities = _::map($view, function($entity) use ($level) {
                     return $level > 0 && _::get($entity, 'RANGE_BOUNDARY') !== null
                         ? _::update($entity, 'VALUE', function($value) use ($entity) {
+                            // nested tables: take columns until "range boundary"
                             return _::take($value, $entity['RANGE_BOUNDARY'] + 1);
                         })
                         : $entity;
                 });
                 return [
                     'LEVEL' => $level,
-                    // TODO improvement: preserve keys in groupWithNumbering
+                    // TODO refactor: optimize: preserve keys in groupWithNumbering
                     'ENTITIES' => _::keyBy('ID', $entities)
                 ];
             });
         });
-        return $views;
+        $simpleViews = _::map($simpleTables, function($entities) {
+            return [
+                'LEVEL' => 0,
+                'ENTITIES' => $entities
+            ];
+        });
+        return array_merge($nestingViews, $simpleViews);
     }
 
     function matchingGoalViews($ids, $views) {
         return _::clean(_::map($views, function($view) use ($ids) {
-            // TODO improvement: add header keys?
-            $multipliers = _::map($ids, function($id) use ($view, $ids) {
+            $multipliers = array_reduce($ids, function($acc, $id) use ($view, $ids) {
                 if (!isset($view['ENTITIES'][$id])) {
-                    return null;
+                    return $acc;
                 }
+                $inView = array_intersect($ids, array_keys($view['ENTITIES']));
                 $value = $view['ENTITIES'][$id]['VALUE'];
-                // test in reverse order, otherwise you won't go past the "range boundary"
-                $multiplierMaybe =  _::find(array_reverse($value, true), function($_, $predStr) use ($ids) {
-                    $pred = Parser::parseNumericPredicate($predStr);
-                    assert($pred !== null);
-                    return $pred(count($ids));
-                });
-                return $multiplierMaybe;
-            });
-            return in_array(null, $multipliers)
+                if (is_array($value)) {
+                    // test in reverse order, otherwise you won't go past the "range boundary"
+                    $multiplierMaybe = _::find(array_reverse($value, true), function($_, $predStr) use ($inView) {
+                        $pred = Parser::parseNumericPredicate($predStr);
+                        assert($pred !== null);
+                        return $pred(count($inView));
+                    });
+                    if ($multiplierMaybe !== null) {
+                        $acc[$id] = $multiplierMaybe;
+                    }
+                } else {
+                    $acc[$id] = $value;
+                }
+                return $acc;
+            }, []);
+            return _::isEmpty($multipliers)
                 ? null
                 : [
                     'LEVEL' => $view['LEVEL'],
                     'MULTIPLIERS' => $multipliers
                 ];
         }));
+    }
+
+    function reduceGoalViews($ids, $matchingViews) {
+        $loop = function($ids, $multipliers = []) use (&$loop, $matchingViews) {
+            if (_::isEmpty($ids)) {
+                return $multipliers;
+            } else {
+                $id = _::first($ids);
+                $vs = _::filter($matchingViews, function($v) use ($id) {
+                    return isset($v['MULTIPLIERS'][$id]);
+                });
+                $v = _::maxBy($vs, function($v) {
+                    // pick the most fitting view
+                    return count($v['MULTIPLIERS']) + $v['LEVEL'];
+                });
+                $remainingIds = array_diff($ids, array_keys($v['MULTIPLIERS']));
+                return t\bounce($loop, $remainingIds, $multipliers + $v['MULTIPLIERS']);
+            }
+        };
+        return t\trampoline($loop, $ids);
     }
 
     function multipliers($model, $dataSet) {
@@ -143,8 +169,7 @@ class ExaminationCalculator extends Calculator {
             if ($field === 'GOALS') {
                 $views = $this->goalViews($dataSet);
                 $matchingViews = $this->matchingGoalViews($x, $views);
-                $deepestView = _::maxBy($matchingViews, _::partialRight([_::class, 'get'], 'LEVEL'));
-                return Util::product($deepestView['MULTIPLIERS']);
+                return u::product($this->reduceGoalViews($x, $matchingViews));
             } elseif (isset($x['ID'])) {
                 // TODO makes sure multiplier exists
                 // TODO nested

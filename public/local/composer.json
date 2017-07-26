@@ -11,7 +11,8 @@
         "league/csv": "^8.2",
         "pimple/pimple": "~3.0",
         "phpoffice/phpspreadsheet": "dev-master",
-        "mpdf/mpdf": "^6.1"
+        "mpdf/mpdf": "^6.1",
+        "functional-php/trampoline": "^1.1"
     },
     "autoload": {
         "files": ["src/core.php", "src/app.php"],

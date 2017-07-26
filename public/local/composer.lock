@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5c3337778d38d373f64fc33430a0a297",
-    "content-hash": "630cab78621aa06fa1028fd696c22337",
+    "hash": "535d1de991f7d162aa90c6f925389d45",
+    "content-hash": "b86d2c3baf0d23a971447da65db7777c",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -167,6 +167,53 @@
                 "string"
             ],
             "time": "2015-11-06 14:35:42"
+        },
+        {
+            "name": "functional-php/trampoline",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/functional-php/trampoline.git",
+                "reference": "3cea9d5a98d01aeb0817a0db2b222949b83aec43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/functional-php/trampoline/zipball/3cea9d5a98d01aeb0817a0db2b222949b83aec43",
+                "reference": "3cea9d5a98d01aeb0817a0db2b222949b83aec43",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "atoum/atoum": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FunctionalPHP\\Trampoline\\": "./src"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Gilles Crettenand",
+                    "email": "gilles@crettenand.info"
+                }
+            ],
+            "description": "Trampoline implementation for PHP.",
+            "keywords": [
+                "functional",
+                "recursion",
+                "trampoline"
+            ],
+            "time": "2016-10-25 20:12:10"
         },
         {
             "name": "gargron/fileupload",

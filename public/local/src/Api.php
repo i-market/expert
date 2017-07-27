@@ -64,8 +64,7 @@ class Api {
                     'STRUCTURES_TO_MONITOR' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                // TODO tmp data
-                $data = (new MonitoringParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Мониторинг калькуляторы.xlsx']));
+                $data = Services::data('monitoring');
                 $state = Monitoring::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Monitoring::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
@@ -85,8 +84,7 @@ class Api {
                     'STRUCTURES_TO_INSPECT' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                // TODO tmp data
-                $data = (new InspectionParser)->parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator/Обследование калькуляторы.xlsx']));
+                $data = Services::data('inspection');
                 $state = Inspection::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Inspection::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {

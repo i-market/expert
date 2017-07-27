@@ -2,10 +2,9 @@
 
 namespace App;
 
+use App\Services\Examination;
 use App\Services\Inspection;
-use App\Services\InspectionParser;
 use App\Services\Monitoring;
-use App\Services\MonitoringParser;
 use App\Services\MonitoringRequest;
 use App\View as v;
 use CFile;
@@ -98,6 +97,26 @@ class Api {
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/inspection_calculator', $context);
+            });
+            $router->respond('POST', '/services/examination/calculator/[:action]', function($request, $response) {
+                $defaults = [
+                    'GOALS'
+                ];
+                $params = array_merge($defaults, self::normalizeParams($request->params()));
+                $data = Services::data('examination');
+                $state = Examination::state($params, $request->action, $data, _::get($params, 'validate', true));
+                $context = Examination::calculatorContext($state);
+                if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
+                    $opts = App::getInstance()->env() === Env::DEV
+                        ? ['output' => ['debug' => true]]
+                        : [];
+                    $proposalParams = Examination::proposalParams($state, Services::outgoingId('examination'), $opts);
+                    $path = Services::generateProposalFile($proposalParams);
+                    assert($path !== false);
+                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    $context['resultBlock']['screen'] = 'sent';
+                }
+                return v::render('partials/calculator/examination_calculator', $context);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 $params = $request->params();

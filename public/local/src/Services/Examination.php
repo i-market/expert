@@ -120,17 +120,32 @@ class Examination {
             }
         });
         $goalsFilter = _::map(array_keys($opts['GOALS']), function($name, $idx) {
-            return ['value' => $idx, 'text' => $name];
+            return ['value' => strval($idx), 'text' => $name];
         });
         return array_merge($opts, [
             'GOALS_FILTER' => $goalsFilter,
             // keys should match goals_filter values
-            'GOAL_UI_ELEMENTS' => array_values(array_map($mergeOptions, $uiElementsByRoot))
+            'GOAL_UI_ELEMENTS' => array_values(array_map($mergeOptions, $uiElementsByRoot)),
+            // TODO missing examination data
+            'DISTANCE_BETWEEN_SITES' => Services::entities2options([
+                1 => [
+                    "ID" => "1",
+                    "NAME" => "Объекты находятся в одном месте",
+                ],
+                2 => [
+                    "ID" => "2",
+                    "NAME" => "Расстояние между объектами не более 0,5 км",
+                ],
+                3 => [
+                    "ID" => "3",
+                    "NAME" => "Расстояние между объектами 0,5-3 км",
+                ],
+            ])
         ]);
     }
 
     static function validateParams($params) {
-        // TODO check for self::$distanceSpecialValue
+        // TODO check for self::$distanceSpecialValue?
         $validator = v::allOf(
             Services::keyValidator('SITE_COUNT', $params),
             Services::keyValidator('DESCRIPTION', $params),
@@ -143,11 +158,11 @@ class Examination {
             !$params['NEEDS_VISIT']
                 ? v::alwaysValid()
                 : v::allOf(
-                Services::keyValidator('LOCATION', $params),
-                v::key('ADDRESS', v::stringType()->notEmpty()),
-                Services::keyValidator('DISTANCE_BETWEEN_SITES', $params),
-                Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params)
-            ),
+                    Services::keyValidator('LOCATION', $params),
+                    v::key('ADDRESS', v::stringType()->notEmpty()),
+                    Services::keyValidator('DISTANCE_BETWEEN_SITES', $params),
+                    Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params)
+                ),
             v::key('GOALS', v::arrayType()->notEmpty()),
             Services::keyValidator('DOCUMENTS', $params)
         );
@@ -157,7 +172,7 @@ class Examination {
         } catch (NestedValidationException $exception) {
             $errors = Services::getMessages($exception);
             // TODO refactor: custom messages
-            $errors = _::update($errors, 'STRUCTURES_TO_INSPECT', _::constantly(Services::EMPTY_LIST_MESSAGE));
+            $errors = _::update($errors, 'GOALS', _::constantly(Services::EMPTY_LIST_MESSAGE));
         }
         return $errors;
     }

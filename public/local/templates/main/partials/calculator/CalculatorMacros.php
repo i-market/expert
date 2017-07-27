@@ -16,7 +16,7 @@ class CalculatorMacros {
         $this->state = $state;
     }
 
-    private function valueErrorPair($name) {
+    function valueErrorPair($name) {
         $path = Util::formInputNamePath($name);
         $value = _::get($this->state['params'], $path);
         $error = _::get($this->state['errors'], $path);
@@ -56,6 +56,14 @@ class CalculatorMacros {
         <?
     }
 
+    function showInputInput($name, $opts = []) {
+        list($value, $error) = $this->valueErrorPair($name);
+        ?>
+        <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+        <div class="error-message"><?= $error ?></div>
+        <?
+    }
+
     function showInput($name, $label, $opts = []) {
         list($value, $error) = $this->valueErrorPair($name);
         ?>
@@ -63,8 +71,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
-                    <div class="error-message"><?= $error ?></div>
+                    <? $this->showInputInput($name, $opts) ?>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>
@@ -101,6 +108,20 @@ class CalculatorMacros {
         <?
     }
 
+    function showSelectInput($name, $options, $opts = []) {
+        list($value, $error) = $this->valueErrorPair($name);
+        ?>
+        <select name="<?= $name ?>"<?= isset($opts['select_attrs']) ? ' '.$opts['select_attrs'] : '' ?>>
+            <?= self::$selectPlaceholder ?>
+            <? foreach ($options as $option): ?>
+                <? $selected = $value === $option['value'] ?>
+                <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
+            <? endforeach ?>
+        </select>
+        <div class="error-message"><?= $error ?></div>
+        <?
+    }
+
     function showSelect($name, $options, $label, $opts) {
         list($value, $error) = $this->valueErrorPair($name);
         ?>
@@ -108,14 +129,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left">
-                    <select name="<?= $name ?>"<?= isset($opts['select_attrs']) ? ' '.$opts['select_attrs'] : '' ?>>
-                        <?= self::$selectPlaceholder ?>
-                        <? foreach ($options as $option): ?>
-                            <? $selected = $value === $option['value'] ?>
-                            <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
-                        <? endforeach ?>
-                    </select>
-                    <div class="error-message"><?= $error ?></div>
+                    <? $this->showSelectInput($name, $options, $opts) ?>
                 </div>
                 <div class="right">
                     <? self::showTooltip($name) ?>
@@ -125,25 +139,32 @@ class CalculatorMacros {
         <?
     }
 
+    function showDistanceSelect($name, $options, $label, $opts) {
+        list($value, $error) = $this->valueErrorPair($name);
+        ?>
+        <div class="top">
+            <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
+            <? // TODO refactor: monitoring-specific warning ?>
+            <? // TODO stop users from submitting the form when this condition is met ?>
+            <p class="text red warning" style="display: <?= $opts['show_warning'] ? 'block' : 'none' ?>">
+                При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта
+            </p>
+        </div>
+        <select name="<?= $name ?>">
+            <?= self::$selectPlaceholder ?>
+            <? foreach ($options as $option): ?>
+                <? $selected = $value === $option['value'] ?>
+                <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
+            <? endforeach ?>
+        </select>
+        <?
+    }
+
     function showOptionalSelect($name, $options, $label, $opts) {
         list($value, $error) = $this->valueErrorPair($name);
         ?>
         <div class="wrap_calc_item_block<?= !v::isEmpty($error) ? ' error' : '' ?><?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? 'style=" display: block"' : '' ?>>
-            <div class="top">
-                <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
-                <? // TODO refactor: monitoring-specific warning ?>
-                <? // TODO stop users from submitting the form when this condition is met ?>
-                <p class="text red warning" style="display: <?= $opts['show_warning'] ? 'block' : 'none' ?>">
-                    При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта
-                </p>
-            </div>
-            <select name="<?= $name ?>">
-                <?= self::$selectPlaceholder ?>
-                <? foreach ($options as $option): ?>
-                    <? $selected = $value === $option['value'] ?>
-                    <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
-                <? endforeach ?>
-            </select>
+            <? $this->showDistanceSelect($name, $options, $label, $opts) ?>
         </div>
         <?
     }

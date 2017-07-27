@@ -59,6 +59,7 @@ $macros = new macros($state);
                                 <label for="some_2" class="radio_label">Нет</label>
                             </div>
                             <div class="right">
+                                <? // TODO tooltip ?>
                                 <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
                             </div>
                         </div>
@@ -99,6 +100,7 @@ $macros = new macros($state);
                                 <label for="some_22" class="radio_label">Нет</label>
                             </div>
                             <div class="right">
+                                <? // TODO tooltip ?>
                                 <span class="tooltip" title="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias omnis eveniet dolorem maxime architecto fuga perspiciatis illo, voluptatibus numquam vel similique iste pariatur placeat nobis assumenda soluta voluptas aliquid laudantium."></span>
                             </div>
                         </div>
@@ -107,44 +109,19 @@ $macros = new macros($state);
                         <div class="top">
                             <p class="title">Местонахождение <span class="red">*</span></p>
                         </div>
-                        <select name="" id="">
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                        </select>
+                        <? $macros->showSelectInput('LOCATION', $options['LOCATION']) ?>
                         <div class="top">
                             <p class="title">Адрес(a) <span class="red">*</span></p>
                         </div>
-                        <select name="" id="">
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                        </select>
-                        <div class="top">
-                            <p class="title">Удаленность объектов друг от друга</p>
-                            <p class="text red">При расстоянии между объектами более 3 км расчет необходимо выполнять отдельно для каждого объекта</p>
-                        </div>
-                        <select name="" id="">
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                        </select>
+                        <? $macros->showInputInput('ADDRESS') ?>
+                        <? $macros->showDistanceSelect('DISTANCE_BETWEEN_SITES', $options['DISTANCE_BETWEEN_SITES'], 'Удаленность объектов друг от друга', [
+                            // TODO show warning? see requirements
+                            'show_warning' => false
+                        ]) ?>
                         <div class="top">
                             <p class="title">Транспортная доступность </p>
                         </div>
-                        <select name="" id="">
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                            <option value="">текст</option>
-                        </select>
+                        <? $macros->showSelectInput('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY']) ?>
                     </div>
                     <? /* TODO
 
@@ -187,41 +164,55 @@ $macros = new macros($state);
                             'class' => 'goals-filter'
                         ])
                     ]) ?>
-                    <? foreach ($options['GOAL_UI_ELEMENTS'] as $filterValue => $elements): ?>
+                    <? list($value, $error) = $macros->valueErrorPair('GOALS') ?>
+                    <? foreach ($options['GOAL_UI_ELEMENTS'] as $idx => $elements): ?>
                         <? $localState = ['last_radio_id' => ''] ?>
-                        <? $group = "goal_{$filterValue}" ?>
-                        <div data-goals-filter="<?= $filterValue ?>" style="display: none">
+                        <? $filterVal = strval($idx) ?>
+                        <? $group = "goals_{$filterVal}" ?>
+                        <? $isActive = $state['params']['GOALS_FILTER'] === $filterVal ?>
+                        <div data-goals-filter="<?= $filterVal ?>" style="display: <?= $isActive ? 'block' : 'none' ?>">
                             <? foreach ($elements as $i => $element): ?>
                                 <? if ($element['type'] === 'subsection'): ?>
-                                    <? $id = "goal_{$filterValue}_{$i}" ?>
+                                    <? $id = "goals_{$filterVal}_{$i}" ?>
                                     <? $localState['last_radio_id'] = $id ?>
                                     <div class="wrap_calc_item hidden_block">
-                                        <? // TODO checked state ?>
                                         <input type="radio"
                                                hidden="hidden"
-                                               name="<?= "goals_{$filterValue}" ?>"
+                                               name="<?= $group ?>"
+                                               value="<?= $id ?>"
                                                id="<?= $id ?>"
                                                class="open_block"
                                                data-name="<?= $localState['last_radio_id'] ?>"
-                                               data-group="<?= $group ?>">
+                                               data-group="<?= $group ?>"
+                                               <?= v::get($state, ['params', $group]) === $id ? 'checked' : '' ?>>
                                         <label for="<?= $id ?>" class="radio_label"><?= v::capitalize($element['value']) ?></label>
                                     </div>
                                 <? elseif ($element['type'] === 'options'): ?>
-                                    <div class="<?= "group_{$group}" ?> <?= $localState['last_radio_id'] ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
+                                    <? $isActive = v::get($state, ['params', $group]) === $localState['last_radio_id'] ?>
+                                    <? $noAssocRadio = v::isEmpty($localState['last_radio_id']) ?>
+                                    <? $classes = ["group_{$group}", $localState['last_radio_id'], !v::isEmpty($error) ? 'error' : ''] ?>
+                                    <div class="<?= join(' ', $classes) ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
                                          <? // display if there are no radio buttons to reveal this block ?>
-                                         style="<?= $localState['last_radio_id'] === '' ? 'display: block' : '' ?>">
+                                         style="<?= $isActive || $noAssocRadio ? 'display: block' : '' ?>">
                                         <? foreach ($element['value'] as $j => $el): ?>
                                             <? if ($el['type'] === 'subsection'): ?>
                                                 <p class="bold"><?= $el['value'] ?></p>
                                             <? elseif ($el['type'] === 'option'): ?>
                                                 <? $opt = $el['value'] ?>
-                                                <? $id = "goal_{$filterValue}_{$i}_{$j}" ?>
+                                                <? $id = "goal_{$filterVal}_{$i}_{$j}" ?>
                                                 <div class="wrap_checkbox">
-                                                    <input name="GOALS[]" value="<?= $opt['value'] ?>" type="checkbox" hidden="hidden" id="<?= $id ?>">
+                                                    <? // TODO checked state ?>
+                                                    <input name="GOALS[]"
+                                                           value="<?= $opt['value'] ?>"
+                                                           type="checkbox"
+                                                           hidden="hidden"
+                                                           id="<?= $id ?>"
+                                                           <?= in_array($opt['value'], $state['params']['GOALS']) ? 'checked' : '' ?>>
                                                     <label for="<?= $id ?>"><?= $opt['text'] ?></label>
                                                 </div>
                                             <? endif ?>
                                         <? endforeach ?>
+                                        <div class="error-message"><?= $error ?></div>
                                     </div>
                                 <? endif ?>
                             <? endforeach ?>

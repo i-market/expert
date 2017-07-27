@@ -44,7 +44,9 @@ class Services {
     }
 
     private static function dataFilePath($type) {
-        return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], "local/data/{$type}.json"]);
+        // TODO
+        $tmpPath = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+        return Util::joinPath([$tmpPath, "{$type}.json"]);
     }
 
     static function save($type, $data) {
@@ -55,6 +57,11 @@ class Services {
         // TODO implement storage
         $tmp = true;
         if ($tmp || App::getInstance()->env() === Env::DEV) {
+            if (file_exists(self::dataFilePath($type)) && _::get($_REQUEST, 'cache', true)) {
+                $content = file_get_contents(self::dataFilePath($type));
+                assert($content !== false);
+                return json_decode($content, true);
+            }
             // use fixtures for development convenience
             $pair = [
                 'monitoring' => [Services\MonitoringParser::class, 'Мониторинг калькуляторы.xlsx'],
@@ -64,7 +71,9 @@ class Services {
             list($class, $file) = $pair[$type];
             /** @var callable $parseFile */
             $parseFile = [new $class, 'parseFile'];
-            return $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $file]));
+            $data = $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $file]));
+            file_put_contents(self::dataFilePath($type), json_encode($data));
+            return $data;
         } else {
             throw new \Exception('not implemented');
         }

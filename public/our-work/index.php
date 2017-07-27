@@ -93,7 +93,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
         "SEF_URL_TEMPLATES" => Array(
             "compare" => "",
             "element" => "",
-            "section" => "#SECTION_CODE#/",
+            "section" => "#SECTION_ID#/#SECTION_CODE#/",
             "sections" => "",
             "smart_filter" => ""
         ),

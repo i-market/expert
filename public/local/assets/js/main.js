@@ -35,7 +35,14 @@
       $distanceBlock.find('select').on('change', function() {
         // TODO improve ux: animate
         $distanceBlock.find('.warning').toggle($(this).val() === '>3km');
-      })
+      });
+      $calc.find('.goals-filter').on('change', function() {
+        var active = $(this).val();
+        $calc.find('[data-goals-filter]').each(function() {
+          $(this).toggle($(this).attr('data-goals-filter') === active);
+          $(this).find('input[type=checkbox]').prop('checked', false);
+        });
+      });
     });
   }
 

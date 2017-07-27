@@ -8,7 +8,7 @@ $macros = new macros($state);
 ?>
 <section class="calculator_certain_types calculator">
     <form ic-post-to="<?= $apiEndpoint ?>"
-          ic-target="closest calculator"
+          ic-target="closest .calculator"
           ic-replace-target="true"
           novalidate>
         <div class="wrap">
@@ -181,34 +181,51 @@ $macros = new macros($state);
                 */ ?>
                 </div>
                 <div class="right_side">
-                    <? $macros->showSelect('GOALS_FILTER', $options['GOALS_FILTER'], 'Цели и задачи экспертизы', ['required' => true]) ?>
+                    <? $macros->showSelect('GOALS_FILTER', $options['GOALS_FILTER'], 'Цели и задачи экспертизы', [
+                        'required' => true,
+                        'select_attrs' => v::attrs([
+                            'class' => 'goals-filter'
+                        ])
+                    ]) ?>
                     <? foreach ($options['GOAL_UI_ELEMENTS'] as $filterValue => $elements): ?>
-                        <? foreach ($elements as $i => $element): ?>
-                            <? if ($element['type'] === 'subsection'): ?>
-                                <? $id = "goal_{$filterValue}_{$i}" ?>
-                                <div class="wrap_calc_item hidden_block">
-                                    <? // TODO checked state ?>
-                                    <input type="radio" hidden="hidden" name="family_2" id="<?= $id ?>" data-name="some_block_3">
-                                    <label for="<?= $id ?>" class="radio_label"><?= v::capitalize($element['value']) ?></label>
-                                </div>
-                            <? elseif ($element['type'] === 'options'): ?>
-                                <? // TODO tmp style display ?>
-                                <div style="display: block;" class="wrap_calc_item_block wrap_calc_item_block--checkbox some_block_3">
-                                    <? foreach ($element['value'] as $j => $el): ?>
-                                        <? if ($el['type'] === 'subsection'): ?>
-                                            <p class="bold"><?= $el['value'] ?></p>
-                                        <? elseif ($el['type'] === 'option'): ?>
-                                            <? $opt = $el['value'] ?>
-                                            <? $id = "goal_{$filterValue}_{$i}_{$j}" ?>
-                                            <div class="wrap_checkbox">
-                                                <input value="<?= $opt['value'] ?>" type="checkbox" hidden="hidden" id="<?= $id ?>">
-                                                <label for="<?= $id ?>"><?= $opt['text'] ?></label>
-                                            </div>
-                                        <? endif ?>
-                                    <? endforeach ?>
-                                </div>
-                            <? endif ?>
-                        <? endforeach ?>
+                        <? $localState = ['last_radio_id' => ''] ?>
+                        <? $group = "goal_{$filterValue}" ?>
+                        <div data-goals-filter="<?= $filterValue ?>" style="display: none">
+                            <? foreach ($elements as $i => $element): ?>
+                                <? if ($element['type'] === 'subsection'): ?>
+                                    <? $id = "goal_{$filterValue}_{$i}" ?>
+                                    <? $localState['last_radio_id'] = $id ?>
+                                    <div class="wrap_calc_item hidden_block">
+                                        <? // TODO checked state ?>
+                                        <input type="radio"
+                                               hidden="hidden"
+                                               name="<?= "goals_{$filterValue}" ?>"
+                                               id="<?= $id ?>"
+                                               class="open_block"
+                                               data-name="<?= $localState['last_radio_id'] ?>"
+                                               data-group="<?= $group ?>">
+                                        <label for="<?= $id ?>" class="radio_label"><?= v::capitalize($element['value']) ?></label>
+                                    </div>
+                                <? elseif ($element['type'] === 'options'): ?>
+                                    <div class="<?= "group_{$group}" ?> <?= $localState['last_radio_id'] ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
+                                         <? // display if there are no radio buttons to reveal this block ?>
+                                         style="<?= $localState['last_radio_id'] === '' ? 'display: block' : '' ?>">
+                                        <? foreach ($element['value'] as $j => $el): ?>
+                                            <? if ($el['type'] === 'subsection'): ?>
+                                                <p class="bold"><?= $el['value'] ?></p>
+                                            <? elseif ($el['type'] === 'option'): ?>
+                                                <? $opt = $el['value'] ?>
+                                                <? $id = "goal_{$filterValue}_{$i}_{$j}" ?>
+                                                <div class="wrap_checkbox">
+                                                    <input name="GOALS[]" value="<?= $opt['value'] ?>" type="checkbox" hidden="hidden" id="<?= $id ?>">
+                                                    <label for="<?= $id ?>"><?= $opt['text'] ?></label>
+                                                </div>
+                                            <? endif ?>
+                                        <? endforeach ?>
+                                    </div>
+                                <? endif ?>
+                            <? endforeach ?>
+                        </div>
                     <? endforeach ?>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>

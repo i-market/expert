@@ -14,7 +14,8 @@
   function init($scope) {
     // calculators
 
-    var sel = '.calculator--monitoring, .calculator--inspection';
+    // TODO refactor: remove redundant calculator classes
+    var sel = '.calculator, .calculator--monitoring, .calculator--inspection';
     $scope.find(sel).addBack(sel).each(function() {
       var $calc = $(this);
       $calc.find('input[type=radio][data-group]').on('change', function() {
@@ -25,7 +26,7 @@
       $calc.find('input.site-count').on('change', function() {
         var siteCount = parseInt($(this).val(), 10);
         if (siteCount > 1) {
-          // wait for a server response
+          // wait for a server response instead
           // Mockup.openBlock($distanceBlock);
         } else {
           Mockup.closeBlock($distanceBlock);

@@ -16,6 +16,8 @@ use Underscore\Methods\StringsMethods;
 use Pimple\Container;
 
 class Underscore extends ArraysMethods {
+    // TODO implement partialAny
+    // https://github.com/lstrojny/functional-php/blob/dac3eea4cf1618d3639d10a655e105de41963649/src/Functional/PartialAny.php
     /**
      * @param mixed $collection
      * @param array|string $key
@@ -152,6 +154,7 @@ class Underscore extends ArraysMethods {
         return is_array($x) && count($x) === 0;
     }
 
+    // TODO seems like a bad heuristic to rely on
     static function isIndexed(array $array) {
         if (!is_array($array)) return false;
         return isset($array[0]);
@@ -311,6 +314,10 @@ class Strings extends StringsMethods {
         }
         return $s;
     }
+
+    static function capitalize($s) {
+        return self::upper(mb_substr($s, 0, 1)) . self::lower(mb_substr($s, 1));
+    }
 }
 
 // TODO warn when used, so we don't leave it in production code
@@ -442,6 +449,10 @@ class View {
 
     static function lower($str) {
         return Strings::lower($str);
+    }
+
+    static function capitalize($str) {
+        return Strings::capitalize($str);
     }
 
     static function appendToView($view, $content) {

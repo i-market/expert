@@ -13,7 +13,7 @@ use App\View as v;
                     <span class="wrap_img">
                         <img src="<?= $item['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $item['DETAIL_PICTURE']['ALT'] ?>">
                     </span>
-                        <span class="text"><?= $item['PREVIEW_TEXT'] ?></span>
+                        <span class="text"><?= $item['DETAIL_TEXT'] ?></span>
                     </a>
                 </div>
             <? endforeach ?>

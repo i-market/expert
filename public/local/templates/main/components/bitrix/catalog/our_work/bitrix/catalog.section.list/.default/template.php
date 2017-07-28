@@ -12,22 +12,22 @@ $showSections = function($sections) use ($splitList) {
     <ul class="list">
         <? $attrs = 'class="heading"' ?>
         <? foreach ($sections as $section): ?>
-            <? // TODO refactor ?>
+            <? $link = "<a href=\"{$section['SECTION_PAGE_URL']}\">{$section['NAME']}</a>" ?>
             <? $elevation = $section['ELEVATION'] ?>
             <? if ($elevation === 3): ?>
-                <? $splitList(function() use ($attrs, $section) { ?>
-                    <h2 <?= $attrs ?>><?= $section['NAME'] ?></h2>
+                <? $splitList(function() use ($attrs, $link) { ?>
+                    <h2 <?= $attrs ?>><?= $link ?></h2>
                 <? }) ?>
             <? elseif ($elevation === 2): ?>
-                <? $splitList(function() use ($attrs, $section) { ?>
-                    <h3 <?= $attrs ?>><?= $section['NAME'] ?></h3>
+                <? $splitList(function() use ($attrs, $link) { ?>
+                    <h3 <?= $attrs ?>><?= $link ?></h3>
                 <? }) ?>
             <? elseif ($elevation === 1): ?>
-                <? $splitList(function() use ($attrs, $section) { ?>
-                    <h4 <?= $attrs ?>><?= $section['NAME'] ?></h4>
+                <? $splitList(function() use ($attrs, $link) { ?>
+                    <h4 <?= $attrs ?>><?= $link ?></h4>
                 <? }) ?>
             <? else: ?>
-                <li><a href="<?= $section['SECTION_PAGE_URL'] ?>"><?= $section['NAME'] ?></a></li>
+                <li><?= $link ?></li>
             <? endif ?>
         <? endforeach ?>
     </ul>

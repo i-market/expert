@@ -62,6 +62,9 @@ class Examination {
             // TODO
 //            'Срок выполнения' => $state['model']['TIME']
         ]);
+        if (isset($state['errors']['GOALS'])) {
+            $state['errors']['GOALS_FILTER'] = $state['errors']['GOALS'];
+        }
         return [
             'apiEndpoint' => '/api/services/examination/calculator/calculate',
             'state' => $state,
@@ -124,8 +127,10 @@ class Examination {
         });
         return array_merge($opts, [
             'GOALS_FILTER' => $goalsFilter,
-            // keys should match goals_filter values
-            'GOAL_UI_ELEMENTS' => array_values(array_map($mergeOptions, $uiElementsByRoot)),
+            'GOAL_UI_ELEMENTS' => array_combine(
+                _::pluck($goalsFilter, 'value'),
+                array_map($mergeOptions, $uiElementsByRoot)
+            ),
             // TODO missing examination data
             'DISTANCE_BETWEEN_SITES' => Services::entities2options([
                 1 => [
@@ -160,7 +165,7 @@ class Examination {
                 : v::allOf(
                     Services::keyValidator('LOCATION', $params),
                     v::key('ADDRESS', v::stringType()->notEmpty()),
-                    Services::keyValidator('DISTANCE_BETWEEN_SITES', $params),
+                    Services::keyValidator('DISTANCE_BETWEEN_SITES', $params, false),
                     Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params)
                 ),
             v::key('GOALS', v::arrayType()->notEmpty()),

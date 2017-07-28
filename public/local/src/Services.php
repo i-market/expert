@@ -332,6 +332,7 @@ class Services {
     }
 
     static function entities2options($x) {
+        // TODO trim "x.x. text"
         if (isset($x['ID'])) {
             return ['value' => $x['ID'], 'text' => $x['NAME']];
         } elseif (is_array($x)) {
@@ -359,7 +360,7 @@ class Services {
         return $errors;
     }
 
-    static function keyValidator($key, $params) {
+    static function keyValidator($key, $params, $mandatory = true) {
         $requiredId = v::notOptional();
         $validators = [
             'SITE_COUNT' => v::intType()->positive(),
@@ -388,7 +389,7 @@ class Services {
             'DOCUMENTS' => v::arrayType()
         ];
         assert(isset($validators[$key]));
-        return v::key($key, $validators[$key]);
+        return v::key($key, $validators[$key], $mandatory);
     }
 
     static function dereferenceParams($params, $dataSet, callable $findEntity) {

@@ -39,7 +39,9 @@ class Api {
         $params = _::update($params, 'FLOORS', function($values) {
             return array_map([self::class, 'parseInt'], $values);
         });
-        $params = _::update($params, 'HAS_UNDERGROUND_FLOORS', 'boolval');
+        foreach (['HAS_UNDERGROUND_FLOORS', 'FOR_LEGAL_CASE', 'NEEDS_VISIT'] as $k) {
+            $params = _::update($params, $k, 'boolval');
+        }
         $params = array_merge([
             'DOCUMENTS' => []
         ], $params);

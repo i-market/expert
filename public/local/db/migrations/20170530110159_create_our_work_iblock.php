@@ -39,7 +39,7 @@ class CreateOurWorkIblock extends AbstractMigration {
             }
             $fields = CIBlock::GetFields($iBlockId);
             $fields['DETAIL_PICTURE']['IS_REQUIRED'] = 'Y';
-            $fields['PREVIEW_TEXT']['IS_REQUIRED'] = 'Y';
+            $fields['DETAIL_TEXT']['IS_REQUIRED'] = 'Y';
             CIBlock::SetFields($iBlockId, $fields);
             $conn->commitTransaction();
         } catch (Exception $e) {

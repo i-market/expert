@@ -13,7 +13,7 @@ use App\View as v;
                 </div>
                 <div class="img">
                     <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>">
-                        <img src="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">
+                        <img src="<?= v::resize($item['PREVIEW_PICTURE'], 270, 140) ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">
                     </a>
                 </div>
             </div>

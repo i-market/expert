@@ -414,11 +414,11 @@ class View {
         return SITE_TEMPLATE_PATH.'/build/assets/'.$path;
     }
 
-    static function resize($imageFileArray, $width, $height) {
+    static function resize($imageFileArray, $width, $height, $type = BX_RESIZE_IMAGE_PROPORTIONAL) {
         $resized = CFile::ResizeImageGet($imageFileArray, [
             'width' => $width,
             'height' => $height
-        ]);
+        ], $type);
         return $resized['src'];
     }
 

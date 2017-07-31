@@ -6,7 +6,7 @@ use App\View as v;
     <div class="our-work-thumbnail-grid our-work-thumbnail-grid--page">
         <div class="grid">
             <? foreach ($arResult['ITEMS'] as $item): ?>
-                <?= v::render('partials/our_work/thumbnail', get_defined_vars()) ?>
+                <?= v::render('partials/our_work/thumbnail', array_merge(get_defined_vars(), ['template' => $this])) ?>
             <? endforeach ?>
         </div>
     </div>

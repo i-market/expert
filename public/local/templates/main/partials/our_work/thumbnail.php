@@ -2,7 +2,7 @@
 
 <? // TODO editing actions ?>
 <? // TODO 4 columns as in the psd mockup? ?>
-<div class="item col col_3">
+<div class="item col col_3" id="<?= v::addEditingActions($item, $template) ?>">
     <? // TODO add fancybox gallery id? ?>
     <? $link = v::get($item, 'DISPLAY_PROPERTIES.FILE.FILE_VALUE.SRC', $item['DETAIL_PICTURE']['SRC']) ?>
     <a class="gallery" href="<?= $link ?>" target="_blank">

@@ -20,7 +20,7 @@ use App\View as v;
                     <? // TODO add fancybox gallery id? ?>
                     <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
                         <span class="wrap_img">
-                            <img src="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">
+                            <img src="<?= v::resize($item['PREVIEW_PICTURE'], 274, 274) ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">
                         </span>
                         <span class="text"><?= $item['NAME'] ?></span>
                     </a>

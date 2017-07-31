@@ -12,7 +12,8 @@ $showElements = function($sectionId) use ($arParams) {
             "ELEMENT_SORT_ORDER" => $arParams["ELEMENT_SORT_ORDER"],
             "ELEMENT_SORT_FIELD2" => $arParams["ELEMENT_SORT_FIELD2"],
             "ELEMENT_SORT_ORDER2" => $arParams["ELEMENT_SORT_ORDER2"],
-            "PROPERTY_CODE" => $arParams["LIST_PROPERTY_CODE"],
+            // TODO catalog property_code param isn't inherited
+            "PROPERTY_CODE" => $arParams["LIST_PROPERTY_CODE"] ?: ['FILE'],
             "META_KEYWORDS" => $arParams["LIST_META_KEYWORDS"],
             "META_DESCRIPTION" => $arParams["LIST_META_DESCRIPTION"],
             "BROWSER_TITLE" => $arParams["LIST_BROWSER_TITLE"],

@@ -59,7 +59,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
         "LIST_BROWSER_TITLE" => "-",
         "LIST_META_DESCRIPTION" => "-",
         "LIST_META_KEYWORDS" => "-",
-        "LIST_PROPERTY_CODE" => array("",""),
+        "LIST_PROPERTY_CODE" => array("FILE"),
         "MESSAGE_404" => "",
         "MESS_BTN_ADD_TO_BASKET" => "В корзину",
         "MESS_BTN_BUY" => "Купить",

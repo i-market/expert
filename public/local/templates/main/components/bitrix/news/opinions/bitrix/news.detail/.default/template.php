@@ -6,7 +6,7 @@ $APPLICATION->SetPageProperty('layout', 'default');
 $APPLICATION->SetPageProperty('section_class', 'opinion-detail');
 ?>
 <?= $arResult['DETAIL_TEXT'] ?>
-<div class="bottom_btn">
+<div class="bottom_btn bottom_btn--back">
     <a href="<?= $arResult['LIST_PAGE_URL'] ?>" class="big_btn">
         <span class="img">
             <img src="<?= v::asset('images/arrow_left_white.svg') ?>">

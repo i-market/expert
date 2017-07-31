@@ -5,6 +5,9 @@ use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Phinx\Seed\AbstractSeed;
+use Core\Util;
+use Core\Strings as str;
+use Core\Underscore as _;
 
 class OurWorkSeeder extends AbstractSeed {
     function run() {
@@ -12,18 +15,16 @@ class OurWorkSeeder extends AbstractSeed {
         $conn->startTransaction();
         try {
             Loader::includeModule('iblock');
-            $text = 'Равным образом рамки и место обучения кадров влечет за собой процесс внедрения и модернизации новых предложений. Повседневная практика показывает.';
-            $imgPath = $_SERVER['DOCUMENT_ROOT'].'/local/mockup/images/pic_10.jpg';
-            assert(file_exists($imgPath), "{$imgPath} doesn't exist");
             $iblockId = IblockTools::find(Iblock::CONTENT_TYPE, Iblock::OUR_WORK)->id();
-            $addSection = function($name, $parentId = null) use ($iblockId) {
+            $addSection = function($name, $idx, $parentId = null) use ($iblockId) {
                 $fields = [
                     'IBLOCK_ID' => $iblockId,
                     'NAME' => $name,
                     'CODE' => CUtil::translit($name, 'ru', [
                         'replace_space' => '-',
                         'replace_other' => '-'
-                    ])
+                    ]),
+                    'SORT' => $idx * 10
                 ];
                 if ($parentId !== null) {
                     $fields['IBLOCK_SECTION_ID'] = $parentId;
@@ -35,73 +36,44 @@ class OurWorkSeeder extends AbstractSeed {
             };
             // TODO refactor
             $leafSectionIdsRef = [];
-            $addSectionRec = function($_section, $parentId = null) use (&$addSectionRec, $addSection, &$leafSectionIdsRef) {
-                // string as a shorthand for section
-                $section = is_string($_section)
-                    ? ['name' => $_section, 'sections' => []]
-                    : $_section;
-                $sectionId = $addSection($section['name'], $parentId);
-                foreach ($section['sections'] as $s) {
-                    $addSectionRec($s, $sectionId);
+            $addSectionRec = function($section, $idx, $parentId = null) use (&$addSectionRec, $addSection, &$leafSectionIdsRef) {
+                $sectionId = $addSection($section['name'], $idx, $parentId);
+                foreach ($section['sections'] as $i => $s) {
+                    $addSectionRec($s, $i, $sectionId);
                 }
                 if (count($section['sections']) === 0) {
                     $leafSectionIdsRef[] = $sectionId;
                 }
             };
-            // TODO good url slugs (codes)
-            $sections = [
-                // design
-                [
-                    'name' => 'Примеры разработанных проектных решений',
-                    'sections' => [
-                        'Фундаменты',
-                        'Плиты перекрытия'
-                    ]
-                ],
-                // monitoring
-                [
-                    'name' => 'Примеры отчетов и заключений по результатам проведенного мониторинга',
-                    'sections' => [
-                        [
-                            'name' => 'Сортировка по целям мониторинга',
-                            'sections' => [
-                                'Реконструкция или капитальный ремонт',
-                                'Оценка возможности дальнейшей безаварийной эксплуатации, необходимости восстановления, усиления и пр.'
-                            ]
-                        ],
-                        [
-                            'name' => 'Сортировка по назначению объектов мониторинга',
-                            'sections' => [
-                                [
-                                    'name' => 'Помещения, здания',
-                                    'sections' => [
-                                        'Одноквартирные жилые здания',
-                                        'Многоквартирные жилые здания'
-                                    ]
-                                ],
-                                [
-                                    'name' => 'Сооружения',
-                                    'sections' => [
-                                        'Подземные гаражи и стоянки',
-                                        'Бомбоубежища'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-            foreach ($sections as $section) {
-                $addSectionRec($section);
+            $path = Util::joinPath([__DIR__, 'our_work.json']);
+            $tree = json_decode(file_get_contents($path), true);
+            $xformName = function($s) {
+                return str::capitalize($s);
+            };
+            $f = function($v, $k) use (&$f, $xformName) {
+                if (is_string($v)) {
+                    return ['name' => $xformName($v), 'sections' => []];
+                } else {
+                    assert(is_array($v));
+                    return ['name' => $xformName($k), 'sections' => array_values(_::map($v, $f))];
+                }
+            };
+            $exclude = 'Примеры технических отчетов по результатам проведенных обследований конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования';
+            $sections = array_values(_::remove(_::map($tree, $f), $exclude));
+            foreach ($sections as $idx => $section) {
+                $addSectionRec($section, $idx);
             }
-            $el = new CIBlockElement();
-            $elementId = $el->Add([
-                'IBLOCK_ID' => $iblockId,
-                'NAME' => 'Пример',
-                'PREVIEW_TEXT' => $text,
-                'DETAIL_PICTURE' => CFile::MakeFileArray($imgPath)
-            ]);
-            assert($el->SetElementSection($elementId, $leafSectionIdsRef), $el->LAST_ERROR);
+//            $text = 'Равным образом рамки и место обучения кадров влечет за собой процесс внедрения и модернизации новых предложений. Повседневная практика показывает.';
+//            $imgPath = $_SERVER['DOCUMENT_ROOT'].'/local/mockup/images/pic_10.jpg';
+//            assert(file_exists($imgPath), "{$imgPath} doesn't exist");
+//            $el = new CIBlockElement();
+//            $elementId = $el->Add([
+//                'IBLOCK_ID' => $iblockId,
+//                'NAME' => 'Пример',
+//                'PREVIEW_TEXT' => $text,
+//                'DETAIL_PICTURE' => CFile::MakeFileArray($imgPath)
+//            ]);
+//            assert($el->SetElementSection($elementId, $leafSectionIdsRef), $el->LAST_ERROR);
             $conn->commitTransaction();
         } catch (Exception $e) {
             $conn->rollbackTransaction();

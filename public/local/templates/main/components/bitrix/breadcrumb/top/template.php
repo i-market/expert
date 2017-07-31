@@ -4,7 +4,7 @@ use App\View as v;
 
 $showItemName = function($title) {
     ?>
-    <span itemprop="name"><?= $title ?></span>
+    <span itemprop="name"><?= TruncateText($title, 50) ?></span>
     <?
 };
 $showItem = function($position, $link, $title, $isLast) use ($showItemName) {

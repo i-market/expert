@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services;
 use Core\Util as u;
 use Core\Underscore as _;
 use FunctionalPHP\Trampoline as t;
@@ -153,31 +154,55 @@ class ExaminationCalculator extends Calculator {
         return t\trampoline($loop, $ids);
     }
 
-    function multipliers($model, $dataSet) {
+    function multipliers($state) {
+        $params = $state['params'];
+        $dataSet = $state['data_set'];
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
-        if (!$model['HAS_UNDERGROUND_FLOORS']) {
+        // TODO missing examination data
+        $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
+        if (!$params['HAS_UNDERGROUND_FLOORS']) {
             $ignoredKeys[] = 'UNDERGROUND_FLOORS';
         }
-        if ($model['SITE_COUNT'] === 1) {
+        if (!$params['NEEDS_VISIT']) {
+            $ignoredKeys = array_merge($ignoredKeys, [
+                'LOCATION',
+                'ADDRESS',
+                'DISTANCE_BETWEEN_SITES',
+                'TRANSPORT_ACCESSIBILITY'
+            ]);
+        }
+        if ($params['SITE_COUNT'] === 1) {
             $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
         }
         $knownKeys = array_keys($dataSet['MULTIPLIERS']);
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);
-        $missingKeys = array_diff($requiredKeys, array_keys($model));
+        $missingKeys = array_diff($requiredKeys, array_keys($params));
         assert(_::isEmpty($missingKeys), var_export($missingKeys, true));
-        return _::map(_::pick($model, $requiredKeys), function($x, $field) use ($dataSet) {
+        $findMult = function($val, $field) use (&$findMult, $dataSet) {
+            if (is_array($val)) {
+                $multipliers = array_map(function($v) use (&$findMult, $field) {
+                    return $findMult($v, $field);
+                }, $val);
+                return u::product($multipliers);
+            }
+            $entity = Services::findEntity($field, $val, $dataSet);
+            if (in_array($field, ['DOCUMENTS'])) {
+                $multiplier = $entity['VALUE'][true];
+            } else {
+                $multiplier = $entity['VALUE'];
+            }
+            assert(is_numeric($multiplier));
+            return $multiplier;
+        };
+        return _::map(_::pick($params, $requiredKeys, true), function($x, $field) use ($findMult, $dataSet) {
             if ($field === 'GOALS') {
                 $views = $this->goalViews($dataSet);
                 $matchingViews = $this->matchingGoalViews($x, $views);
                 return u::product($this->reduceGoalViews($x, $matchingViews));
-            } elseif (isset($x['ID'])) {
-                // TODO makes sure multiplier exists
-                // TODO nested
-                return $dataSet['MULTIPLIERS'][$field][$x['ID']]['VALUE'];
-            }
-            else {
-                // TODO non-ref case
-                return $x;
+            } if ($field === 'FLOORS') {
+                return $findMult(u::sum($x), $field);
+            } else {
+                return $findMult($x, $field);
             }
         });
     }

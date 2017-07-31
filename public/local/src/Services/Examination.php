@@ -40,14 +40,12 @@ class Examination {
                 return Util::inRange($model['TOTAL_AREA'], $range['min'], $range['max']);
             });
             $calculator = new ExaminationCalculator();
-            // TODO !!!!
-            // TODO use the model to get multipliers
-//            $multipliers = $calculator->multipliers($params, $dataSet);
-//            $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
+            $multipliers = $calculator->multipliers($state);
+            $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
             $state['model'] = $model;
-//            $state['result'] = [
-//                'total_price' => $totalPrice
-//            ];
+            $state['result'] = [
+                'total_price' => $totalPrice
+            ];
         }
         return $state;
     }
@@ -132,6 +130,7 @@ class Examination {
                 array_map($mergeOptions, $uiElementsByRoot)
             ),
             // TODO missing examination data
+            // see also calculator/multipliers method ignored key
             'DISTANCE_BETWEEN_SITES' => Services::entities2options([
                 1 => [
                     "ID" => "1",

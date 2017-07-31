@@ -431,7 +431,7 @@ class Services {
                 $f = Parser::parseNumericPredicate($entity['NAME']);
                 return $f($val);
             };
-        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS'])) {
+        } elseif (in_array($field, ['HAS_UNDERGROUND_FLOORS', 'FOR_LEGAL_CASE', 'NEEDS_VISIT'])) {
             $pred = function($entity) use ($val) {
                 $bool = Parser::parseBoolean($entity['NAME']);
                 return $val === $bool;

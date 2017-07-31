@@ -295,8 +295,8 @@ abstract class Parser {
 
     static function parseBoolean($str) {
         // TODO keywords class property
-        $truthy = ['Имеется', 'ЕСТЬ'];
-        $falsy = ['Не имеется', 'НЕТ'];
+        $truthy = ['Имеется', 'ЕСТЬ', 'Для суда', 'Требуется'];
+        $falsy = ['Не имеется', 'НЕТ', 'Не для суда', 'Не требуется'];
         if (in_array($str, $truthy)) {
             return true;
         } elseif (in_array($str, $falsy)) {

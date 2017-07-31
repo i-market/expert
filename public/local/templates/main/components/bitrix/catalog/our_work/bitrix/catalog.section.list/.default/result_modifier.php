@@ -1,6 +1,7 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\Iblock;
+use Bitrix\Iblock\SectionTable;
 use Core\Util;
 use Core\Underscore as _;
 
@@ -19,3 +20,14 @@ $arResult['ROOT_SECTIONS'] = array_map(function($root) use ($sectionSorter) {
     }, $descendants);
     return _::set($root, 'SECTIONS', _::sort($sections, $sectionSorter));
 }, Iblock::sectionTrees($arResult['SECTIONS']));
+
+if (intval($arResult['SECTION']['DEPTH_LEVEL']) === 1) {
+    $roots = SectionTable::query()->setSelect(['ID', 'SORT'])->setFilter([
+        'IBLOCK_ID' => $arResult['SECTION']['IBLOCK_ID'],
+        'DEPTH_LEVEL' => 1
+    ])->setOrder(['SORT' => 'ASC'])->exec()->fetchAll();
+    $idx = _::findKey($roots, function($x) use ($arResult) {
+        return $x['ID'] === $arResult['SECTION']['ID'];
+    });
+    $arResult['NUMBER_MARKER'] = $idx + 1;
+}

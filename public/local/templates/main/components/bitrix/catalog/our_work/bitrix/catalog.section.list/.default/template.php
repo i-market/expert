@@ -38,9 +38,10 @@ $showSections = function($sections) use ($splitList) {
 <section class="work_examples_inner">
 	<div class="wrap">
 		<div class="wrap_title">
-			<? // TODO decorative number ?>
-<!--			<div class="number_marker">1</div>-->
-			<h2><?= $arResult['SECTION']['NAME'] ?></h2>
+            <? if (!v::isEmpty(v::get($arResult, 'NUMBER_MARKER'))): ?>
+                <div class="number_marker"><?= $arResult['NUMBER_MARKER'] ?></div>
+            <? endif ?>
+            <h2><?= $arResult['SECTION']['NAME'] ?></h2>
 		</div>
         <? if (!v::isEmpty($arResult['ROOT_SECTIONS'])): ?>
             <div class="accordeon">

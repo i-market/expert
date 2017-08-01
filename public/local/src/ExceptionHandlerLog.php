@@ -13,7 +13,7 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
     public function write($exception, $logType) {
         global $USER;
         if ($this->enabled && function_exists('curl_init') && $this->client !== null) {
-            if (is_object($USER)) {
+            if (is_object($USER) && $USER->IsAuthorized()) {
                 $this->client->user_context([
                     'id' => $USER->GetID(),
                     'username' => $USER->GetLogin(),

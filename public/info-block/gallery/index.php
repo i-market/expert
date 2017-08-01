@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Кунсткамера");
 $APPLICATION->SetPageProperty('layout', 'bare');
 ?>
 
-<section class="infoblock_gallery">
+<section class="infoblock_gallery infoblock_gallery--page">
     <div class="wrap">
         <div class="wrap_title">
             <h2><?= $APPLICATION->GetTitle(false) ?></h2>
@@ -51,7 +51,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
                 "PAGER_SHOW_ALWAYS" => "N",
                 "PAGER_TEMPLATE" => ".default",
                 "PAGER_TITLE" => '',
-                "PARENT_SECTION" => "",
+                "PARENT_SECTION" => $_REQUEST['SECTION_ID'],
                 "PARENT_SECTION_CODE" => "",
                 "PREVIEW_TRUNCATE_LEN" => "",
                 "PROPERTY_CODE" => array("", ""),

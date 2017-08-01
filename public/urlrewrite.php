@@ -1,5 +1,11 @@
 <?
 $arUrlRewrite = array(
+    array(
+        "CONDITION" => "#^/info-block/gallery/(\d+)/#",
+        "RULE" => "SECTION_ID=\$1",
+        "ID" => "",
+        "PATH" => "/info-block/gallery/index.php",
+    ),
 	array(
 		"CONDITION" => "#^/info-block/opinions/#",
 		"RULE" => "",

@@ -1,6 +1,5 @@
 <? use App\View as v; ?>
 
-<? // TODO editing actions ?>
 <? // TODO 4 columns as in the psd mockup? ?>
 <div class="item col col_3" id="<?= v::addEditingActions($item, $template) ?>">
     <? // TODO add fancybox gallery id? ?>

@@ -133,4 +133,36 @@ class Util {
             return $acc * $x;
         }, 1);
     }
+
+    static function elementEditingLinks($element) {
+        assert(isset($element['IBLOCK_ID']));
+        assert(isset($element['ID']));
+        // news.list
+        $arButtons = \CIBlock::GetPanelButtons(
+            $element["IBLOCK_ID"],
+            $element["ID"],
+            0,
+            array("SECTION_BUTTONS"=>false, "SESSID"=>false)
+        );
+        return [
+            "EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
+            "DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"]
+        ];
+    }
+
+    static function sectionEditingLinks($section) {
+        assert(isset($section['IBLOCK_ID']));
+        assert(isset($section['ID']));
+        // catalog.section.list
+        $arButtons = \CIBlock::GetPanelButtons(
+            $section["IBLOCK_ID"],
+            0,
+            $section["ID"],
+            array("SESSID"=>false, "CATALOG"=>true)
+        );
+        return [
+            "EDIT_LINK" => $arButtons["edit"]["edit_section"]["ACTION_URL"],
+            "DELETE_LINK" => $arButtons["edit"]["delete_section"]["ACTION_URL"]
+        ];
+    }
 }

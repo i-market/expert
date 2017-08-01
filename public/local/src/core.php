@@ -474,19 +474,22 @@ class View {
 
 trait NewsListLike {
     /**
-     * @param array $element
+     * @param array $el
      * @param CBitrixComponentTemplate $template
      * @return string dom element id
      */
-    static function addEditingActions($element, $template) {
-        assert(array_key_exists('EDIT_LINK', $element));
-        assert(array_key_exists('DELETE_LINK', $element));
-        $template->AddEditAction($element['ID'], $element['EDIT_LINK'],
-            CIBlock::GetArrayByID($element['IBLOCK_ID'], 'ELEMENT_EDIT'));
-        $template->AddDeleteAction($element['ID'], $element['DELETE_LINK'],
-            CIBlock::GetArrayByID($element['IBLOCK_ID'], 'ELEMENT_DELETE'),
+    static function addEditingActions($el, $template, $type = 'element') {
+        $isSection = $type === 'section' || isset($el['DEPTH_LEVEL']);
+        if (!_::isEmpty(array_diff(['EDIT_LINK', 'DELETE_LINK'] , array_keys($el)))) {
+            $links = $isSection ? Util::sectionEditingLinks($el) : Util::elementEditingLinks($el);
+            $el = array_merge($el, $links);
+        }
+        $template->AddEditAction($el['ID'], $el['EDIT_LINK'],
+            CIBlock::GetArrayByID($el['IBLOCK_ID'], $isSection ? 'SECTION_EDIT' : 'ELEMENT_EDIT'));
+        $template->AddDeleteAction($el['ID'], $el['DELETE_LINK'],
+            CIBlock::GetArrayByID($el['IBLOCK_ID'], $isSection ? 'SECTION_DELETE' : 'ELEMENT_DELETE'),
             ['CONFIRM' => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')]);
-        return $template->GetEditAreaId($element['ID']);
+        return $template->GetEditAreaId($el['ID']);
     }
 }
 

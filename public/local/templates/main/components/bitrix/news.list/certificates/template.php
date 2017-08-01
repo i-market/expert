@@ -4,31 +4,33 @@ use App\View as v;
 ?>
 <? foreach ($arResult['SECTIONS'] as $section): ?>
     <div class="certificates_item" id="<?= $section['CODE'] ?>">
-        <div class="wrap_title">
-            <h4><?= $section['NAME'] ?></h4>
-            <? if (!v::isEmpty($section['FILE'])): ?>
-                <? $extension = v::upper($section['FILE']['EXTENSION']) ?>
-                <? // TODO improve microcopy ?>
-                <? $downloadText = 'Скачать '.$extension.', '.$section['FILE']['HUMAN_SIZE'] ?>
-                <a class="download_doc" href="<?= $section['FILE']['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
-            <? endif ?>
-        </div>
-        <div class="grid">
-            <? foreach ($section['ITEMS'] as $item): ?>
-                <? $file = $item['FILE'] ?>
-                <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
-                    <? // TODO add fancybox gallery id? ?>
-                    <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
+        <div id="<?= v::addEditingActions($section, $this, 'section') ?>">
+            <div class="wrap_title">
+                <h4><?= $section['NAME'] ?></h4>
+                <? if (!v::isEmpty($section['FILE'])): ?>
+                    <? $extension = v::upper($section['FILE']['EXTENSION']) ?>
+                    <? // TODO improve microcopy ?>
+                    <? $downloadText = 'Скачать '.$extension.', '.$section['FILE']['HUMAN_SIZE'] ?>
+                    <a class="download_doc" href="<?= $section['FILE']['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
+                <? endif ?>
+            </div>
+            <div class="grid">
+                <? foreach ($section['ITEMS'] as $item): ?>
+                    <? $file = $item['FILE'] ?>
+                    <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
+                        <? // TODO add fancybox gallery id? ?>
+                        <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
                         <span class="wrap_img">
                             <img src="<?= v::resize($item['PREVIEW_PICTURE'], 274, 274) ?>" alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>">
                         </span>
-                        <span class="text"><?= $item['NAME'] ?></span>
-                    </a>
-                    <? $extension = v::upper($file['EXTENSION']) ?>
-                    <? $downloadText = "Скачать ${extension}, ${file['HUMAN_SIZE']}" ?>
-                    <a class="download_sert" href="<?= $file['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
-                </div>
-            <? endforeach ?>
+                            <span class="text"><?= $item['NAME'] ?></span>
+                        </a>
+                        <? $extension = v::upper($file['EXTENSION']) ?>
+                        <? $downloadText = "Скачать ${extension}, ${file['HUMAN_SIZE']}" ?>
+                        <a class="download_sert" href="<?= $file['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
+                    </div>
+                <? endforeach ?>
+            </div>
         </div>
     </div>
 <? endforeach ?>

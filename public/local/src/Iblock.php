@@ -40,7 +40,7 @@ class Iblock {
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {
             $sections = SectionTable::query()
-                ->setSelect(['ID', 'NAME'])
+                ->setSelect(['IBLOCK_ID', 'ID', 'NAME'])
                 ->setFilter(['IBLOCK_ID' => $iblockId])
                 ->exec()->fetchAll();
         }

@@ -137,7 +137,7 @@ class Util {
     static function elementEditingLinks($element) {
         assert(isset($element['IBLOCK_ID']));
         assert(isset($element['ID']));
-        // news.list
+        // from news.list
         $arButtons = \CIBlock::GetPanelButtons(
             $element["IBLOCK_ID"],
             $element["ID"],
@@ -153,7 +153,7 @@ class Util {
     static function sectionEditingLinks($section) {
         assert(isset($section['IBLOCK_ID']));
         assert(isset($section['ID']));
-        // catalog.section.list
+        // from catalog.section.list
         $arButtons = \CIBlock::GetPanelButtons(
             $section["IBLOCK_ID"],
             0,

@@ -5,6 +5,9 @@ namespace App;
 use App\Services\Monitoring;
 use App\Services\MonitoringParser;
 use App\Services\MonitoringRepo;
+use Bex\Tools\Iblock\IblockTools;
+use Bitrix\Main\Loader;
+use CIBlockElement;
 use Core\NewsListLike;
 use Core\ShareButtons;
 use League\Plates\Engine;
@@ -12,6 +15,11 @@ use Bitrix\Main\Config\Configuration;
 use Core\Underscore as _;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
+
+// TODO non-ideal way to distinguish between environments
+if (php_sapi_name() !== 'cli') {
+    Loader::includeModule('iblock');
+}
 
 class App extends \Core\App {
     const SITE_ID = 's1';
@@ -97,7 +105,6 @@ class App extends \Core\App {
         try {
             $validator->assert($params);
         } catch (NestedValidationException $exception) {
-            // TODO refactor: extract validation stuff
             $errors = Services::getMessages($exception);
         }
         $state = [
@@ -106,7 +113,19 @@ class App extends \Core\App {
         ];
         $isValid = _::isEmpty($errors);
         if ($isValid) {
-            // TODO side effects
+            $el = new CIBlockElement();
+            $fields = _::pick($params, ['CONTACT_PERSON', 'PHONE']);
+            $result = $el->Add([
+                'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::CALLBACK_REQUESTS)->id(),
+                'NAME' => $params['CONTACT_PERSON'],
+                'PROPERTY_VALUES' => $fields
+            ]);
+            if (!$result) {
+                trigger_error("can't save the callback request", E_USER_WARNING);
+            }
+            App::getInstance()->sendMail(Events::CALLBACK_REQUEST, array_merge($fields, [
+                'EMAIL_TO' => App::getInstance()->adminEmailMaybe()
+            ]), App::SITE_ID);
             $state['screen'] = 'success';
         }
         return $state;
@@ -161,6 +180,7 @@ class View extends \Core\View {
 
 class Events {
     const PROPOSAL = 'PROPOSAL';
+    const CALLBACK_REQUEST = 'CALLBACK_REQUEST';
 }
 
 class Videos {

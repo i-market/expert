@@ -114,13 +114,13 @@ class App extends \Core\App {
         $isValid = _::isEmpty($errors);
         if ($isValid) {
             $el = new CIBlockElement();
-            $fields = _::pick($params, ['CONTACT_PERSON', 'PHONE']);
+            $fields = _::pick($params, ['CONTACT_PERSON', 'PHONE'], true);
             $result = $el->Add([
                 'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::CALLBACK_REQUESTS)->id(),
                 'NAME' => $params['CONTACT_PERSON'],
                 'PROPERTY_VALUES' => $fields
             ]);
-            if (!$result) {
+            if ($result === false) {
                 trigger_error("can't save the callback request", E_USER_WARNING);
             }
             App::getInstance()->sendMail(Events::CALLBACK_REQUEST, array_merge($fields, [

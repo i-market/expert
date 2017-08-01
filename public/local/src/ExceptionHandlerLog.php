@@ -7,6 +7,7 @@ use Raven_Client;
 use Core\Underscore as _;
 
 class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
+    /** @var Raven_Client */
     private $client = null;
     private $enabled = false;
 

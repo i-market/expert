@@ -8,6 +8,7 @@ use App\Services\MonitoringRepo;
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Main\Loader;
 use CIBlockElement;
+use Core\Env;
 use Core\NewsListLike;
 use Core\ShareButtons;
 use League\Plates\Engine;
@@ -123,9 +124,24 @@ class App extends \Core\App {
             if ($result === false) {
                 trigger_error("can't save the callback request", E_USER_WARNING);
             }
-            App::getInstance()->sendMail(Events::CALLBACK_REQUEST, array_merge($fields, [
+            $mailFields = array_merge($fields, [
                 'EMAIL_TO' => App::getInstance()->adminEmailMaybe()
-            ]), App::SITE_ID);
+            ]);
+            if (self::env() !== Env::DEV) {
+                // TODO refactor: sentry logger
+                $appConfig = Configuration::getValue('app');
+                $dsn = _::get($appConfig, 'sentry.dsn');
+                $client = new \Raven_Client($dsn, [
+                    'environment' => self::env()
+                ]);
+                $client->captureMessage('callback request mail event', [], [
+                    'level' => 'info',
+                    'extra' => [
+                        'fields' => $mailFields
+                    ]
+                ]);
+            }
+            App::getInstance()->sendMail(Events::CALLBACK_REQUEST, $mailFields, App::SITE_ID);
             $state['screen'] = 'success';
         }
         return $state;

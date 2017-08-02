@@ -1,5 +1,4 @@
 <?
-use App\Components;
 use App\View as v;
 ?>
 <section class="activites_section">
@@ -29,12 +28,17 @@ use App\View as v;
                             </div>
                         </div>
                         <div class="bottom">
-                            <a href="<?= $service['calcLink'] ?>" class="big_btn">
-                                <span class="text"><span>Определить стоимость и сроки On-line</span></span>
-                                <span class="img">
+                            <? if (!v::isEmpty($service['calcLink'])): ?>
+                                <a href="<?= $service['calcLink'] ?>" class="big_btn">
+                                    <span class="text"><span>Определить стоимость и сроки On-line</span></span>
+                                    <span class="img">
                                     <img src="<?= v::asset('images/calc.png') ?>">
                                 </span>
-                            </a>
+                                </a>
+                            <? else: ?>
+                                <? // TODO refactor: get rid of an invisible element used for button alignment ?>
+                                <div class="big_btn" style="visibility: hidden"></div>
+                            <? endif ?>
                             <button data-modal="<?= $service['requestModalId'] ?>" class="big_btn">
                                 <span class="text"><span>Отправить заявку</span></span>
                                 <span class="img">

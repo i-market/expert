@@ -26,6 +26,7 @@ class Monitoring {
             Services::keyValidator('FLOORS', $params),
             Services::keyValidator('UNDERGROUND_FLOORS', $params),
             v::key('MONITORING_GOAL', v::notOptional()),
+            Services::keyValidator('DURATION', $params),
             Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params),
             v::key('STRUCTURES_TO_MONITOR', v::arrayType()->notEmpty()),
             Services::keyValidator('DOCUMENTS', $params)
@@ -95,6 +96,7 @@ class Monitoring {
             'Продолжительность выполнения работ' => Services::formatDuration($state['model']['DURATION']['NAME'])
         ]);
         $options = _::update(self::options($state['data_set']['MULTIPLIERS']), 'DURATION', function($opts) {
+            // TODO I guess you can format `duration` ahead of time in `options`
             return array_map(function($opt) {
                 return _::update($opt, 'text', [Services::class, 'formatDuration']);
             }, $opts);

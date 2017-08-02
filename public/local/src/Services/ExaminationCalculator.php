@@ -154,11 +154,9 @@ class ExaminationCalculator extends Calculator {
         return t\trampoline($loop, $ids);
     }
 
-    function multipliers($state) {
-        $params = $state['params'];
-        $dataSet = $state['data_set'];
+    function multipliers($params, $dataSet) {
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
-        // TODO missing examination data
+        // TODO temporary ignore while we're missing distance data
         $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
         if (!$params['HAS_UNDERGROUND_FLOORS']) {
             $ignoredKeys[] = 'UNDERGROUND_FLOORS';
@@ -199,7 +197,7 @@ class ExaminationCalculator extends Calculator {
                 $views = $this->goalViews($dataSet);
                 $matchingViews = $this->matchingGoalViews($x, $views);
                 return u::product($this->reduceGoalViews($x, $matchingViews));
-            } if ($field === 'FLOORS') {
+            } elseif ($field === 'FLOORS') {
                 return $findMult(u::sum($x), $field);
             } else {
                 return $findMult($x, $field);

@@ -99,10 +99,6 @@ class Components {
             }
             return array_merge($service, ['form' => $form]);
         }, array_values(Services::services()));
-        // TODO tmp: filter out services that are not implemented yet
-        $services = array_filter($services, function($service) {
-            return in_array($service['code'], ['monitoring', 'inspection', 'examination']);
-        });
         return v::render('partials/services_section', ['services' => $services]);
     }
 }

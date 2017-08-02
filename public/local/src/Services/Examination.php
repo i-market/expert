@@ -40,7 +40,7 @@ class Examination {
                 return Util::inRange($model['TOTAL_AREA'], $range['min'], $range['max']);
             });
             $calculator = new ExaminationCalculator();
-            $multipliers = $calculator->multipliers($state);
+            $multipliers = $calculator->multipliers($params, $dataSet);
             $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
             $state['model'] = $model;
             $state['result'] = [

@@ -66,7 +66,8 @@ class Services {
             $pair = [
                 'monitoring' => [Services\MonitoringParser::class, 'Мониторинг калькуляторы.xlsx'],
                 'inspection' => [Services\InspectionParser::class, 'Обследование калькуляторы.xlsx'],
-                'examination' => [Services\ExaminationParser::class, 'Экспертиза калькуляторы.xlsx']
+                'examination' => [Services\ExaminationParser::class, 'Экспертиза калькуляторы.xlsx'],
+                'oversight' => [Services\OversightParser::class, 'Технадзор контроль калькуляторы.xlsx']
             ];
             list($class, $file) = $pair[$type];
             /** @var callable $parseFile */

@@ -6,6 +6,7 @@ use App\Services\Examination;
 use App\Services\Inspection;
 use App\Services\Monitoring;
 use App\Services\MonitoringRequest;
+use App\Services\Oversight;
 use App\View as v;
 use CFile;
 use Core\Env;
@@ -102,7 +103,7 @@ class Api {
             });
             $router->respond('POST', '/services/examination/calculator/[:action]', function($request, $response) {
                 $defaults = [
-                    'GOALS'
+                    'GOALS' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
                 $data = Services::data('examination');
@@ -119,6 +120,26 @@ class Api {
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/examination_calculator', $context);
+            });
+            $router->respond('POST', '/services/oversight/calculator/[:action]', function($request, $response) {
+                $defaults = [
+                    // TODO?
+                ];
+                $params = array_merge($defaults, self::normalizeParams($request->params()));
+                $data = Services::data('oversight');
+                $state = Oversight::state($params, $request->action, $data, _::get($params, 'validate', true));
+                $context = Oversight::calculatorContext($state);
+                if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
+                    $opts = App::getInstance()->env() === Env::DEV
+                        ? ['output' => ['debug' => true]]
+                        : [];
+                    $proposalParams = Oversight::proposalParams($state, Services::outgoingId('oversight'), $opts);
+                    $path = Services::generateProposalFile($proposalParams);
+                    assert($path !== false);
+                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    $context['resultBlock']['screen'] = 'sent';
+                }
+                return v::render('partials/calculator/oversight_calculator', $context);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 $params = $request->params();

@@ -73,9 +73,8 @@ if (App::useBitrixAsset()) {
                             )
                         ); ?>
                     </div>
-                    <? // TODO implement search ?>
-                    <form action="" method="post" id="">
-                        <input type="text" placeholder="Найти">
+                    <form action="/search/">
+                        <input name="q" type="text" placeholder="Найти">
                         <button type="submit"></button>
                     </form>
                 </div>

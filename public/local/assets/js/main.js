@@ -43,6 +43,28 @@
           $(this).find('input[type=checkbox]').prop('checked', false);
         });
       });
+      $calc.find('.construction-phase').each(function() {
+        var $component = $(this);
+        console.assert(typeof App !== 'undefined' && _.has(App, 'constructionPhases'));
+        $component.find('input').on('change', function() {
+          var $trigger = $(this);
+          var checked = $component.find('input:checked').map(function() {
+            return $(this).val();
+          }).get();
+          var disabled = _.uniq(_.flatMap(checked, function(id) {
+            return _.has(App.constructionPhases.available, id)
+              ? _.difference(_.without(App.constructionPhases.known, id), App.constructionPhases.available[id])
+              : [];
+          }));
+          $component.find('input').each(function() {
+            var dis = _.includes(disabled, $(this).val());
+            $(this).prop('disabled', dis).closest('.wrap_checkbox').toggleClass('disabled', dis);
+            if (!$(this).is($trigger) && $(this).prop('checked') && dis) {
+              $(this).prop('checked', false);
+            }
+          });
+        });
+      });
     });
   }
 

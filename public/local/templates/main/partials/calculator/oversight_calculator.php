@@ -6,6 +6,10 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
+<script>
+    window.App = window.App || {};
+    App.constructionPhases = <?= json_encode($constructionPhases) ?>;
+</script>
 <section class="calculator_certain_types calculator">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator"
@@ -49,7 +53,6 @@ $macros = new macros($state);
                     <? $macros->showTextarea('ADDRESS', 'Адрес(а)') ?>
                     <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов)', ['required' => true]) ?>
                     <? $macros->showSelect('CONSTRUCTION_TYPE', $options['CONSTRUCTION_TYPE'], 'Вид строительства', ['required' => true]) ?>
-                    <? $macros->showSelect('CONSTRUCTION_PHASE', $options['CONSTRUCTION_PHASE'], 'Этап строительства', ['required' => true]) ?>
                     <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', [
                         'required' => true,
                         'type' => 'number',
@@ -75,6 +78,10 @@ $macros = new macros($state);
                     <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доступность', ['required' => true]) ?>
                 </div>
                 <div class="right_side">
+                    <? $macros->showCheckboxList('CONSTRUCTION_PHASE', $options['CONSTRUCTION_PHASE'], 'Этап строительства', [
+                        'required' => true,
+                        'class' => 'construction-phase'
+                    ]) ?>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>
             </div>

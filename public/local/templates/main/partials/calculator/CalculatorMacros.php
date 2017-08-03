@@ -184,11 +184,10 @@ class CalculatorMacros {
     }
 
     function showCheckboxList($name, $options, $label, $opts) {
-        // TODO errors
         list($value, $error) = $this->valueErrorPair($name);
         $prefix = Util::uniqueId().'_'.$name;
         ?>
-        <div class="wrap_calc_item">
+        <div class="wrap_calc_item<?= !v::isEmpty($error) ? ' error' : '' ?> <?= isset($opts['class']) ? $opts['class'] : '' ?>">
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <? foreach ($options as $idx => $option): ?>
                 <? $id = "{$prefix}_{$idx}" ?>
@@ -198,6 +197,7 @@ class CalculatorMacros {
                     <label for="<?= $id ?>"><?= $option['text'] ?></label>
                 </div>
             <? endforeach ?>
+            <div class="error-message"><?= $error ?></div>
         </div>
         <?
     }

@@ -124,7 +124,7 @@ class Api {
             });
             $router->respond('POST', '/services/oversight/calculator/[:action]', function($request, $response) {
                 $defaults = [
-                    // TODO?
+                    'CONSTRUCTION_PHASE' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
                 $data = Services::data('oversight');

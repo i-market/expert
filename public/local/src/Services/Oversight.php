@@ -44,6 +44,71 @@ class Oversight {
         return $state;
     }
 
+    static function constructionPhases($dataSet) {
+        $knownPhases = [
+            'Строительство еще не начато',
+            'Выполнены (выполняются) земляные работы',
+            'Выполнены (выполняются) работы нулевого цикла',
+            'Выполнена (выполняется) прокладка внутриплощадочных инженерных сетей',
+            'Возведен (возводитсья) несущий каркас',
+            'Выполнены (выполняются) кровельные работы',
+            'Выполнен (выполняется) монтаж внутренних инженерных сетей и оборудования',
+            'Выполнены (выполняются) внутренние отделочные работы',
+            'Выполнены (выполняются) нуружные отделочные работы'
+        ];
+        $availableBySelected = [
+            'Строительство еще не начато' => [],
+            'Выполнены (выполняются) работы нулевого цикла' => [
+                'Выполнены (выполняются) земляные работы',
+                'Выполнена (выполняется) прокладка внутриплощадочных инженерных сетей'
+            ],
+            'Выполнена (выполняется) прокладка внутриплощадочных инженерных сетей' => [
+                'Выполнены (выполняются) земляные работы',
+                'Выполнены (выполняются) работы нулевого цикла',
+                'Возведен (возводитсья) несущий каркас'
+            ],
+            'Возведен (возводитсья) несущий каркас' =>
+                array_diff($knownPhases, [
+                    'Возведен (возводитсья) несущий каркас',
+                    'Строительство еще не начато',
+                    'Выполнены (выполняются) кровельные работы'
+                ]),
+            'Выполнены (выполняются) кровельные работы' =>
+                array_diff($knownPhases, [
+                    'Выполнены (выполняются) кровельные работы',
+                    'Строительство еще не начато',
+                ]),
+            'Выполнен (выполняется) монтаж внутренних инженерных сетей и оборудования' =>
+                array_diff($knownPhases, [
+                    'Выполнен (выполняется) монтаж внутренних инженерных сетей и оборудования',
+                    'Строительство еще не начато',
+                ]),
+            'Выполнены (выполняются) внутренние отделочные работы' =>
+                array_diff($knownPhases, [
+                    'Выполнены (выполняются) внутренние отделочные работы',
+                    'Строительство еще не начато',
+                ]),
+            'Выполнены (выполняются) нуружные отделочные работы' =>
+                array_diff($knownPhases, [
+                    'Выполнены (выполняются) нуружные отделочные работы',
+                    'Строительство еще не начато',
+                ]),
+        ];
+        $byName = _::keyBy('NAME', $dataSet['MULTIPLIERS']['CONSTRUCTION_PHASE']);
+        $getId = function($name) use ($byName) {
+            assert(isset($byName[$name]));
+            return $byName[$name]['ID'];
+        };
+        $idsBySelected = _::reduce($availableBySelected, function($acc, $xs, $k) use ($getId) {
+            // array_values to make sure when we convert it to json its not going to be an object
+            return _::set($acc, $getId($k), array_values(_::map($xs, $getId)));
+        }, []);
+        return [
+            'known' => _::map($knownPhases, $getId),
+            'available' => $idsBySelected
+        ];
+    }
+
     static function calculatorContext($state) {
         $params = $state['params'];
         $siteCount = _::get($params, 'SITE_COUNT', 1);
@@ -57,6 +122,7 @@ class Oversight {
             'apiEndpoint' => '/api/services/oversight/calculator/calculate',
             'state' => $state,
             'options' => self::options($state['data_set']['MULTIPLIERS']),
+            'constructionPhases' => self::constructionPhases($state['data_set']),
             'heading' => 'Определение стоимости<br> проведения обследования',
             'floorInputs' => $floorInputs,
             'showDistanceSelect' => $siteCount > 1,
@@ -94,7 +160,7 @@ class Oversight {
             Services::keyValidator('LOCATION', $params),
             Services::keyValidator('USED_FOR', $params),
             v::key('CONSTRUCTION_TYPE', $requiredId),
-            v::key('CONSTRUCTION_PHASE', $requiredId),
+            v::key('CONSTRUCTION_PHASE', v::arrayType()->notEmpty()),
             Services::keyValidator('TOTAL_AREA', $params),
             Services::keyValidator('VOLUME', $params),
             Services::keyValidator('FLOORS', $params),
@@ -108,6 +174,8 @@ class Oversight {
             $validator->assert($params);
         } catch (NestedValidationException $exception) {
             $errors = Services::getMessages($exception);
+            // TODO refactor: custom messages
+            $errors = _::update($errors, 'CONSTRUCTION_PHASE', _::constantly(Services::EMPTY_LIST_MESSAGE));
         }
         return $errors;
     }

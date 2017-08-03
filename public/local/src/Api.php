@@ -77,7 +77,7 @@ class Api {
                     $proposalParams = Monitoring::proposalParams($state, Services::outgoingId('monitoring'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/monitoring_calculator', $context);
@@ -97,7 +97,7 @@ class Api {
                     $proposalParams = Inspection::proposalParams($state, Services::outgoingId('inspection'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/inspection_calculator', $context);
@@ -117,7 +117,7 @@ class Api {
                     $proposalParams = Examination::proposalParams($state, Services::outgoingId('examination'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/examination_calculator', $context);
@@ -137,7 +137,7 @@ class Api {
                     $proposalParams = Oversight::proposalParams($state, Services::outgoingId('oversight'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/oversight_calculator', $context);
@@ -158,7 +158,7 @@ class Api {
                     $proposalParams = Individual::proposalParams($state, Services::outgoingId('individual'), $opts);
                     $path = Services::generateProposalFile($proposalParams);
                     assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/individual_calculator', $context);

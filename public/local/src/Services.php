@@ -486,10 +486,10 @@ class Services {
         return $response;
     }
 
-    static function sendProposalEmail($emailTo, $attachmentPaths) {
+    static function sendProposalEmail($emailTo, $fileIds) {
         $event = [
             'EMAIL_TO' => $emailTo,
-            'FILE' => $attachmentPaths
+            'FILE' => $fileIds
         ];
         return App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
     }

@@ -145,6 +145,17 @@ class Underscore extends ArraysMethods {
         return $ret;
     }
 
+    static function dropWhile($array, $pred) {
+        $from = 0;
+        foreach ($array as $k => $v) {
+            if (!$pred($v, $k)) {
+                return array_slice($array, $from);
+            }
+            $from += 1;
+        }
+        return [];
+    }
+
     static function update($array, $key, callable $f) {
         return !self::has($array, $key)
             ? $array
@@ -275,6 +286,14 @@ class Underscore extends ArraysMethods {
      */
     static function find($array, Closure $closure) {
         return parent::find($array, $closure);
+    }
+
+    static function initial($array, $to = 1) {
+        // underscore.php returns x for initial([x]) and that's quite a surprise
+        if (count($array) === 1 && $to >= 1) {
+            return [];
+        }
+        return parent::initial($array, $to);
     }
 }
 

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\Examination;
+use App\Services\Individual;
 use App\Services\Inspection;
 use App\Services\Monitoring;
 use App\Services\MonitoringRequest;
@@ -140,6 +141,27 @@ class Api {
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/oversight_calculator', $context);
+            });
+            $router->respond('POST', '/services/individual/calculator/[:action]', function($request, $response) {
+                $defaults = [
+                    // TODO?
+                ];
+                $params = $request->params(['SERVICES']);
+                $params = array_merge($defaults, self::normalizeParams($params));
+                $data = Services::data('individual');
+                $state = Individual::state($params, $request->action, $data, _::get($params, 'validate', true));
+                $context = Individual::calculatorContext($state);
+                if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
+                    $opts = App::getInstance()->env() === Env::DEV
+                        ? ['output' => ['debug' => true]]
+                        : [];
+                    $proposalParams = Individual::proposalParams($state, Services::outgoingId('individual'), $opts);
+                    $path = Services::generateProposalFile($proposalParams);
+                    assert($path !== false);
+                    Services::sendProposalEmail($params['EMAIL'], [$path]);
+                    $context['resultBlock']['screen'] = 'sent';
+                }
+                return v::render('partials/calculator/individual_calculator', $context);
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 $params = $request->params();

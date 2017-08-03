@@ -66,6 +66,7 @@
             scrollTop: $firstError.offset().top - $modal.find('.block').offset().top
           }, duration);
         } else {
+          // TODO refactor: .title works for `individual` calculator, but that's just a happy accident
           var $title = $firstError.closest(':has(.title)').find('.title');
           $('body, html').animate({
             scrollTop: ($title.length ? $title : $firstError).offset().top

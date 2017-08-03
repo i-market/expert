@@ -67,7 +67,8 @@ class Services {
                 'monitoring' => [Services\MonitoringParser::class, 'Мониторинг калькуляторы.xlsx'],
                 'inspection' => [Services\InspectionParser::class, 'Обследование калькуляторы.xlsx'],
                 'examination' => [Services\ExaminationParser::class, 'Экспертиза калькуляторы.xlsx'],
-                'oversight' => [Services\OversightParser::class, 'Технадзор контроль калькуляторы.xlsx']
+                'oversight' => [Services\OversightParser::class, 'Технадзор контроль калькуляторы.xlsx'],
+                'individual' => [Services\IndividualParser::class, 'Техническая экспертиза калькуляторы.xlsx']
             ];
             list($class, $file) = $pair[$type];
             /** @var callable $parseFile */
@@ -404,17 +405,13 @@ class Services {
                 }, $val);
             } else {
                 $entityMaybe = $findEntity($k, $val, $dataSet);
-                return $entityMaybe ? _::pick($entityMaybe, ['ID' , 'NAME']) : $val;
+                return $entityMaybe ? _::remove($entityMaybe, 'VALUE') : $val;
             }
         };
         return _::map($params, $deref);
     }
 
-    static function findEntity($field, $val, $dataSet) {
-        if (!isset($dataSet['MULTIPLIERS'][$field])) {
-            return null;
-        }
-        $entities = $dataSet['MULTIPLIERS'][$field];
+    static function findEntity2($field, $val, $entities) {
         $findRec = function($xs, $pred) {
             $reducer = function($result, $x) use (&$reducer, $xs, $pred) {
                 if (isset($x['ID']) && $pred($x)) {
@@ -444,6 +441,15 @@ class Services {
             return $findRec($entities, $pred);
         }
         return _::find($entities, $pred);
+    }
+
+    // TODO refactor
+    /** @deprecated use `findEntity2` */
+    static function findEntity($field, $val, $dataSet) {
+        if (!isset($dataSet['MULTIPLIERS'][$field])) {
+            return null;
+        }
+        return self::findEntity2($field, $val, $dataSet['MULTIPLIERS'][$field]);
     }
 
     /// proposal

@@ -17,7 +17,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 // TODO non-ideal way to distinguish between environments
-if (php_sapi_name() !== 'cli') {
+if (class_exists('Bitrix\Main\Loader')) {
     Loader::includeModule('iblock');
 }
 

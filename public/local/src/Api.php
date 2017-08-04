@@ -50,6 +50,14 @@ class Api {
         return $params;
     }
 
+    static function sendProposalEmail($proposalParams, $email) {
+        $path = Services::generateProposalFile($proposalParams);
+        assert($path !== false);
+        $fileId = CFile::SaveFile(CFile::MakeFileArray($path), 'tmp');
+        assert(is_numeric($fileId), var_export($path, true));
+        return Services::sendProposalEmail($email, [$fileId]);
+    }
+
     // TODO sanitize params
     static function router() {
         $router = new Klein();
@@ -75,9 +83,7 @@ class Api {
                         ? ['output' => ['debug' => true]]
                         : [];
                     $proposalParams = Monitoring::proposalParams($state, Services::outgoingId('monitoring'), $opts);
-                    $path = Services::generateProposalFile($proposalParams);
-                    assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
+                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/monitoring_calculator', $context);
@@ -95,9 +101,7 @@ class Api {
                         ? ['output' => ['debug' => true]]
                         : [];
                     $proposalParams = Inspection::proposalParams($state, Services::outgoingId('inspection'), $opts);
-                    $path = Services::generateProposalFile($proposalParams);
-                    assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
+                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/inspection_calculator', $context);
@@ -115,9 +119,7 @@ class Api {
                         ? ['output' => ['debug' => true]]
                         : [];
                     $proposalParams = Examination::proposalParams($state, Services::outgoingId('examination'), $opts);
-                    $path = Services::generateProposalFile($proposalParams);
-                    assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
+                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/examination_calculator', $context);
@@ -135,9 +137,7 @@ class Api {
                         ? ['output' => ['debug' => true]]
                         : [];
                     $proposalParams = Oversight::proposalParams($state, Services::outgoingId('oversight'), $opts);
-                    $path = Services::generateProposalFile($proposalParams);
-                    assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
+                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/oversight_calculator', $context);
@@ -156,9 +156,7 @@ class Api {
                         ? ['output' => ['debug' => true]]
                         : [];
                     $proposalParams = Individual::proposalParams($state, Services::outgoingId('individual'), $opts);
-                    $path = Services::generateProposalFile($proposalParams);
-                    assert($path !== false);
-                    Services::sendProposalEmail($params['EMAIL'], [CFile::SaveFile(CFile::MakeFileArray($path), 'tmp')]);
+                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/individual_calculator', $context);

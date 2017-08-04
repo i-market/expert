@@ -6,6 +6,7 @@ use ArrayIterator;
 use Bitrix\Main\Config\Configuration;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Mail\Event;
+use Bitrix\Main\Mail\EventManager;
 use CBitrixComponentTemplate;
 use CFile;
 use CIBlock;
@@ -413,6 +414,8 @@ class App {
             'C_FIELDS' => $fields
         ], _::get($opts, 'event', []));
         $addResult = Event::send($event);
+        // sendImmediate doesn't handle files? yay
+        EventManager::checkEvents();
         return $addResult;
     }
 

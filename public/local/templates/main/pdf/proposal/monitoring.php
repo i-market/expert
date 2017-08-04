@@ -237,8 +237,4 @@
             <strong>Продолжительность выполнения работ: <?= $duration ?>.</strong>
         </p>
     </div>
-    <p class="extra-top-margin">
-        <strong>Ссылка на просмотрщик:</strong><br>
-        <strong style="color: red">http://www.autodesk.ru/free-trials</strong>
-    </p>
 </div>

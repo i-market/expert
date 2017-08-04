@@ -116,7 +116,7 @@ class Oversight {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
         $resultBlock = Services::resultBlockContext($state, '/api/services/oversight/calculator/send_proposal', [
-            // TODO duration?
+            'Продолжительность выполнения работ' => Services::formatDuration($state['model']['DURATION']['NAME'])
         ]);
         return [
             'apiEndpoint' => '/api/services/oversight/calculator/calculate',

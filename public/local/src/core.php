@@ -336,8 +336,9 @@ class Strings extends StringsMethods {
         return $s;
     }
 
-    static function capitalize($s) {
-        return self::upper(mb_substr($s, 0, 1)) . self::lower(mb_substr($s, 1));
+    static function capitalize($s, $lowerRest = true) {
+        $xformRest = $lowerRest ? _::func([self::class, 'lower']) : _::identity();
+        return self::upper(mb_substr($s, 0, 1)) . $xformRest(mb_substr($s, 1));
     }
 }
 

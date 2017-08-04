@@ -86,10 +86,14 @@ abstract class Parser {
         });
     }
 
+    // TODO refactor single concern: also strips leading dash
+    static function stripNumbering($str) {
+        return str::replaceAll($str, '/^(\d+\.)+\s*(-\s*)?/', '');
+    }
+
     protected function findSection($cells, $sections) {
         $isMatch = function($prefix) use ($cells) {
-            // strip numbering
-            $str = str::replaceAll(_::first($cells), '/^\d+\.\s*/', '');
+            $str = self::stripNumbering(_::first($cells));
             // TODO maybe ignore whitespace?
             // TODO make it case-insensitive
             return str::startsWith($str, $prefix);

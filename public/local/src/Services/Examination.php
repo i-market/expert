@@ -120,7 +120,7 @@ class Examination {
             }
         });
         $goalsFilter = _::map(array_keys($opts['GOALS']), function($name, $idx) {
-            return ['value' => strval($idx), 'text' => $name];
+            return ['value' => strval($idx), 'text' => Parser::stripNumbering($name)];
         });
         return array_merge($opts, [
             'GOALS_FILTER' => $goalsFilter,

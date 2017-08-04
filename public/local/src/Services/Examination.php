@@ -57,8 +57,7 @@ class Examination {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
         $resultBlock = Services::resultBlockContext($state, '/api/services/examination/calculator/send_proposal', [
-            // TODO
-//            'Срок выполнения' => $state['model']['TIME']
+            'Срок выполнения' => $state['model']['TIME']
         ]);
         if (isset($state['errors']['GOALS'])) {
             $state['errors']['GOALS_FILTER'] = $state['errors']['GOALS'];

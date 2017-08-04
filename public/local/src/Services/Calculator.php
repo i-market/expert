@@ -19,6 +19,7 @@ abstract class Calculator {
             return $acc + $x;
         }, 0);
         $price = round($this->pricePerSquareMeter($totalArea), $scale);
+        self::$debug['price_per_square_meter'] = $price;
         return $price * $totalArea * $multiplier;
     }
 

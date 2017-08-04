@@ -192,7 +192,7 @@ class ExaminationCalculator extends Calculator {
             assert(is_numeric($multiplier));
             return $multiplier;
         };
-        return _::map(_::pick($params, $requiredKeys, true), function($x, $field) use ($findMult, $dataSet) {
+        $multipliers = _::map(_::pick($params, $requiredKeys, true), function($x, $field) use ($findMult, $dataSet) {
             if ($field === 'GOALS') {
                 $views = $this->goalViews($dataSet);
                 $matchingViews = $this->matchingGoalViews($x, $views);
@@ -203,5 +203,7 @@ class ExaminationCalculator extends Calculator {
                 return $findMult($x, $field);
             }
         });
+        self::$debug['multipliers'] = $multipliers;
+        return $multipliers;
     }
 }

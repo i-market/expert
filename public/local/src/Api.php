@@ -57,6 +57,12 @@ class Api {
         return Services::sendProposalEmail($email, [$path]);
     }
 
+    // TODO debugging data
+    static function debugScript() {
+        $json = json_encode(Services\Calculator::$debug);
+        return "<script>console.log({$json})</script>";
+    }
+
     // TODO sanitize params
     static function router() {
         $router = new Klein();
@@ -85,7 +91,7 @@ class Api {
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
-                return v::render('partials/calculator/monitoring_calculator', $context);
+                return v::render('partials/calculator/monitoring_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/inspection/calculator/[:action]', function($request, $response) {
                 $defaults = [
@@ -103,7 +109,7 @@ class Api {
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
-                return v::render('partials/calculator/inspection_calculator', $context);
+                return v::render('partials/calculator/inspection_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/examination/calculator/[:action]', function($request, $response) {
                 $defaults = [
@@ -121,7 +127,7 @@ class Api {
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
-                return v::render('partials/calculator/examination_calculator', $context);
+                return v::render('partials/calculator/examination_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/oversight/calculator/[:action]', function($request, $response) {
                 $defaults = [
@@ -139,7 +145,7 @@ class Api {
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
-                return v::render('partials/calculator/oversight_calculator', $context);
+                return v::render('partials/calculator/oversight_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/individual/calculator/[:action]', function($request, $response) {
                 $defaults = [
@@ -158,7 +164,7 @@ class Api {
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
-                return v::render('partials/calculator/individual_calculator', $context);
+                return v::render('partials/calculator/individual_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 $params = $request->params();

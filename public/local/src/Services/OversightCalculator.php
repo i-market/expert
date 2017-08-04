@@ -59,12 +59,14 @@ class OversightCalculator extends Calculator {
             assert(is_numeric($multiplier));
             return $multiplier;
         };
-        return _::map(_::pick($params, $requiredKeys, true), function($x, $field) use ($findMult, $dataSet) {
+        $multipliers = _::map(_::pick($params, $requiredKeys, true), function($x, $field) use ($findMult, $dataSet) {
             if ($field === 'FLOORS') {
                 return $findMult(u::sum($x), $field);
             } else {
                 return $findMult($x, $field);
             }
         });
+        self::$debug['multipliers'] = $multipliers;
+        return $multipliers;
     }
  }

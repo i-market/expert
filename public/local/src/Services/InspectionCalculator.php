@@ -86,6 +86,7 @@ class InspectionCalculator extends Calculator {
         $multipliers = array_reduce($requiredKeys, function($acc, $field) use ($dataSet, $params, $multiplierRec) {
             return _::set($acc, $field, $multiplierRec($params[$field], $field, $dataSet));
         }, []);
+        self::$debug['multipliers'] = $multipliers;
         return $multipliers;
     }
 }

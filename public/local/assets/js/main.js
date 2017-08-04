@@ -12,6 +12,20 @@
   });
 
   function init($scope) {
+    $('.work_examples_inner').each(function() {
+      var $component = $(this);
+      var hash = window.location.hash.substr(1);
+      var hashQuery = hash.split('&').reduce(function(result, item) {
+        var parts = item.split('=');
+        result[parts[0]] = parts[1];
+        return result;
+      }, {});
+      if (_.has(hashQuery, 'backFrom')) {
+        var sectionId = hashQuery['backFrom'];
+        // expand accordion item containing the section from which we navigated from
+        $component.find('[data-id='+ sectionId +']').closest('.accordeon_inner').prev().click();
+      }
+    });
     // calculators
 
     // TODO refactor: remove redundant calculator classes

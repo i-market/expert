@@ -12,7 +12,7 @@ $showSections = function($sections) use ($splitList) {
     <ul class="list">
         <? $attrs = 'class="heading"' ?>
         <? foreach ($sections as $section): ?>
-            <? $link = "<a href=\"{$section['SECTION_PAGE_URL']}\">{$section['NAME']}</a>" ?>
+            <? $link = "<a href=\"{$section['SECTION_PAGE_URL']}\" data-id=\"{$section['ID']}\">{$section['NAME']}</a>" ?>
             <? $elevation = $section['ELEVATION'] ?>
             <? if ($elevation === 3): ?>
                 <? $splitList(function() use ($attrs, $link) { ?>

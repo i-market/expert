@@ -8,7 +8,7 @@ use Core\Underscore as _;
 
 class CalculatorMacros {
     static private $requiredMark = ' <span class="red">*</span>';
-    static private $selectPlaceholder = '<option value="">Выбрать...</option>';
+    static private $selectPlaceholder = '<option value="" hidden>Выбрать...</option>';
     private $state;
 
     function __construct($state) {

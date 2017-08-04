@@ -53,9 +53,8 @@ class Api {
     static function sendProposalEmail($proposalParams, $email) {
         $path = Services::generateProposalFile($proposalParams);
         assert($path !== false);
-        $fileId = CFile::SaveFile(CFile::MakeFileArray($path), 'tmp');
-        assert(is_numeric($fileId), var_export(['path' => $path, 'error' => $fileId], true));
-        return Services::sendProposalEmail($email, [$fileId]);
+        assert(file_exists($path), $path);
+        return Services::sendProposalEmail($email, [$path]);
     }
 
     // TODO sanitize params

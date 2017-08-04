@@ -401,17 +401,17 @@ class App {
         return Option::get('main', 'email_from', null);
     }
 
-    function sendMail($eventName, $fields, $siteId) {
+    function sendMail($eventName, $fields, $siteId, $opts = []) {
         $app = Configuration::getValue('app');
         $emailFromMaybe = _::get($app, 'override_default_email_from');
         if ($emailFromMaybe !== null) {
             $fields['DEFAULT_EMAIL_FROM'] = $emailFromMaybe;
         }
-        $event = [
+        $event = array_merge([
             'EVENT_NAME' => $eventName,
             'LID' => $siteId,
             'C_FIELDS' => $fields
-        ];
+        ], _::get($opts, 'event', []));
         $result = Event::sendImmediate($event);
         $isSent = $result === Event::SEND_RESULT_SUCCESS;
         if (!$isSent && $this->env() !== Env::DEV) {

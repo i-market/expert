@@ -486,12 +486,10 @@ class Services {
         return $response;
     }
 
-    static function sendProposalEmail($emailTo, $fileIds) {
-        $event = [
-            'EMAIL_TO' => $emailTo,
-            'FILE' => $fileIds
-        ];
-        return App::getInstance()->sendMail(Events::PROPOSAL, $event, App::SITE_ID);
+    static function sendProposalEmail($emailTo, $filePaths) {
+        return App::getInstance()->sendMail(Events::PROPOSAL, ['EMAIL_TO' => $emailTo], App::SITE_ID, [
+            'event' => ['FILE' => $filePaths]
+        ]);
     }
 
     static function formatFullDate(\DateTime $datetime) {

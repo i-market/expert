@@ -54,7 +54,7 @@ class Api {
         $path = Services::generateProposalFile($proposalParams);
         assert($path !== false);
         $fileId = CFile::SaveFile(CFile::MakeFileArray($path), 'tmp');
-        assert(is_numeric($fileId), var_export($path, true));
+        assert(is_numeric($fileId), var_export(['path' => $path, 'error' => $fileId], true));
         return Services::sendProposalEmail($email, [$fileId]);
     }
 

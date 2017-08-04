@@ -17,7 +17,7 @@ use App\View as v;
                 </span>
             </a>
             <? if (!v::isEmpty($item['DETAIL_TEXT'])): ?>
-                <div class="text">
+                <div class="description">
                     <?= $item['DETAIL_TEXT'] ?>
                 </div>
             <? endif ?>

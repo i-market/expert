@@ -73,7 +73,7 @@ $path = $dest === ''
     ? ''
     : (_::get($params, 'output.debug', false)
         ? Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/proposal.pdf'])
-        : tempnam($tmpPath, 'proposal'));
+        : tempnam($tmpPath, 'proposal').'.pdf');
 $pdf->Output($path, $dest);
 
 if ($dest === 'F') {

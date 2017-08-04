@@ -10,8 +10,6 @@ try {
     Api::router()->dispatch();
 } catch (\Exception $e) {
     CHTTP::SetStatus('500 Internal Server Error');
-    if (App::getInstance()->env() === Env::DEV) {
-        // unwrap klein exception
-        throw $e->getPrevious();
-    }
+    // unwrap klein exception
+    throw $e->getPrevious();
 }

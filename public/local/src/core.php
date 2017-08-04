@@ -412,7 +412,7 @@ class App {
             'LID' => $siteId,
             'C_FIELDS' => $fields
         ], _::get($opts, 'event', []));
-        $result = Event::sendImmediate($event);
+        $result = Event::send($event);
         $isSent = $result === Event::SEND_RESULT_SUCCESS;
         if (!$isSent && $this->env() !== Env::DEV) {
             trigger_error("mail sending issue: {$result}", E_USER_WARNING);

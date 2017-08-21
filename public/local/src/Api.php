@@ -12,6 +12,7 @@ use App\Services\InspectionRequest;
 use App\Services\Monitoring;
 use App\Services\MonitoringRequest;
 use App\Services\Oversight;
+use App\Services\OversightRequest;
 use App\View as v;
 use CFile;
 use Core\Env;
@@ -214,6 +215,15 @@ class Api {
                     // TODO side effects
                 }
                 return Components::renderServiceForm('partials/service_forms/design_form', $ctx);
+            });
+            $router->respond('POST', '/services/oversight', function($request, $response) {
+                $params = $request->params();
+                $state = OversightRequest::state($params, Services::data('oversight'));
+                $ctx = OversightRequest::context($state, Services::services()['oversight']);
+                if (_::isEmpty($state['errors'])) {
+                    // TODO side effects
+                }
+                return Components::renderServiceForm('partials/service_forms/oversight_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {
                 // TODO handle errors

@@ -6,6 +6,7 @@ use App\Services\DesignRequest;
 use App\Services\ExaminationRequest;
 use App\Services\IndividualRequest;
 use App\Services\InspectionRequest;
+use App\Services\OversightRequest;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
@@ -111,7 +112,12 @@ class Components {
             } elseif ($service['code'] === 'design') {
                 $ctx = DesignRequest::context(DesignRequest::initialState(), $service);
                 $form = Components::renderServiceForm('partials/service_forms/design_form', $ctx);
+            } elseif ($service['code'] === 'oversight') {
+                $data = Services::data('oversight');
+                $ctx = OversightRequest::context(OversightRequest::initialState($data), $service);
+                $form = Components::renderServiceForm('partials/service_forms/oversight_form', $ctx);
             } else {
+                trigger_error('unknown service type', E_USER_WARNING);
                 $form = 'Извините, раздел находится в разработке.';
             }
             return array_merge($service, ['form' => $form]);

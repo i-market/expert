@@ -5,6 +5,7 @@ namespace App;
 use App\Services\Examination;
 use App\Services\Individual;
 use App\Services\Inspection;
+use App\Services\InspectionRequest;
 use App\Services\Monitoring;
 use App\Services\MonitoringRequest;
 use App\Services\Oversight;
@@ -174,6 +175,15 @@ class Api {
                     // TODO side effects
                 }
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
+            });
+            $router->respond('POST', '/services/inspection', function($request, $response) {
+                $params = $request->params();
+                $state = InspectionRequest::state($params, Services::data('inspection'));
+                $ctx = InspectionRequest::context($state, Services::services()['inspection']);
+                if (_::isEmpty($state['errors'])) {
+                    // TODO side effects
+                }
+                return Components::renderServiceForm('partials/service_forms/inspection_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {
                 // TODO handle errors

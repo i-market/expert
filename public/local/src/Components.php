@@ -2,8 +2,7 @@
 
 namespace App;
 
-use App\Services\Monitoring;
-use App\Services\MonitoringRepo;
+use App\Services\InspectionRequest;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
@@ -92,8 +91,12 @@ class Components {
         $services = array_map(function($service) {
             if ($service['code'] === 'monitoring') {
                 $data = Services::data('monitoring');
-                $ctx = MonitoringRequest::context(MonitoringRequest::initialState($data), Services::services()['monitoring']);
+                $ctx = MonitoringRequest::context(MonitoringRequest::initialState($data), $service);
                 $form = Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
+            } elseif ($service['code'] === 'inspection') {
+                $data = Services::data('inspection');
+                $ctx = InspectionRequest::context(InspectionRequest::initialState($data), $service);
+                $form = Components::renderServiceForm('partials/service_forms/inspection_form', $ctx);
             } else {
                 $form = 'Извините, раздел находится в разработке.';
             }

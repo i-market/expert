@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\ExaminationRequest;
 use App\Services\InspectionRequest;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
@@ -97,6 +98,10 @@ class Components {
                 $data = Services::data('inspection');
                 $ctx = InspectionRequest::context(InspectionRequest::initialState($data), $service);
                 $form = Components::renderServiceForm('partials/service_forms/inspection_form', $ctx);
+            } elseif ($service['code'] === 'examination') {
+                $data = Services::data('examination');
+                $ctx = ExaminationRequest::context(ExaminationRequest::initialState($data), $service);
+                $form = Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
             } else {
                 $form = 'Извините, раздел находится в разработке.';
             }

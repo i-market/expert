@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\Examination;
+use App\Services\ExaminationRequest;
 use App\Services\Individual;
 use App\Services\Inspection;
 use App\Services\InspectionRequest;
@@ -184,6 +185,15 @@ class Api {
                     // TODO side effects
                 }
                 return Components::renderServiceForm('partials/service_forms/inspection_form', $ctx);
+            });
+            $router->respond('POST', '/services/examination', function($request, $response) {
+                $params = $request->params();
+                $state = ExaminationRequest::state($params, Services::data('examination'));
+                $ctx = ExaminationRequest::context($state, Services::services()['examination']);
+                if (_::isEmpty($state['errors'])) {
+                    // TODO side effects
+                }
+                return Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {
                 // TODO handle errors

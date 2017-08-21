@@ -9,7 +9,7 @@ $macros = new macros($state);
     <? $macros->showInput('NAME', 'Наименование предмета(ов) экспертизы или обследования', ['required' => true]) ?>
     <? $macros->showInput('LOCATION', 'Местонахождение') ?>
     <? $macros->showTextarea('GOAL', 'Опишите цели проведения экспертизы или обследования', ['required' => true]) ?>
-    <? $macros->showTextarea('ADDITIONAL_INFO', 'Дополнительная информация по экспертизе') ?>
+    <? $macros->showTextarea('ADDITIONAL_INFO', 'Дополнительная информация по экспертизе или обследованию') ?>
 </div>
 <? macros::showFilesBlock('<b>Документы</b> по объекту(ам) экспертизы (к заявке можно прикрепить не более 10 файлов)') ?>
 <h3 class="h3_mb">Контактная информация для ответа</h3>

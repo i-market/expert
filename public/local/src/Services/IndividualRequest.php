@@ -60,10 +60,7 @@ class IndividualRequest {
 
     static function context($state, $service) {
         return array_merge($service, [
-            'state' => $state,
-            'options' => [
-                'DOCUMENTS' => Services::entities2options($state['data_set']['MULTIPLIERS']['DOCUMENTS'])
-            ]
+            'state' => $state
         ]);
     }
 }

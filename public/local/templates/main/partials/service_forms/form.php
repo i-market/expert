@@ -23,8 +23,8 @@ use App\View as v;
         }
     </style>
     <h2>Заявка</h2>
-    <? if (!v::isEmpty($service['requestFormSubheading'])): ?>
-        <h3><?= $service['requestFormSubheading'] ?></h3>
+    <? if (!v::isEmpty($requestFormSubheading)): ?>
+        <h3><?= $requestFormSubheading ?></h3>
     <? endif ?>
     <p class="top_text"><? $APPLICATION->IncludeComponent(
             "bitrix:main.include",

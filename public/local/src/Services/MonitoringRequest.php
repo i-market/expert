@@ -65,7 +65,9 @@ class MonitoringRequest {
     static function context($state, $service) {
         return array_merge($service, [
             'state' => $state,
-            'options' => _::pick($state['data_set']['MULTIPLIERS'], ['DOCUMENTS'])
+            'options' => [
+                'DOCUMENTS' => Services::entities2options($state['data_set']['MULTIPLIERS']['DOCUMENTS'])
+            ]
         ]);
     }
 

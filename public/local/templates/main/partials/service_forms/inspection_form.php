@@ -16,7 +16,7 @@ $macros = new macros($state);
 <div class="wrap_checkbox_block">
     <h4>Наличие документов:</h4>
     <? foreach ($options['DOCUMENTS'] as $idx => $opt): ?>
-        <? $macros->showCheckbox('DOCUMENTS[]', $opt['ID'], $opt['NAME'], "inspection-document-{$idx}") ?>
+        <? $macros->showCheckbox('DOCUMENTS[]', $opt['value'], $opt['text'], "inspection-document-{$idx}") ?>
     <? endforeach ?>
 </div>
 <? macros::showFilesBlock('<b>Документы</b> по объекту(ам) технического надзора (к заявке можно прикрепить не более 10 файлов)') ?>

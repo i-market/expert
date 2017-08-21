@@ -23,7 +23,7 @@ class FormMacros {
     }
 
     // TODO refactor
-    private function valueErrorPair($name) {
+    function valueErrorPair($name) {
         return [self::getValue($name), $this->state['errors'][$name]];
     }
 

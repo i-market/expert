@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\DesignRequest;
 use App\Services\Examination;
 use App\Services\ExaminationRequest;
 use App\Services\Individual;
@@ -204,6 +205,15 @@ class Api {
                     // TODO side effects
                 }
                 return Components::renderServiceForm('partials/service_forms/individual_form', $ctx);
+            });
+            $router->respond('POST', '/services/design', function($request, $response) {
+                $params = $request->params();
+                $state = DesignRequest::state($params);
+                $ctx = DesignRequest::context($state, Services::services()['design']);
+                if (_::isEmpty($state['errors'])) {
+                    // TODO side effects
+                }
+                return Components::renderServiceForm('partials/service_forms/design_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {
                 // TODO handle errors

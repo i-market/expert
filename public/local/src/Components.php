@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\DesignRequest;
 use App\Services\ExaminationRequest;
 use App\Services\IndividualRequest;
 use App\Services\InspectionRequest;
@@ -107,6 +108,9 @@ class Components {
                 $data = Services::data('individual');
                 $ctx = IndividualRequest::context(IndividualRequest::initialState($data), $service);
                 $form = Components::renderServiceForm('partials/service_forms/individual_form', $ctx);
+            } elseif ($service['code'] === 'design') {
+                $ctx = DesignRequest::context(DesignRequest::initialState(), $service);
+                $form = Components::renderServiceForm('partials/service_forms/design_form', $ctx);
             } else {
                 $form = 'Извините, раздел находится в разработке.';
             }

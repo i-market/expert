@@ -6,7 +6,7 @@ use App\Templates\FormMacros as macros;
 $macros = new macros($state);
 ?>
 <div class="wrap_input_block">
-    <? $macros->showInput('NAME', 'Наименование объекта(ов) мониторинга', ['required' => true]) ?>
+    <? $macros->showInput('NAME', 'Наименование объекта(ов) обследования', ['required' => true]) ?>
     <? $macros->showInput('LOCATION', 'Местонахождение объекта(ов)') ?>
     <? $macros->showTextarea('INSPECTION_GOAL', 'Опишите цели обследования', ['required' => true]) ?>
     <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) обследования (назначение, этажность, наличие подвала, площадь, год постройки и пр.)',

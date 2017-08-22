@@ -14,7 +14,11 @@ use App\Services\MonitoringRequest;
 use App\Services\Oversight;
 use App\Services\OversightRequest;
 use App\View as v;
+use Bex\Tools\Iblock\IblockTools;
+use Bitrix\Iblock\ElementTable;
+use Bitrix\Iblock\PropertyTable;
 use CFile;
+use CIBlockElement;
 use Core\Env;
 use Core\FileUpload;
 use Core\Strings as str;
@@ -174,10 +178,35 @@ class Api {
             $router->respond('POST', '/services/monitoring', function($request, $response) {
                 $params = $request->params();
                 $state = MonitoringRequest::state($params, Services::data('monitoring'));
-                $ctx = MonitoringRequest::context($state, Services::services()['monitoring']);
                 if (_::isEmpty($state['errors'])) {
-                    // TODO side effects
+                    $fieldsBase = array_merge(_::flatten($params, '_'), [
+                        'DOCUMENTS' => _::pluck($state['model']['DOCUMENTS'], 'NAME')
+                    ]);
+                    $el = new CIBlockElement();
+                    $elementId = $el->Add([
+                        'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::MONITORING_REQUESTS)->id(),
+                        'NAME' => Services::serviceRequestName($params),
+                        'PROPERTY_VALUES' => array_merge($fieldsBase, [
+                            'FILES' => array_map([self::class, 'uploadedFileArray'], $params['fileIds'])
+                        ])
+                    ]);
+                    if (!is_numeric($elementId)) {
+                        trigger_error("can't add service request element: {$el->LAST_ERROR}", E_USER_WARNING);
+                    }
+                    $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
+                    $files = array_map([CFile::class, 'GetFileArray'], $element['PROPERTIES']['FILES']['VALUE']);
+                    $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
+                    $fileLinks = array_map([App::class, 'url'], _::pluck($files, 'SRC'));
+                    $eventFields = array_merge($formattedFields, [
+                        'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                        'FILE_LINKS' => !_::isEmpty($fileLinks)
+                            ? join("\n", array_merge(['Прикрепленные файлы:'], $fileLinks))
+                            : '',
+                    ]);
+                    App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_MONITORING, $eventFields, App::SITE_ID);
+                    $state['screen'] = 'success';
                 }
+                $ctx = MonitoringRequest::context($state, Services::services()['monitoring']);
                 return Components::renderServiceForm('partials/service_forms/monitoring_form', $ctx);
             });
             $router->respond('POST', '/services/inspection', function($request, $response) {

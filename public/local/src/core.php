@@ -415,16 +415,22 @@ class App {
             'C_FIELDS' => $fields
         ], _::get($opts, 'event', []));
         $addResult = Event::send($event);
-        // sendImmediate doesn't handle files? yay
+        // sendImmediate doesn't handle files? yep
         EventManager::checkEvents();
         return $addResult;
     }
 
-    static function requestUrl() {
-        global $APPLICATION;
+    static function url($path) {
+        // TODO check for leading slash in path?
         $host = _::first(explode(':', $_SERVER['HTTP_HOST']));
         $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443;
-        return ($isHttps ? 'https' : 'http').'://'.$host.$APPLICATION->GetCurUri();
+        return ($isHttps ? 'https' : 'http').'://'.$host.$path;
+    }
+
+    /** @deprecated see `url` */
+    static function requestUrl() {
+        global $APPLICATION;
+        return self::url($APPLICATION->GetCurUri());
     }
 }
 

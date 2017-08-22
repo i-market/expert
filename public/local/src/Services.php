@@ -31,18 +31,6 @@ class Services {
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
 
-    static function saveServiceRequest($modelFields, $fileIds) {
-        $fields = self::markEmptyStrings(array_merge(_::flatten($modelFields, '_'), [
-            // TODO add files prop to db migration
-            'FILES' => array_map([Api::class, 'uploadedFileArray'], $fileIds)
-        ]));
-        $el = new CIBlockElement();
-        $elementId = $el->Add($fields);
-        $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
-//        $savedFiles = array_map([CFile::class, 'GetFileArray'], $element['PROPERTIES']['FILES']['VALUE']);
-        return $element;
-    }
-
     private static function dataFilePath($type) {
         // TODO
         $tmpPath = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
@@ -166,7 +154,7 @@ class Services {
         return 'NEW_SERVICE_REQUEST_'.str::upper($serviceCode);
     }
 
-    /** @deprecated */
+    /** @deprecated see Api class */
     private static function uploadedFileArrays($fileIds) {
         return array_map(function($fileId) {
             $absPath = Util::joinPath([Api::fileuploadDir(), $fileId]);
@@ -174,31 +162,12 @@ class Services {
         }, $fileIds);
     }
 
-    // TODO unused
-//    private function saveServiceRequest($serviceCode, $name, $message, $params, $propertyValues) {
-//        $iblockId = IblockTools::find(Iblock::INBOX_TYPE, Iblock::SERVICE_REQUESTS)->id();
-//        $section = SectionTable::query()
-//            ->setSelect(['ID'])
-//            ->setFilter([
-//                'IBLOCK_ID' => $iblockId,
-//                'CODE' => $serviceCode
-//            ])
-//            ->exec()->fetch();
-//        $el = new CIBlockElement();
-//        $fields = [
-//            'IBLOCK_ID' => $iblockId,
-//            'IBLOCK_SECTION_ID' => $section['ID'],
-//            'NAME' => $name,
-//            'PREVIEW_TEXT' => $message,
-//            'DETAIL_TEXT' => json_encode(['params' => $params]),
-//            'PROPERTY_VALUES' => $propertyValues
-//        ];
-//        $elementId = $el->Add($fields);
-//        if (!is_numeric($elementId)) {
-//            trigger_error("can't add `service_request` element: {$el->LAST_ERROR}", E_USER_WARNING);
-//        }
-//        return $elementId;
-//    }
+    static function serviceRequestName($params) {
+        $parts = array_map(function($contactKey) use ($params) {
+            return _::get($params, ['CONTACT', $contactKey]);
+        }, ['ORGANIZATION', 'PERSON', 'EMAIL']);
+        return join(' - ', _::clean($parts));
+    }
 
     static function formatList($items) {
         return join("\n", array_map(function($item) {

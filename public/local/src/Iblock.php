@@ -35,8 +35,8 @@ class Iblock {
     const SERVICE_DATA = 'service_data';
 
     const INBOX_TYPE = 'inbox';
-    const SERVICE_REQUESTS = 'service_requests';
     const CALLBACK_REQUESTS = 'callback_requests';
+    const MONITORING_REQUESTS = 'monitoring_requests';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

@@ -297,8 +297,31 @@ class Api {
                 $params = $request->params();
                 $state = DesignRequest::state($params);
                 if (_::isEmpty($state['errors'])) {
-                    // TODO side effects
+                    $itemsById = _::keyBy('ID', DesignRequest::items());
+                    $fieldsBase = array_merge(_::flatten($params, '_'), [
+                        'ITEMS' => array_map(function($id) use ($itemsById) {
+                            return _::get($itemsById, [$id, 'NAME']);
+                        }, $params['ITEMS'])
+                    ]);
+                    $el = new CIBlockElement();
+                    $elementId = $el->Add([
+                        'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::DESIGN_REQUESTS)->id(),
+                        'NAME' => Services::serviceRequestName($params),
+                        'PROPERTY_VALUES' => array_merge($fieldsBase, [
+                            'FILES' => array_map([self::class, 'uploadedFileArray'], $params['fileIds'])
+                        ])
+                    ]);
+                    if (!is_numeric($elementId)) {
+                        trigger_error("can't add service request element: {$el->LAST_ERROR}", E_USER_WARNING);
                 }
+                    $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
+                    $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'ITEMS', [Services::class, 'formatList']));
+                    $eventFields = array_merge($formattedFields, [
+                        'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                        'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
+                    ]);
+                    App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_DESIGN, $eventFields, App::SITE_ID);
+                    $state['screen'] = 'success';                }
                 $ctx = DesignRequest::context($state, Services::services()['design']);
                 return Components::renderServiceForm('partials/service_forms/design_form', $ctx);
             });

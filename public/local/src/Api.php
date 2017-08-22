@@ -194,14 +194,10 @@ class Api {
                         trigger_error("can't add service request element: {$el->LAST_ERROR}", E_USER_WARNING);
                     }
                     $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
-                    $files = array_map([CFile::class, 'GetFileArray'], $element['PROPERTIES']['FILES']['VALUE']);
                     $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
-                    $fileLinks = array_map([App::class, 'url'], _::pluck($files, 'SRC'));
                     $eventFields = array_merge($formattedFields, [
                         'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
-                        'FILE_LINKS' => !_::isEmpty($fileLinks)
-                            ? join("\n", array_merge(['Прикрепленные файлы:'], $fileLinks))
-                            : '',
+                        'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                     ]);
                     App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_MONITORING, $eventFields, App::SITE_ID);
                     $state['screen'] = 'success';

@@ -169,6 +169,14 @@ class Services {
         return join(' - ', _::clean($parts));
     }
 
+    static function fileLinksSection($fileIds) {
+        $files = array_map([CFile::class, 'GetFileArray'], $fileIds);
+        $fileLinks = array_map([App::class, 'url'], _::pluck($files, 'SRC'));
+        return !_::isEmpty($fileLinks)
+            ? join("\n", array_merge(['Прикрепленные файлы:'], $fileLinks))
+            : '';
+    }
+
     static function formatList($items) {
         return join("\n", array_map(function($item) {
             return '✓ '.$item;

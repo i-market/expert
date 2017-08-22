@@ -50,8 +50,10 @@ class CreateDesignRequestsIblock extends AbstractMigration {
                     'USER_TYPE' => 'HTML',
                 ],
                 [
-                    'CODE' => 'DOCUMENTS',
-                    'NAME' => 'Наличие документов'
+                    'CODE' => 'ITEMS',
+                    'NAME' => 'Какие проектные решения необходимо разработать',
+                    'PROPERTY_TYPE' => 'S',
+                    'MULTIPLE' => 'Y',
                 ],
                 [
                     'CODE' => 'CONTACT_ORGANIZATION',
@@ -109,7 +111,7 @@ class CreateDesignRequestsIblock extends AbstractMigration {
             ['CODE' => static::$iBlockData['CODE']]
         );
         if ($iBlock = $dbIBlock->Fetch()) {
-            CIBlock::Delete($iBlock['ID']);
+            assert(CIBlock::Delete($iBlock['ID']), $cIBlock->LAST_ERROR);
         }
     }
 }

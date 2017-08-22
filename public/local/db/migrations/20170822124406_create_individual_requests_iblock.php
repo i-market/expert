@@ -56,7 +56,9 @@ class CreateIndividualRequestsIblock extends AbstractMigration {
                 ],
                 [
                     'CODE' => 'DOCUMENTS',
-                    'NAME' => 'Наличие документов'
+                    'NAME' => 'Наличие документов',
+                    'PROPERTY_TYPE' => 'S',
+                    'MULTIPLE' => 'Y',
                 ],
                 [
                     'CODE' => 'CONTACT_ORGANIZATION',
@@ -114,7 +116,7 @@ class CreateIndividualRequestsIblock extends AbstractMigration {
             ['CODE' => static::$iBlockData['CODE']]
         );
         if ($iBlock = $dbIBlock->Fetch()) {
-            CIBlock::Delete($iBlock['ID']);
+            assert(CIBlock::Delete($iBlock['ID']), $cIBlock->LAST_ERROR);
         }
     }
 }

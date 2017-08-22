@@ -37,6 +37,11 @@ class Iblock {
     const INBOX_TYPE = 'inbox';
     const CALLBACK_REQUESTS = 'callback_requests';
     const MONITORING_REQUESTS = 'monitoring_requests';
+    const INSPECTION_REQUESTS = 'inspection_requests';
+    const EXAMINATION_REQUESTS = 'examination_requests';
+    const INDIVIDUAL_REQUESTS = 'individual_requests';
+    const DESIGN_REQUESTS = 'design_requests';
+    const OVERSIGHT_REQUESTS = 'oversight_requests';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

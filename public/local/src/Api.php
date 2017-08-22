@@ -15,8 +15,6 @@ use App\Services\Oversight;
 use App\Services\OversightRequest;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
-use Bitrix\Iblock\ElementTable;
-use Bitrix\Iblock\PropertyTable;
 use CFile;
 use CIBlockElement;
 use Core\Env;
@@ -208,7 +206,6 @@ class Api {
             $router->respond('POST', '/services/inspection', function($request, $response) {
                 $params = $request->params();
                 $state = InspectionRequest::state($params, Services::data('inspection'));
-                $ctx = InspectionRequest::context($state, Services::services()['inspection']);
                 if (_::isEmpty($state['errors'])) {
                     $fieldsBase = array_merge(_::flatten($params, '_'), [
                         'DOCUMENTS' => _::pluck($state['model']['DOCUMENTS'], 'NAME')
@@ -233,12 +230,12 @@ class Api {
                     App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_INSPECTION, $eventFields, App::SITE_ID);
                     $state['screen'] = 'success';
                 }
+                $ctx = InspectionRequest::context($state, Services::services()['inspection']);
                 return Components::renderServiceForm('partials/service_forms/inspection_form', $ctx);
             });
             $router->respond('POST', '/services/examination', function($request, $response) {
                 $params = $request->params();
                 $state = ExaminationRequest::state($params, Services::data('examination'));
-                $ctx = ExaminationRequest::context($state, Services::services()['examination']);
                 if (_::isEmpty($state['errors'])) {
                     $fieldsBase = array_merge(_::flatten($params, '_'), [
                         'DOCUMENTS' => _::pluck($state['model']['DOCUMENTS'], 'NAME')
@@ -263,33 +260,55 @@ class Api {
                     App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_EXAMINATION, $eventFields, App::SITE_ID);
                     $state['screen'] = 'success';
                 }
+                $ctx = ExaminationRequest::context($state, Services::services()['examination']);
                 return Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
             });
             $router->respond('POST', '/services/individual', function($request, $response) {
                 $params = $request->params();
                 $state = IndividualRequest::state($params, Services::data('individual'));
-                $ctx = IndividualRequest::context($state, Services::services()['individual']);
                 if (_::isEmpty($state['errors'])) {
-                    // TODO side effects
+                    $fieldsBase = array_merge(_::flatten($params, '_'), [
+                        'DOCUMENTS' => _::pluck($state['model']['DOCUMENTS'], 'NAME')
+                    ]);
+                    $el = new CIBlockElement();
+                    $elementId = $el->Add([
+                        'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::INDIVIDUAL_REQUESTS)->id(),
+                        'NAME' => Services::serviceRequestName($params),
+                        'PROPERTY_VALUES' => array_merge($fieldsBase, [
+                            'FILES' => array_map([self::class, 'uploadedFileArray'], $params['fileIds'])
+                        ])
+                    ]);
+                    if (!is_numeric($elementId)) {
+                        trigger_error("can't add service request element: {$el->LAST_ERROR}", E_USER_WARNING);
+                    }
+                    $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
+                    $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
+                    $eventFields = array_merge($formattedFields, [
+                        'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                        'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
+                    ]);
+                    App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_INDIVIDUAL, $eventFields, App::SITE_ID);
+                    $state['screen'] = 'success';
                 }
+                $ctx = IndividualRequest::context($state, Services::services()['individual']);
                 return Components::renderServiceForm('partials/service_forms/individual_form', $ctx);
             });
             $router->respond('POST', '/services/design', function($request, $response) {
                 $params = $request->params();
                 $state = DesignRequest::state($params);
-                $ctx = DesignRequest::context($state, Services::services()['design']);
                 if (_::isEmpty($state['errors'])) {
                     // TODO side effects
                 }
+                $ctx = DesignRequest::context($state, Services::services()['design']);
                 return Components::renderServiceForm('partials/service_forms/design_form', $ctx);
             });
             $router->respond('POST', '/services/oversight', function($request, $response) {
                 $params = $request->params();
                 $state = OversightRequest::state($params, Services::data('oversight'));
-                $ctx = OversightRequest::context($state, Services::services()['oversight']);
                 if (_::isEmpty($state['errors'])) {
                     // TODO side effects
                 }
+                $ctx = OversightRequest::context($state, Services::services()['oversight']);
                 return Components::renderServiceForm('partials/service_forms/oversight_form', $ctx);
             });
             $router->respond('POST', '/fileupload', function($request, $response) {

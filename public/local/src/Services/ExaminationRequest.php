@@ -19,7 +19,7 @@ class ExaminationRequest {
         $validator = v::allOf(
             v::key('NAME', v::stringType()->notEmpty()),
             v::key('LOCATION', v::stringType()),
-            v::key('INSPECTION_GOAL', v::stringType()->notEmpty()),
+            v::key('EXAMINATION_GOAL', v::stringType()->notEmpty()),
             v::key('DESCRIPTION', v::stringType()->notEmpty()),
             v::key('ADDITIONAL_INFO', v::stringType())
         );

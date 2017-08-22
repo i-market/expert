@@ -240,7 +240,28 @@ class Api {
                 $state = ExaminationRequest::state($params, Services::data('examination'));
                 $ctx = ExaminationRequest::context($state, Services::services()['examination']);
                 if (_::isEmpty($state['errors'])) {
-                    // TODO side effects
+                    $fieldsBase = array_merge(_::flatten($params, '_'), [
+                        'DOCUMENTS' => _::pluck($state['model']['DOCUMENTS'], 'NAME')
+                    ]);
+                    $el = new CIBlockElement();
+                    $elementId = $el->Add([
+                        'IBLOCK_ID' => IblockTools::find(Iblock::INBOX_TYPE, Iblock::EXAMINATION_REQUESTS)->id(),
+                        'NAME' => Services::serviceRequestName($params),
+                        'PROPERTY_VALUES' => array_merge($fieldsBase, [
+                            'FILES' => array_map([self::class, 'uploadedFileArray'], $params['fileIds'])
+                        ])
+                    ]);
+                    if (!is_numeric($elementId)) {
+                        trigger_error("can't add service request element: {$el->LAST_ERROR}", E_USER_WARNING);
+                    }
+                    $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
+                    $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
+                    $eventFields = array_merge($formattedFields, [
+                        'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                        'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
+                    ]);
+                    App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_EXAMINATION, $eventFields, App::SITE_ID);
+                    $state['screen'] = 'success';
                 }
                 return Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
             });

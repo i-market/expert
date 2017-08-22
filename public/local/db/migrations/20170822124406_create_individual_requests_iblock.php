@@ -6,7 +6,7 @@ use Phinx\Migration\AbstractMigration;
 
 class CreateIndividualRequestsIblock extends AbstractMigration {
     static $iBlockData = [
-        'NAME' => 'Заявки на проведение экспертизы',
+        'NAME' => 'Заявки на выполнение отдельных видов работ',
         'CODE' => 'individual_requests',
         'TYPE' => 'inbox',
     ];

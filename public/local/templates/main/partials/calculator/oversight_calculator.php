@@ -6,10 +6,6 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
-<script>
-    window.App = window.App || {};
-    App.constructionPhases = <?= json_encode($constructionPhases) ?>;
-</script>
 <section class="calculator_certain_types calculator">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator"

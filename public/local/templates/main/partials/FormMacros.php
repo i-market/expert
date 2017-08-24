@@ -9,7 +9,7 @@ use Core\Underscore as _;
 class FormMacros {
     // TODO wrap error messages in `if`
 
-    static private $requiredMark = ' <span class="red">*</span>';
+    static private $requiredMark = '&nbsp;<span class="red">*</span>';
     private $state;
 
     function __construct($state) {

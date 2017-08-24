@@ -7,7 +7,7 @@ use Core\Util;
 use Core\Underscore as _;
 
 class CalculatorMacros {
-    static private $requiredMark = ' <span class="red">*</span>';
+    static $requiredMark = '&nbsp;<span class="red">*</span>';
     static private $selectPlaceholder = '<option value="" hidden>Выбрать...</option>';
     private $state;
 
@@ -198,6 +198,34 @@ class CalculatorMacros {
                 </div>
             <? endforeach ?>
             <div class="error-message"><?= $error ?></div>
+        </div>
+        <?
+    }
+
+    function showExpandableCheckboxList($name, $label, $options, $_opts = []) {
+        $opts = array_merge([
+            'state' => 'collapsed'
+        ], $_opts);
+        list($value, $error) = $this->valueErrorPair($name);
+        $id = $name.'_'.Util::uniqueId();
+        ?>
+        <div class="wrap_calc_item hidden_block">
+            <p class="calculator__expandable-title" data-state="<?= $opts['state'] ?>" data-target="<?= '#'.$id ?>" role="button">
+                <span class="text"><?= $label ?></span>
+            </p>
+        </div>
+        <? // TODO error ?>
+        <div class="wrap_calc_item_block wrap_calc_item_block--checkbox"
+             id="<?= $id ?>"
+             style="display: <?= $opts['state'] === 'expanded' ? 'block' : 'none' ?>">
+            <? foreach ($options as $i => $option): ?>
+                <? $checkboxId = $id.'_'.$i ?>
+                <? $checked = in_array($option['value'], $value) ?>
+                <div class="wrap_checkbox">
+                    <input type="checkbox" name="<?= $name.'[]' ?>" value="<?= $option['value'] ?>"<?= $checked ? ' checked' : '' ?> hidden="hidden" id="<?= $checkboxId ?>">
+                    <label for="<?= $checkboxId ?>"><?= $option['text'] ?></label>
+                </div>
+            <? endforeach ?>
         </div>
         <?
     }

@@ -125,6 +125,7 @@
       $el.attr('data-state', saveState(state));
     }
 
+    // TODO refactor: split up this monster of a function
     var sel = '.calculator, .calculator--monitoring, .calculator--inspection';
     $scope.find(sel).addBack(sel).each(function() {
       var $calc = $(this);
@@ -170,6 +171,7 @@
         var $block = $(this);
         $block.find('input[type=checkbox]').on('change', function() {
           if (!$block.is('[data-dirty=true]')) {
+            // dirtiness flag won't survive an ajax request. meh.
             $block.attr('data-dirty', 'true');
             $block.find('.calculator__expandable-title').each(function() {
               // on first change expand everything

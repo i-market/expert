@@ -209,12 +209,11 @@ class CalculatorMacros {
         list($value, $error) = $this->valueErrorPair($name);
         $id = $name.'_'.Util::uniqueId();
         ?>
-        <div class="wrap_calc_item hidden_block">
+        <div class="wrap_calc_item">
             <p class="calculator__expandable-title" data-state="<?= $opts['state'] ?>" data-target="<?= '#'.$id ?>" role="button">
                 <span class="text"><?= $label ?></span>
             </p>
         </div>
-        <? // TODO error ?>
         <div class="wrap_calc_item_block wrap_calc_item_block--checkbox"
              id="<?= $id ?>"
              style="display: <?= $opts['state'] === 'expanded' ? 'block' : 'none' ?>">

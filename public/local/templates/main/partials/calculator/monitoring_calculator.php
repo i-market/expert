@@ -76,18 +76,27 @@ $macros = new macros($state);
                     <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доступность', ['required' => true]) ?>
                 </div>
                 <div class="right_side">
-                    <? $macros->showPackageSelector('STRUCTURES_TO_MONITOR', 'Конструкции подлежащие мониторингу', [
-                        [
-                            'value' => 'PACKAGE',
-                            'text' => 'Комплексный мониторинг',
-                            'options' => $options['STRUCTURES_TO_MONITOR']['PACKAGE']
-                        ],
-                        [
-                            'value' => 'INDIVIDUAL',
-                            'text' => 'Выборочный мониторинг',
-                            'options' => $options['STRUCTURES_TO_MONITOR']['INDIVIDUAL']
-                        ]
+                    <div class="structures">
+                        <? $name = 'STRUCTURES_TO_MONITOR' ?>
+                        <? list($value, $error) = $macros->valueErrorPair($name) ?>
+                        <div class="wrap_calc_item<?= !v::isEmpty($error) ? ' error' : '' ?>">
+                            <div class="inner">
+                                <div class="left">
+                                    <p class="title">Конструкции подлежащие мониторингу:<?= macros::$requiredMark ?></p>
+                                    <div class="error-message"><?= $error ?></div>
+                                </div>
+                                <div class="right">
+                                    <? $macros->showTooltip($name) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <? $macros->showExpandableCheckboxList($name, 'Комплексный мониторинг', $options['STRUCTURES_TO_MONITOR']['PACKAGE'], [
+                            'state' => 'expanded'
+                        ]) ?>
+                        <? $macros->showExpandableCheckboxList($name, 'Выборочный мониторинг', $options['STRUCTURES_TO_MONITOR']['INDIVIDUAL'], [
+                            'state' => 'expanded'
                     ]) ?>
+                    </div>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>
             </div>

@@ -328,6 +328,14 @@
           anyOf(anyOfPairs)
         ]);
       });
+      $calc.filter('.calculator--monitoring').find('.structures').each(function() {
+        constrainSelection($(this), [
+          anyOf([
+            [[1], rangeInc(2, 9)],
+            [rangeInc(2, 9), [1]]
+          ])
+        ]);
+      })
     });
   }
 

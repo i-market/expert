@@ -91,7 +91,9 @@ $macros = new macros($state);
                         <? $macros->showExpandableCheckboxList($name, 'Комплексное обследование', $options['STRUCTURES_TO_INSPECT']['PACKAGE'], [
                             'state' => 'expanded'
                         ]) ?>
-                        <? $macros->showExpandableCheckboxList($name, 'Выборочное обследование', $options['STRUCTURES_TO_INSPECT']['INDIVIDUAL']) ?>
+                        <? $macros->showExpandableCheckboxList($name, 'Выборочное обследование', $options['STRUCTURES_TO_INSPECT']['INDIVIDUAL'], [
+                            'state' => 'expanded'
+                        ]) ?>
                     </div>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>

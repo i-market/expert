@@ -173,19 +173,6 @@
           $(this).find('input[type=checkbox]').prop('checked', false);
         });
       });
-      $calc.find('.structures-to-inspect, .construction-phase').each(function() {
-        var $block = $(this);
-        $block.find('input[type=checkbox]').on('change', function() {
-          if (!$block.is('[data-dirty=true]')) {
-            // dirtiness flag won't survive an ajax request. meh.
-            $block.attr('data-dirty', 'true');
-            $block.find('.calculator__expandable-title').each(function() {
-              // on first change expand everything
-              setExpandableTo($(this), 'expanded');
-            });
-          }
-        });
-      });
       $calc.find('.structures-to-inspect').each(function() {
         constrainSelection($(this), [
           equals({

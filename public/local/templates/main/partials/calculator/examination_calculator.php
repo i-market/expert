@@ -6,7 +6,7 @@ use App\Templates\CalculatorMacros as macros;
 
 $macros = new macros($state);
 ?>
-<section class="calculator_certain_types calculator">
+<section class="calculator_certain_types calculator calculator--examination">
     <form ic-post-to="<?= $apiEndpoint ?>"
           ic-target="closest .calculator"
           ic-replace-target="true"
@@ -154,58 +154,54 @@ $macros = new macros($state);
                         ])
                     ]) ?>
                     <? list($value, $error) = $macros->valueErrorPair('GOALS') ?>
-                    <? foreach ($options['GOAL_UI_ELEMENTS'] as $idx => $elements): ?>
-                        <? $localState = ['last_radio_id' => ''] ?>
-                        <? $filterVal = strval($idx) ?>
-                        <? $group = "goals_{$filterVal}" ?>
-                        <? $isActive = $state['params']['GOALS_FILTER'] === $filterVal ?>
-                        <div data-goals-filter="<?= $filterVal ?>" style="display: <?= $isActive ? 'block' : 'none' ?>">
-                            <? foreach ($elements as $i => $element): ?>
-                                <? if ($element['type'] === 'subsection'): ?>
-                                    <? $id = "goals_{$filterVal}_{$i}" ?>
-                                    <? $localState['last_radio_id'] = $id ?>
-                                    <div class="wrap_calc_item hidden_block">
-                                        <input type="radio"
-                                               hidden="hidden"
-                                               name="<?= $group ?>"
-                                               value="<?= $id ?>"
-                                               id="<?= $id ?>"
-                                               class="open_block"
-                                               data-name="<?= $localState['last_radio_id'] ?>"
-                                               data-group="<?= $group ?>"
-                                               <?= v::get($state, ['params', $group]) === $id ? 'checked' : '' ?>>
-                                        <label for="<?= $id ?>" class="radio_label"><?= v::capitalize($element['value']) ?></label>
-                                    </div>
-                                <? elseif ($element['type'] === 'options'): ?>
-                                    <? $isActive = v::get($state, ['params', $group]) === $localState['last_radio_id'] ?>
-                                    <? $noAssocRadio = v::isEmpty($localState['last_radio_id']) ?>
-                                    <? $classes = ["group_{$group}", $localState['last_radio_id'], !v::isEmpty($error) ? 'error' : ''] ?>
-                                    <div class="<?= join(' ', $classes) ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
-                                         <? // display if there are no radio buttons to reveal this block ?>
-                                         style="<?= $isActive || $noAssocRadio ? 'display: block' : '' ?>">
-                                        <? foreach ($element['value'] as $j => $el): ?>
-                                            <? if ($el['type'] === 'subsection'): ?>
-                                                <p class="bold"><?= $el['value'] ?></p>
-                                            <? elseif ($el['type'] === 'option'): ?>
-                                                <? $opt = $el['value'] ?>
-                                                <? $id = "goal_{$filterVal}_{$i}_{$j}" ?>
-                                                <div class="wrap_checkbox">
-                                                    <input name="GOALS[]"
-                                                           value="<?= $opt['value'] ?>"
-                                                           type="checkbox"
-                                                           hidden="hidden"
-                                                           id="<?= $id ?>"
-                                                           <?= in_array($opt['value'], $state['params']['GOALS']) ? 'checked' : '' ?>>
-                                                    <label for="<?= $id ?>"><?= $opt['text'] ?></label>
-                                                </div>
-                                            <? endif ?>
-                                        <? endforeach ?>
-                                        <div class="error-message"><?= $error ?></div>
-                                    </div>
-                                <? endif ?>
-                            <? endforeach ?>
-                        </div>
-                    <? endforeach ?>
+                    <div class="goals">
+                        <? foreach ($options['GOAL_UI_ELEMENTS'] as $idx => $elements): ?>
+                            <? $localState = ['last_expandable_id' => ''] ?>
+                            <? $filterVal = strval($idx) ?>
+                            <? $group = "goals_{$filterVal}" ?>
+                            <? $isActive = $state['params']['GOALS_FILTER'] === $filterVal ?>
+                            <div data-goals-filter="<?= $filterVal ?>" style="display: <?= $isActive ? 'block' : 'none' ?>">
+                                <? foreach ($elements as $i => $element): ?>
+                                    <? if ($element['type'] === 'subsection'): ?>
+                                        <? $id = "goals_{$filterVal}_{$i}" ?>
+                                        <? $localState['last_expandable_id'] = $id ?>
+                                        <div class="wrap_calc_item">
+                                            <p class="calculator__expandable-title" data-state="collapsed" data-target="<?= '#'.$id ?>" role="button">
+                                                <span class="text"><?= v::capitalize($element['value']) ?></span>
+                                            </p>
+                                        </div>
+                                    <? elseif ($element['type'] === 'options'): ?>
+                                        <? $isActive = v::get($state, ['params', $group]) === $localState['last_expandable_id'] ?>
+                                        <? $noAssocRadio = v::isEmpty($localState['last_expandable_id']) ?>
+                                        <? $classes = ["group_{$group}", !v::isEmpty($error) ? 'error' : ''] ?>
+                                        <div class="<?= join(' ', $classes) ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
+                                             id="<?= $id ?>"
+                                            <? // display if there is no expandable button to reveal this block ?>
+                                             style="<?= $isActive || $noAssocRadio ? 'display: block' : '' ?>">
+                                            <? foreach ($element['value'] as $j => $el): ?>
+                                                <? if ($el['type'] === 'subsection'): ?>
+                                                    <p class="bold"><?= $el['value'] ?></p>
+                                                <? elseif ($el['type'] === 'option'): ?>
+                                                    <? $opt = $el['value'] ?>
+                                                    <? $id = "goal_{$filterVal}_{$i}_{$j}" ?>
+                                                    <div class="wrap_checkbox">
+                                                        <input name="GOALS[]"
+                                                               value="<?= $opt['value'] ?>"
+                                                               type="checkbox"
+                                                               hidden="hidden"
+                                                               id="<?= $id ?>"
+                                                            <?= in_array($opt['value'], $state['params']['GOALS']) ? 'checked' : '' ?>>
+                                                        <label for="<?= $id ?>"><?= $opt['text'] ?></label>
+                                                    </div>
+                                                <? endif ?>
+                                            <? endforeach ?>
+                                            <div class="error-message"><?= $error ?></div>
+                                        </div>
+                                    <? endif ?>
+                                <? endforeach ?>
+                            </div>
+                        <? endforeach ?>
+                    </div>
                     <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
                 </div>
             </div>

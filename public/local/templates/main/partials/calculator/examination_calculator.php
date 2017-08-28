@@ -172,12 +172,12 @@ $macros = new macros($state);
                                         </div>
                                     <? elseif ($element['type'] === 'options'): ?>
                                         <? $isActive = v::get($state, ['params', $group]) === $localState['last_expandable_id'] ?>
-                                        <? $noAssocRadio = v::isEmpty($localState['last_expandable_id']) ?>
-                                        <? $classes = ["group_{$group}", !v::isEmpty($error) ? 'error' : ''] ?>
+                                        <? $noAssocExpandable = v::isEmpty($localState['last_expandable_id']) ?>
+                                        <? $classes = ["group_{$group}"] ?>
                                         <div class="<?= join(' ', $classes) ?> wrap_calc_item_block wrap_calc_item_block--checkbox"
                                              id="<?= $id ?>"
                                             <? // display if there is no expandable button to reveal this block ?>
-                                             style="<?= $isActive || $noAssocRadio ? 'display: block' : '' ?>">
+                                             style="<?= $isActive || $noAssocExpandable ? 'display: block' : '' ?>">
                                             <? foreach ($element['value'] as $j => $el): ?>
                                                 <? if ($el['type'] === 'subsection'): ?>
                                                     <p class="bold"><?= $el['value'] ?></p>
@@ -195,7 +195,6 @@ $macros = new macros($state);
                                                     </div>
                                                 <? endif ?>
                                             <? endforeach ?>
-                                            <div class="error-message"><?= $error ?></div>
                                         </div>
                                     <? endif ?>
                                 <? endforeach ?>

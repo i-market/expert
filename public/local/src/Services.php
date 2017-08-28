@@ -315,7 +315,7 @@ class Services {
             $trimmed = Parser::stripNumbering($x['NAME']);
             // TODO tmp: don't strip anything for QA purposes
 //            return ['value' => $x['ID'], 'text' => str::capitalize($trimmed, false)];
-            return ['value' => $x['ID'], 'text' => $x['NAME']];
+            return ['value' => $x['ID'], 'text' => str::capitalize($x['NAME'], false)];
         } elseif (is_array($x)) {
             return array_map([self::class, 'entities2options'], $x);
         } else {

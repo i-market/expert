@@ -304,7 +304,7 @@
           };
           return n + offsetByPrefix[prefix];
         }
-        var anyOfPairs = _.map(anyOfontries, function(entry) {
+        var anyOfPairs = _.map(anyOfEntries, function(entry) {
           var res = parseConstraintEntry(entry);
           function ids(str) {
             if (str === 'nil') {

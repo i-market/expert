@@ -21,22 +21,9 @@ table {
     vertical-align: top;
 }
 
-.header .right {
-    text-align: right;
-    vertical-align: top;
-    font-size: 8pt;
-}
-
-.header table,
 .header p {
     margin-bottom: 22pt;
-}
-
-.header p {
     font-weight: bold;
     font-style: italic;
-}
-
-.extra-top-margin {
-    margin-top: 66pt;
+    text-align: left;
 }

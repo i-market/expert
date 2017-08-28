@@ -1,5 +1,5 @@
 <? use App\View as v; ?>
-<?= v::render('pdf/proposal/partials/header', get_defined_vars()) ?>
+
 <div class="body">
     <?= v::render('pdf/proposal/partials/body', get_defined_vars()) ?>
     <h2>Состав работ:</h2>

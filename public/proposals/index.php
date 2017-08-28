@@ -23,7 +23,21 @@ if (_::get($appConfig, 'sentry.enabled', false)) {
 
 define('SITE_TEMPLATE_PATH', '/local/templates/main');
 
-$pdf = new mPDF('UTF-8');
+$pdf = new mPDF(...array_values([
+    'mode' => 'UTF-8',
+    'format' => 'A4',
+    'default_font_size' => 0,
+    'default_font' => '',
+    // margins
+    'mgl' => 15,
+    'mgr' => 15,
+    // make space for the header and footer elements
+    'mgt' => 16 * 3.5,
+    'mgb' => 16 * 2.5,
+    'mgh' => 9,
+    'mgf' => 9,
+    'orientation' => 'P'
+]));
 
 $stylesPath = View::template('pdf/proposal/proposal.css');
 $styles = file_get_contents(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $stylesPath]));
@@ -65,6 +79,10 @@ if ($params['example']) {
     }
 }
 $html = View::render("pdf/proposal/{$params['type']}", $params);
+$pdf->defaultheaderline = false;
+$pdf->defaultfooterline = false;
+$pdf->SetHeader(View::render('pdf/proposal/partials/header', $params));
+$pdf->SetFooter(View::render('pdf/proposal/partials/footer', $params));
 $pdf->WriteHTML($html, 2);
 $dest = _::get($params, 'output.dest', '');
 // TODO ok tmp dir?

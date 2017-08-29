@@ -27,16 +27,4 @@ abstract class Calculator {
     static function parseNumericPredicate($str) {
         return Parser::parseNumericPredicate($str);
     }
-
-    // TODO remove unused
-    /** @deprecated */
-    function conditionalTable($selected, $data) {
-        // TODO replace values with pk ids
-        $subtableMaybe = _::find($data['SUBTABLES'], function($subtable) use ($selected) {
-            return _::matches($selected, function($value) use ($subtable) {
-                return _::contains($subtable, $value);
-            });
-        });
-        return nil::get($subtableMaybe, $data['TABLE']);
-    }
 }

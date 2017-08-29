@@ -18,6 +18,9 @@
   // --- selection constraints ---
   // "constraint" is a function mapping selected options to ones that should be disabled
 
+  // TODO refactor: namespace it
+
+  /** @deprecated */
   function constrainSelection($component, constraints) {
     function getId($input) {
       return _.toInteger($input.val());
@@ -40,6 +43,54 @@
     update();
   }
 
+  function getId($el) {
+    return _.toInteger($el.val());
+  }
+
+  function checkboxSelection($inputs) {
+    return $inputs.filter(':checked').map(function() {
+      return getId($(this));
+    }).get();
+  }
+
+  function updateCheckboxes($inputs, disabled) {
+    $inputs.each(function() {
+      var dis = _.includes(disabled, getId($(this)));
+      $(this).prop('disabled', dis).closest('.wrap_checkbox').toggleClass('disabled', dis);
+      if ($(this).prop('checked') && dis) {
+        $(this).prop('checked', false);
+      }
+    });
+  }
+
+  function selectSelection($select) {
+    if (_.isEmpty($select.val())) {
+      return [];
+    }
+    return [getId($select)];
+  }
+
+  function updateSelect($select, disabled) {
+    var shouldReset = _.includes(disabled, getId($select));
+    if ($select.is('.fs-dropdown-element')) {
+      var values = $select.find('option').map(function() {
+        return $(this).val();
+      }).get();
+      _.forEach(_.reject(values, _.isEmpty), function(val) {
+        var isDisabled = _.includes(disabled, _.toInteger(val));
+        $select.dropdown(isDisabled ? 'disable' : 'enable', val);
+      });
+    } else {
+      $select.find('option').each(function() {
+        $(this).prop('disabled', _.includes(disabled, getId($(this))));
+      });
+    }
+    if (shouldReset) {
+      $select.val('');
+    }
+    $select.trigger('change');
+  }
+
   function and(constraints) {
     return function(selected) {
       function loop(fns, result) {
@@ -56,6 +107,12 @@
       }
       return loop(constraints, []);
     }
+  }
+
+  function merge(constraints) {
+    return function(selected) {
+      return _.uniq(_.flatten(_.over(constraints)(selected)));
+    };
   }
 
   function anyOf(pairs) {
@@ -175,7 +232,7 @@
         });
       });
       $calc.find('.structures-to-inspect').each(function() {
-        constrainSelection($(this), [
+        var constraint = merge([
           equals({
             1: _.concat(rangeInc(2, 12), rangeInc(14, 18)),
             2: _.concat([1], rangeInc(4, 12)),
@@ -199,9 +256,16 @@
             ])
           ])
         ]);
+        var $inputs = $(this).find('input[type=checkbox]');
+        function update() {
+          var selected = checkboxSelection($inputs);
+          updateCheckboxes($inputs, constraint(selected));
+        }
+        $inputs.on('change', update);
+        update();
       });
       $calc.find('.construction-phase').each(function() {
-        constrainSelection($(this), [
+        var constraint = merge([
           equals({
             1: rangeInc(2, 9),
             // 2?
@@ -214,8 +278,16 @@
             9: [1]
           })
         ]);
+        var $inputs = $(this).find('input[type=checkbox]');
+        function update() {
+          var selected = checkboxSelection($inputs);
+          updateCheckboxes($inputs, constraint(selected));
+        }
+        $inputs.on('change', update);
+        update();
       });
-      $calc.filter('.calculator--examination').find('.goals').each(function() {
+      var $examination = $calc.filter('.calculator--examination');
+      $examination.find('.goals').each(function() {
         var anyOfEntries = [
           '14.1 1: 2-10,12-38',
           '14.1 2: 1,3-6,10,12-13,17,19,22,24,26,28,30,32,34,36,38',
@@ -328,6 +400,23 @@
         constrainSelection($(this), [
           anyOf(anyOfPairs)
         ]);
+      });
+      $examination.each(function() {
+        var $source = $(this).find('select[name="SITE_CATEGORY"]');
+        var $target = $(this).find('select[name="GOALS_FILTER"]');
+        var constraint = merge([
+          equals({
+            1: [6],
+            2: [1, 2, 4, 7],
+            3: rangeInc(1, 6)
+          })
+        ]);
+        function update() {
+          var selected = selectSelection($source);
+          updateSelect($target, constraint(selected));
+        }
+        $source.on('change', update);
+        update();
       });
       $calc.filter('.calculator--monitoring').find('.structures').each(function() {
         constrainSelection($(this), [

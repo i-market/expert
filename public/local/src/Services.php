@@ -312,9 +312,8 @@ class Services {
 
     static function entities2options($x) {
         if (isset($x['ID'])) {
-            $trimmed = Parser::stripNumbering($x['NAME']);
-            // TODO tmp: don't strip anything for QA purposes
-//            return ['value' => $x['ID'], 'text' => str::capitalize($trimmed, false)];
+            // TODO tmp: don't strip anything for testing purposes
+//            return ['value' => $x['ID'], 'text' => str::capitalize(Parser::stripNumbering($x['NAME']), false)];
             return ['value' => $x['ID'], 'text' => str::capitalize($x['NAME'], false)];
         } elseif (is_array($x)) {
             return array_map([self::class, 'entities2options'], $x);

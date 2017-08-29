@@ -269,7 +269,7 @@ class ExaminationParser extends Parser {
                         // TODO refactor hack: move fixed prices out of `multipliers`
                         $value['IS_FIXED_PRICE'] = true;
                     }
-                    
+
                     $ret = _::set($ret, _::append($path, $value['ID']), $value);
                     $state = ['in_nesting_table', $path, $header, $metadata];
                 }

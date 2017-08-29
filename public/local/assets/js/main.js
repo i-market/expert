@@ -15,8 +15,8 @@
     $('#global-error-message').show();
   });
 
-  // --- checkbox selection constraints ---
-  // "constraint" is a function mapping checked options to ones that should be disabled
+  // --- selection constraints ---
+  // "constraint" is a function mapping selected options to ones that should be disabled
 
   function constrainSelection($component, constraints) {
     function getId($input) {
@@ -41,12 +41,12 @@
   }
 
   function and(constraints) {
-    return function(checked) {
+    return function(selected) {
       function loop(fns, result) {
         if (_.isEmpty(fns)) {
           return result;
         }
-        var disabled = _.first(fns)(checked);
+        var disabled = _.first(fns)(selected);
         if (_.isEmpty(disabled)) {
           // if any constraint is "false" (returns an empty array), then the whole thing is false
           return [];
@@ -59,30 +59,30 @@
   }
 
   function anyOf(pairs) {
-    return function(checked) {
+    return function(selected) {
       return _.reduce(pairs, function(acc, pair) {
         var anyOf = pair[0];
         var disabled = pair[1];
-        var isMatch = !_.isEmpty(_.intersection(anyOf, checked));
+        var isMatch = !_.isEmpty(_.intersection(anyOf, selected));
         return isMatch ? _.concat(acc, disabled) : acc;
       }, [])
     }
   }
 
   function allOf(pairs) {
-    return function(checked) {
+    return function(selected) {
       return _.reduce(pairs, function(acc, pair) {
         var allOf = pair[0];
         var disabled = pair[1];
-        var isMatch = _.isEmpty(_.difference(allOf, checked));
+        var isMatch = _.isEmpty(_.difference(allOf, selected));
         return isMatch ? _.concat(acc, disabled) : acc;
       }, [])
     }
   }
 
   function equals(disabled) {
-    return function(checked) {
-      return _.flatMap(checked, function(id) {
+    return function(selected) {
+      return _.flatMap(selected, function(id) {
         return _.get(disabled, id, []);
       })
     }
@@ -95,7 +95,7 @@
   function parseConstraintEntry(str) {
     // concise constraint format
     var match = str.match(/^(\S+) (\d+(?:-\d+)?,?)+: (nil|(\d+(?:-\d+)?,?)+)$/);
-    return {prefix: match[1], checked: match[2], disabled: match[3]};
+    return {prefix: match[1], selected: match[2], disabled: match[3]};
   }
 
   function init($scope) {
@@ -320,7 +320,7 @@
             });
           }
           return [
-            _.map(ids(res.checked), _.partial(translate, res.prefix)),
+            _.map(ids(res.selected), _.partial(translate, res.prefix)),
             _.map(ids(res.disabled), _.partial(translate, res.prefix))
           ]
         });

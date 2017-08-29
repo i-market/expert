@@ -213,6 +213,7 @@ class Services {
 
     static function keyValidator($key, $params, $mandatory = true) {
         $requiredId = v::notOptional();
+        // TODO refactor: optimize
         $validators = [
             'SITE_COUNT' => v::intType()->positive(),
             'SITE_CATEGORY' => $requiredId,

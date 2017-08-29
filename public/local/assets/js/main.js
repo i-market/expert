@@ -95,6 +95,7 @@
   function parseConstraintEntry(str) {
     // concise constraint format
     var match = str.match(/^(\S+) (\d+(?:-\d+)?,?)+: (nil|(\d+(?:-\d+)?,?)+)$/);
+    console.assert(match !== null);
     return {prefix: match[1], selected: match[2], disabled: match[3]};
   }
 

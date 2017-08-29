@@ -264,6 +264,12 @@ class ExaminationParser extends Parser {
                             'NUMBERING' => array_filter(_::drop($dataCells, count($header)), _::complement([str::class, 'isEmpty']))
                         ];
                     }
+
+                    if (str::startsWith(_::last($path), '14.7. Рецензирование')) {
+                        // TODO refactor hack: move fixed prices out of `multipliers`
+                        $value['IS_FIXED_PRICE'] = true;
+                    }
+                    
                     $ret = _::set($ret, _::append($path, $value['ID']), $value);
                     $state = ['in_nesting_table', $path, $header, $metadata];
                 }

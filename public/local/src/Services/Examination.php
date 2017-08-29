@@ -39,9 +39,24 @@ class Examination {
                 $range = Parser::parseRangeText($rangeText, ['min' => 0, 'max' => PHP_INT_MAX]);
                 return Util::inRange($model['TOTAL_AREA'], $range['min'], $range['max']);
             });
+
+            // TODO refactor hack: move fixed prices out of `multipliers`, see parser
+            $fixedPriceEntities = array_filter($model['GOALS'], function($entity) {
+                return _::get($entity, 'IS_FIXED_PRICE', false);
+            });
+
             $calculator = new ExaminationCalculator();
-            $multipliers = $calculator->multipliers($params, $dataSet);
+            $multipliers = $calculator->multipliers(_::update($params, 'GOALS', function($ids) use ($fixedPriceEntities) {
+                return array_diff($ids, _::pluck($fixedPriceEntities, 'ID'));
+            }), $dataSet);
             $totalPrice = $calculator->totalPrice($model['TOTAL_AREA'], $multipliers);
+
+            $totalPrice = array_reduce($fixedPriceEntities, function($acc, $entity) use ($dataSet) {
+                $multEntity = Services::findEntity2('GOALS', $entity['ID'], $dataSet['MULTIPLIERS']['GOALS']);
+                assert($multEntity !== null);
+                return $acc + $multEntity['VALUE'];
+            }, $totalPrice);
+
             $state['model'] = $model;
             $state['result'] = [
                 'total_price' => $totalPrice

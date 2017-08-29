@@ -108,6 +108,11 @@ class ExaminationCalculator extends Calculator {
                 if (!isset($view['ENTITIES'][$id])) {
                     return $acc;
                 }
+
+                // TODO refactor hack: move fixed prices out of `multipliers`, see parser
+                $isFixed = _::get($view['ENTITIES'][$id], 'IS_FIXED_PRICE', false);
+                if ($isFixed) return $acc;
+
                 $inView = array_intersect($ids, array_keys($view['ENTITIES']));
                 $value = $view['ENTITIES'][$id]['VALUE'];
                 if (is_array($value)) {

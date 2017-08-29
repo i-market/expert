@@ -4,18 +4,16 @@ namespace App;
 
 use App\Services\Parser;
 use Bex\Tools\Iblock\IblockTools;
-use Bitrix\Iblock\SectionTable;
-use Bitrix\Main\Mail\Internal\EventMessageTable;
 use Bitrix\Main\Loader;
 use CFile;
 use CIBlockElement;
 use Core\Env;
+use Core\Nullable as nil;
+use Core\Strings as str;
+use Core\Underscore as _;
 use Core\Util;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
-use Core\Underscore as _;
-use Core\Strings as str;
-use Core\Nullable as nil;
 
 // TODO non-ideal way to distinguish between environments
 if (php_sapi_name() !== 'cli') {
@@ -26,7 +24,6 @@ class Services {
     // fields that act the same most of the time
     static $structures = ['STRUCTURES_TO_MONITOR', 'STRUCTURES_TO_INSPECT'];
     static $distanceSpecialValue = '>3km';
-    private static $data = [];
 
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
@@ -97,24 +94,6 @@ class Services {
         }, $elements));
     }
 
-    // TODO review
-    static function initialState() {
-        return [
-            'params' => [],
-            'errors' => []
-        ];
-    }
-
-    // TODO unused?
-    static function floorInputs($params) {
-        $siteCount = _::get($params, 'SITE_COUNT', 1);
-        return array_map(function($num) {
-            return [
-                'label' => 'Строение '.$num,
-            ];
-        }, range(1, $siteCount));
-    }
-
     // TODO refactor
     static function translateMessage($template) {
         $ru = [
@@ -137,29 +116,6 @@ class Services {
         }, []);
         $ret = _::update($ret, 'FLOORS', _::constantly('В каждом поле должно быть положительное число.'));
         return $ret;
-    }
-
-    private static function findEventMessageTemplate($eventName) {
-        return EventMessageTable::query()
-            ->setSelect(['*'])
-            ->setFilter([
-                'ACTIVE' => 'Y',
-                'EVENT_NAME' => $eventName,
-                'EVENT_MESSAGE_SITE.SITE_ID' => App::SITE_ID,
-            ])
-            ->exec()->fetch();
-    }
-
-    private function newRequestEventName($serviceCode) {
-        return 'NEW_SERVICE_REQUEST_'.str::upper($serviceCode);
-    }
-
-    /** @deprecated see Api class */
-    private static function uploadedFileArrays($fileIds) {
-        return array_map(function($fileId) {
-            $absPath = Util::joinPath([Api::fileuploadDir(), $fileId]);
-            return CFile::MakeFileArray($absPath);
-        }, $fileIds);
     }
 
     static function serviceRequestName($params) {
@@ -225,91 +181,6 @@ class Services {
         }, $text);
     }
 
-    // TODO unused
-    /** @deprecated */
-    static function requestMonitoring($params) {
-        $contactValidator = v::allOf(
-            v::key('ORGANIZATION', v::stringType()),
-            v::key('PERSON', v::stringType()->notEmpty()),
-            v::key('PHONE_1', v::stringType()),
-            v::key('PHONE_2', v::stringType()),
-            v::key('EMAIL', v::stringType()->notEmpty())
-        );
-        $validator = v::allOf(
-            v::key('NAME', v::stringType()->notEmpty()),
-            v::key('LOCATION', v::stringType()),
-            v::key('MONITORING_GOAL', v::stringType()->notEmpty()),
-            v::key('DESCRIPTION', v::stringType()->notEmpty()),
-            v::key('ADDITIONAL_INFO', v::stringType())
-//            v::key('CONTACT', $contactValidator)
-        );
-        $errors = [];
-        try {
-            $validator->assert($params);
-        } catch (NestedValidationException $exception) {
-            $errors = self::getMessages($exception);
-        }
-        // TODO refactor nested params/messages
-        try {
-            $contactValidator->assert($params['CONTACT']);
-        } catch (NestedValidationException $exception) {
-            foreach (self::getMessages($exception) as $name => $msg) {
-                // TODO refactor
-                $errors["CONTACT[${name}]"] = $msg;
-            }
-        }
-        $state = [
-            'params' => $params,
-            'errors' => $errors
-        ];
-        $isValid = _::isEmpty($errors);
-        if ($isValid) {
-            $documentOptions = _::keyBy('ID', App::getInstance()->container['monitoring_repo']->documents());
-            $documentNames = array_map(function($documentId) use ($documentOptions) {
-                return $documentOptions[$documentId]['NAME'];
-            }, array_map('intval', $params['DOCUMENTS']));
-            $fields = self::markEmptyStrings(array_merge(_::flatten($params, '_'), [
-                // TODO service requests email_to
-                'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
-                'FILE_LINKS' => '',
-                'DOCUMENTS' => self::formatList($documentNames)
-            ]));
-            $serviceCode = 'monitoring';
-            $elementName = $params['CONTACT']['PERSON'];
-            $eventName = self::newRequestEventName($serviceCode);
-            $eventMessageTemplate = self::findEventMessageTemplate($eventName);
-            assert($eventMessageTemplate !== null);
-            $message = _::reduce($fields, function($result, $value, $key) {
-                return str_replace('#'.$key.'#', $value, $result);
-            }, $eventMessageTemplate['MESSAGE']);
-            $files = self::uploadedFileArrays($params['fileIds']);
-            if (App::getInstance()->env() !== Env::DEV) {
-                $elementId = self::saveServiceRequest($serviceCode, $elementName, $message, $params, [
-                    'FILES' => $files
-                ]);
-                $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
-                $savedFiles = array_map(function($fileId) {
-                    return CFile::GetFileArray($fileId);
-                }, $element['PROPERTIES']['FILES']['VALUE']);
-            } else {
-                $savedFiles = [];
-            }
-            $fileLinks = array_map(function($file) {
-                // TODO ! full url
-                $url = $file['SRC'];
-                return "{$file['ORIGINAL_NAME']} — {$url}";
-            }, $savedFiles);
-            $fieldsWithFileLinks = array_merge($fields, [
-                'FILE_LINKS' => !_::isEmpty($fileLinks)
-                    ? join("\n", array_merge(['Прикрепленные файлы:'], $fileLinks))
-                    : ''
-            ]);
-            App::getInstance()->sendMail($eventName, $fieldsWithFileLinks, App::SITE_ID);
-            $state['screen'] = 'success';
-        }
-        return $state;
-    }
-
     static function entities2options($x) {
         if (isset($x['ID'])) {
             // TODO tmp: don't strip anything for testing purposes
@@ -322,7 +193,7 @@ class Services {
         }
     }
 
-    // TODO unused?
+    /** @deprecated */
     static function dataSet($data, $params) {
         return $params['SITE_COUNT'] > 1
             ? $data['MULTIPLE_BUILDINGS']
@@ -421,7 +292,6 @@ class Services {
         return _::find($entities, $pred);
     }
 
-    // TODO refactor
     /** @deprecated use `findEntity2` */
     static function findEntity($field, $val, $dataSet) {
         if (!isset($dataSet['MULTIPLIERS'][$field])) {

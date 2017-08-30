@@ -134,6 +134,7 @@ class Util {
         }, 1);
     }
 
+    // TODO refactor: move to `NewsListLike`
     static function elementEditingLinks($element) {
         assert(isset($element['IBLOCK_ID']));
         assert(isset($element['ID']));

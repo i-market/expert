@@ -321,7 +321,8 @@ class Api {
                         'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                     ]);
                     App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_DESIGN, $eventFields, App::SITE_ID);
-                    $state['screen'] = 'success';                }
+                    $state['screen'] = 'success';
+                }
                 $ctx = DesignRequest::context($state, Services::services()['design']);
                 return Components::renderServiceForm('partials/service_forms/design_form', $ctx);
             });

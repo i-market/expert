@@ -9,7 +9,6 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Individual {
-    use \Core\DynamicMethods; // TODO tmp for dev
     static function initialState($data) {
         return [
             'data_set' => $data['MULTIPLE_BUILDINGS'],
@@ -48,7 +47,7 @@ class Individual {
 
     static function calculatorContext($state) {
         $summaryValues = $state['result']['duration'] > 0
-            ? ['Продолжительность выполнения работ' => Services::formatDuration(strval($state['result']['duration']))]
+            ? ['Продолжительность выполнения работ' => Services::formatDurationWorkdays(strval($state['result']['duration']))]
             : [];
         $resultBlock = Services::resultBlockContext($state, '/api/services/individual/calculator/send_proposal', $summaryValues);
         return [
@@ -61,7 +60,25 @@ class Individual {
     }
 
     static function proposalParams($state, $outgoingId, $opts = []) {
-        // TODO fn
+        assert(isset($state['result']));
+        $creationDate = isset($opts['creation_date'])
+            ? $opts['creation_date']
+            : new \DateTime();
+        $d = clone $creationDate;
+        $endingDate = $d->add(new \DateInterval('P3M'));
+        return [
+            'type' => 'individual',
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на выполнение отдельных видов работ',
+            'outgoingId' => $outgoingId,
+            'date' => Services::formatFullDate($creationDate),
+            'endingDate' => Services::formatFullDate($endingDate),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'duration' => Services::formatDurationWorkdays($state['result']['duration']),
+            'tables' => self::proposalTables($state['model']),
+            'output' => array_merge([
+                'dest' => 'F'
+            ], _::get($opts, 'output' ,[]))
+        ];
     }
 
     static function options($roots) {
@@ -100,6 +117,16 @@ class Individual {
     }
 
     static function proposalTables($model) {
-        // TODO fn
+        return [
+            [
+                'heading' => 'Состав работ',
+                'header' => ['Вид работ', 'Цель работ', 'Единица измерения', 'Стоимость, руб.'],
+                'rows' => _::map($model['SERVICES'], function($entity) {
+                    return _::map(['NAME', 'GOAL', 'UNIT', 'PRICE'], function($k) use ($entity) {
+                        return Services::orNotSpecified($entity[$k]);
+                    });
+                })
+            ]
+        ];
     }
 }

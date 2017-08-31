@@ -51,7 +51,7 @@ class Oversight {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
         $resultBlock = Services::resultBlockContext($state, '/api/services/oversight/calculator/send_proposal', [
-            'Продолжительность выполнения работ' => Services::formatDuration($state['model']['DURATION']['NAME'])
+            'Продолжительность выполнения работ' => Services::formatDurationMonths($state['model']['DURATION']['NAME'])
         ]);
         return [
             'apiEndpoint' => '/api/services/oversight/calculator/calculate',
@@ -81,7 +81,7 @@ class Oversight {
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
-            'duration' => Services::formatDuration($state['model']['DURATION']['NAME']),
+            'duration' => Services::formatDurationMonths($state['model']['DURATION']['NAME']),
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([
                 'dest' => 'F'
@@ -98,7 +98,7 @@ class Oversight {
         });
         return _::update($options, 'DURATION', function($opts) {
             return array_map(function($opt) {
-                return _::update($opt, 'text', [Services::class, 'formatDuration']);
+                return _::update($opt, 'text', [Services::class, 'formatDurationMonths']);
             }, $opts);
         });
     }

@@ -58,13 +58,15 @@ class Api {
     }
 
     static function sendProposalEmail($proposalParams, $email) {
-        $path = Services::generateProposalFile($proposalParams);
-        assert($path !== false);
+        $response = Services::generateProposalFile($proposalParams);
+        // TODO refactor: move error handling to `generateProposalFile`
+        assert($response !== false, $response);
+        $path = $response;
         assert(file_exists($path), $path);
         return Services::sendProposalEmail($email, [$path]);
     }
 
-    // TODO debugging data
+    // TODO tmp: debugging data
     static function debugScript() {
         $json = json_encode(Services\Calculator::$debug);
         return "<script>console.log({$json})</script>";
@@ -155,11 +157,8 @@ class Api {
                 return v::render('partials/calculator/oversight_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/individual/calculator/[:action]', function($request, $response) {
-                $defaults = [
-                    // TODO?
-                ];
-                $params = $request->params(['SERVICES']);
-                $params = array_merge($defaults, self::normalizeParams($params));
+                $params = $request->params(['SERVICES', 'EMAIL']);
+                $params = self::normalizeParams($params);
                 $data = Services::data('individual');
                 $state = Individual::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Individual::calculatorContext($state);

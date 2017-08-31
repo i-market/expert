@@ -139,6 +139,11 @@ class Services {
         }, $items));
     }
 
+    static function orNotSpecified($str) {
+        return str::isEmpty($str) ? '—' : $str;
+    }
+
+    /** @deprecated use orNotSpecified */
     static function markEmptyStrings($array) {
         return array_map(function($value) {
             return is_string($value) && str::isEmpty($value) ? '—' : $value;
@@ -170,7 +175,7 @@ class Services {
         return $ret;
     }
 
-    static function formatDuration($text) {
+    static function formatDurationMonths($text) {
         return preg_replace_callback('/(\pL+\s+)?(\d+)$/u', function($matches) {
             list($match, $word, $number) = $matches;
             $units = $word !== ''
@@ -179,6 +184,13 @@ class Services {
                 : Util::units($number, 'месяц', 'месяца', 'месяцев');
             return $match.' '.$units;
         }, $text);
+    }
+
+    static function formatDurationWorkdays($text) {
+        assert(is_numeric($text), $text);
+        $number = intval($text);
+        $units = Util::units($number, 'рабочий день', 'рабочих дня', 'рабочих дней');
+        return strval($number).' '.$units;
     }
 
     static function entities2options($x) {
@@ -355,6 +367,7 @@ class Services {
             'inspection' => '2411-5',
             // TODO duplicate prefix
             'oversight' => '0611-1',
+            'individual' => '2331-5'
             // TODO the rest
         ];
         assert(in_array($serviceType, array_keys($prefix)));

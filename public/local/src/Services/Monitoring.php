@@ -93,12 +93,12 @@ class Monitoring {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
         $resultBlock = Services::resultBlockContext($state, '/api/services/monitoring/calculator/send_proposal', [
-            'Продолжительность выполнения работ' => Services::formatDuration($state['model']['DURATION']['NAME'])
+            'Продолжительность выполнения работ' => Services::formatDurationMonths($state['model']['DURATION']['NAME'])
         ]);
         $options = _::update(self::options($state['data_set']['MULTIPLIERS']), 'DURATION', function($opts) {
             // TODO I guess you can format `duration` ahead of time in `options`
             return array_map(function($opt) {
-                return _::update($opt, 'text', [Services::class, 'formatDuration']);
+                return _::update($opt, 'text', [Services::class, 'formatDurationMonths']);
             }, $opts);
         });
         return [
@@ -203,7 +203,7 @@ class Monitoring {
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
-            'duration' => Services::formatDuration($state['model']['DURATION']['NAME']),
+            'duration' => Services::formatDurationMonths($state['model']['DURATION']['NAME']),
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([
                 'dest' => 'F'

@@ -85,88 +85,98 @@ class Api {
                 ]);
             });
             $router->respond('POST', '/services/monitoring/calculator/[:action]', function($request, $response) {
+                $type = 'monitoring';
                 $defaults = [
                     'STRUCTURES_TO_MONITOR' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                $data = Services::data('monitoring');
+                $data = Services::data($type);
                 $state = Monitoring::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Monitoring::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Monitoring::proposalParams($state, Services::outgoingId('monitoring'), $opts);
+                    $recordId = Services::recordProposal($type, $params['EMAIL']);
+                    $proposalParams = Monitoring::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/monitoring_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/inspection/calculator/[:action]', function($request, $response) {
+                $type = 'inspection';
                 $defaults = [
                     'STRUCTURES_TO_INSPECT' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                $data = Services::data('inspection');
+                $data = Services::data($type);
                 $state = Inspection::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Inspection::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Inspection::proposalParams($state, Services::outgoingId('inspection'), $opts);
+                    $recordId = Services::recordProposal($type, $params['EMAIL']);
+                    $proposalParams = Inspection::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/inspection_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/examination/calculator/[:action]', function($request, $response) {
+                $type = 'examination';
                 $defaults = [
                     'GOALS' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                $data = Services::data('examination');
+                $data = Services::data($type);
                 $state = Examination::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Examination::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Examination::proposalParams($state, Services::outgoingId('examination'), $opts);
+                    $recordId = Services::recordProposal($type, $params['EMAIL']);
+                    $proposalParams = Examination::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/examination_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/oversight/calculator/[:action]', function($request, $response) {
+                $type = 'oversight';
                 $defaults = [
                     'CONSTRUCTION_PHASE' => []
                 ];
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
-                $data = Services::data('oversight');
+                $data = Services::data($type);
                 $state = Oversight::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Oversight::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Oversight::proposalParams($state, Services::outgoingId('oversight'), $opts);
+                    $recordId = Services::recordProposal($type, $params['EMAIL']);
+                    $proposalParams = Oversight::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/oversight_calculator', $context).self::debugScript();
             });
             $router->respond('POST', '/services/individual/calculator/[:action]', function($request, $response) {
+                $type = 'individual';
                 $params = $request->params(['SERVICES', 'EMAIL']);
                 $params = self::normalizeParams($params);
-                $data = Services::data('individual');
+                $data = Services::data($type);
                 $state = Individual::state($params, $request->action, $data, _::get($params, 'validate', true));
                 $context = Individual::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Individual::proposalParams($state, Services::outgoingId('individual'), $opts);
+                    $recordId = Services::recordProposal($type, $params['EMAIL']);
+                    $proposalParams = Individual::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }

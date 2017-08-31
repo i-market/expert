@@ -67,7 +67,26 @@ class Oversight {
     }
 
     static function proposalParams($state, $outgoingId, $opts = []) {
-        // TODO fn
+        assert(isset($state['result']));
+        $creationDate = isset($opts['creation_date'])
+            ? $opts['creation_date']
+            : new \DateTime();
+        $d = clone $creationDate;
+        $endingDate = $d->add(new \DateInterval('P3M'));
+        return [
+            'type' => 'oversight',
+            // TODO move it to the template?
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение технического надзора, строительного контроля',
+            'outgoingId' => $outgoingId,
+            'date' => Services::formatFullDate($creationDate),
+            'endingDate' => Services::formatFullDate($endingDate),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'duration' => Services::formatDuration($state['model']['DURATION']['NAME']),
+            'tables' => self::proposalTables($state['model']),
+            'output' => array_merge([
+                'dest' => 'F'
+            ], _::get($opts, 'output' ,[]))
+        ];
     }
 
     static function options($entities) {
@@ -115,6 +134,31 @@ class Oversight {
     }
 
     static function proposalTables($model) {
-        // TODO fn
+        $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
+        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $listFn = function($entities) use ($nameFn) {
+            return Services::listHtml(array_map($nameFn, $entities));
+        };
+        return [
+            [
+                'heading' => 'Сведения об объекте (объектах)',
+                'rows' => array_map($formatRow, [
+                    ['Описание объекта (объектов)', 'DESCRIPTION'],
+                    ['Количество объектов', 'SITE_COUNT'],
+                    ['Адрес (адреса)', 'ADDRESS'],
+                    ['Местонахождение', 'LOCATION', $nameFn],
+                    ['Назначение объекта (объектов)', 'USED_FOR', $nameFn],
+                    ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
+                    ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
+                    ['Количество подземных этажей у одного или нескольких объектов', 'UNDERGROUND_FLOORS'],
+                    ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
+                    ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
+                    ['Общая площадь объекта (объектов)', 'TOTAL_AREA'],
+                    ['Строительный объем объекта (объектов)', 'VOLUME'],
+                    ['Текущий этап строительства', 'CONSTRUCTION_PHASE', $listFn],
+                    ['Наличие документов', 'DOCUMENTS', $listFn]
+                ])
+            ]
+        ];
     }
 }

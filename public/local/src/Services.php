@@ -352,7 +352,9 @@ class Services {
         $nextId = _::constantly('4242');
         $prefix = [
             'monitoring' => '0611-1',
-            'inspection' => '2411-5'
+            'inspection' => '2411-5',
+            // TODO duplicate prefix
+            'oversight' => '0611-1',
             // TODO the rest
         ];
         assert(in_array($serviceType, array_keys($prefix)));

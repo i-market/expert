@@ -39,13 +39,17 @@ $pdf = new mPDF(...array_values([
     'orientation' => 'P'
 ]));
 
-$stylesPath = View::template('pdf/proposal/proposal.css');
-$styles = file_get_contents(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $stylesPath]));
-$pdf->WriteHTML($styles, 1);
+// TODO if a cell doesn't fit a page split instead of scaling it down
+// see e.g. oversight
+
 // "Keep-with-table"
 // automatically set $page-break-inside=avoid for any H1-H6 header that immediately precedes a table,
 // thus keeping the heading together with the table.
 $pdf->use_kwt = true;
+
+$stylesPath = View::template('pdf/proposal/proposal.css');
+$styles = file_get_contents(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $stylesPath]));
+$pdf->WriteHTML($styles, 1);
 $params = $_REQUEST;
 $validator = v::allOf(
     v::key('type')

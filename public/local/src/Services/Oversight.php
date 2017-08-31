@@ -57,7 +57,7 @@ class Oversight {
             'apiEndpoint' => '/api/services/oversight/calculator/calculate',
             'state' => $state,
             'options' => self::options($state['data_set']['MULTIPLIERS']),
-            'heading' => 'Определение стоимости<br> проведения обследования',
+            'heading' => 'Определение стоимости<br> технического надзора, строительного контроля',
             'floorInputs' => $floorInputs,
             'showDistanceSelect' => $siteCount > 1,
             'showDistanceWarning' => $siteCount > 1 && $params['DISTANCE_BETWEEN_SITES'] === Services::$distanceSpecialValue,

@@ -55,8 +55,7 @@ class Individual {
             'apiEndpoint' => '/api/services/individual/calculator/calculate',
             'state' => $state,
             'options' => self::options($state['data_set']['ENTITIES']),
-            // TODO !!! heading
-            'heading' => 'Определение стоимости',
+            'heading' => 'Определение стоимости<br> выполнения отдельных видов работ',
             'resultBlock' => $resultBlock
         ];
     }

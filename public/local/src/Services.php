@@ -376,7 +376,7 @@ class Services {
             // TODO duplicate prefix
             'oversight' => '0611-1',
             'individual' => '2331-5',
-            // TODO the rest: e.g. examination
+            'examination' => '2511-1',
         ];
         assert(in_array($serviceType, array_keys($prefix)));
         return $prefix[$serviceType].'/'.$recordId;

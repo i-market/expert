@@ -1,0 +1,8 @@
+<?
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetTitle("Выполнение отдельных видов работ по экспертизе и обследованию");
+?>
+
+Извините, раздел находится в разработке.
+
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

@@ -97,8 +97,7 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $recordId = Services::recordProposal($type, $params['EMAIL']);
-                    $proposalParams = Monitoring::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
+                    $proposalParams = Monitoring::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
@@ -117,8 +116,7 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $recordId = Services::recordProposal($type, $params['EMAIL']);
-                    $proposalParams = Inspection::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
+                    $proposalParams = Inspection::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
@@ -137,8 +135,7 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $recordId = Services::recordProposal($type, $params['EMAIL']);
-                    $proposalParams = Examination::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
+                    $proposalParams = Examination::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
@@ -157,8 +154,7 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $recordId = Services::recordProposal($type, $params['EMAIL']);
-                    $proposalParams = Oversight::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
+                    $proposalParams = Oversight::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
@@ -175,8 +171,7 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $recordId = Services::recordProposal($type, $params['EMAIL']);
-                    $proposalParams = Individual::proposalParams($state, Services::outgoingId($type, $recordId), $opts);
+                    $proposalParams = Individual::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
                     self::sendProposalEmail($proposalParams, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }

@@ -360,25 +360,14 @@ class Services {
         return join(' ', [date('d', $ts), $month, date('Y', $ts), 'г.']);
     }
 
-    static function recordProposal($_type, $_recipientEmail) {
+    static function recordProposal($_type, $_email) {
         $conn = Application::getConnection();
         // TODO refactor: use mysqli which supports binding/prepared statements
         $type = $conn->getSqlHelper()->forSql($_type);
-        $email = $conn->getSqlHelper()->forSql($_recipientEmail);
-        $conn->query("INSERT INTO proposals (type, email, created) VALUES ('{$type}', '{$email}', NOW());");
-        return $conn->getInsertedId();
-    }
-
-    static function outgoingId($serviceType, $recordId) {
-        $prefix = [
-            'monitoring' => '0611-1',
-            'inspection' => '2411-5',
-            // TODO duplicate prefix
-            'oversight' => '0611-1',
-            'individual' => '2331-5',
-            'examination' => '2511-1',
-        ];
-        assert(in_array($serviceType, array_keys($prefix)));
-        return $prefix[$serviceType].'/'.$recordId;
+        $email = $conn->getSqlHelper()->forSql($_email);
+        $conn->query("insert into proposals (type, email, created) values ('{$type}', '{$email}', now())");
+        $todayCount = $conn->queryScalar('select count(*) from proposals where date(created) = curdate()');
+        $seqNum = $todayCount + 1;
+        return date("dm-{$seqNum}/y");
     }
 }

@@ -9,7 +9,6 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Examination {
-    use \Core\DynamicMethods; // TODO tmp for dev
     static function initialState($data) {
         return [
             'data_set' => $data['SINGLE_BUILDING'],

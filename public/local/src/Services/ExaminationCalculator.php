@@ -9,7 +9,6 @@ use FunctionalPHP\Trampoline as t;
 use Exception;
 
 class ExaminationCalculator extends Calculator {
-    use \Core\DynamicMethods; // TODO tmp for dev
     function pricePerSquareMeter($sqMeters) {
         $x = $sqMeters;
         if ($x < 500 && $x > 0) {

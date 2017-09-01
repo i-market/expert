@@ -8,7 +8,6 @@ use Exception;
 use Core\Underscore as _;
 
 class OversightCalculator extends Calculator {
-    use \Core\DynamicMethods; // TODO tmp for dev
     function pricePerSquareMeter($sqMeters) {
         $x = $sqMeters;
         if ($x < 500 && $x > 0) {

@@ -12,7 +12,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
 class ExaminationParser extends Parser {
-    use \Core\DynamicMethods; // TODO tmp for dev
     public $spec = [
         'worksheets' => [
             [

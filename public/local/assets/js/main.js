@@ -406,7 +406,7 @@
         var $target = $(this).find('select[name="GOALS_FILTER"]');
         var constraint = merge([
           equals({
-            1: [6],
+            1: [7],
             2: [1, 2, 4, 7],
             3: rangeInc(1, 6)
           })

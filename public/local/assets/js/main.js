@@ -87,8 +87,9 @@
     }
     if (shouldReset) {
       $select.val('');
-    }
+      // notify fs-dropdown
     $select.trigger('change');
+  }
   }
 
   function and(constraints) {

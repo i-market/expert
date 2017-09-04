@@ -88,8 +88,8 @@
     if (shouldReset) {
       $select.val('');
       // notify fs-dropdown
-    $select.trigger('change');
-  }
+      $select.trigger('change');
+    }
   }
 
   function and(constraints) {
@@ -207,6 +207,7 @@
           setExpandableTo($(this), $(this).attr('data-state') === 'collapsed' ? 'expanded' : 'collapsed');
         });
       });
+      // deprecated: radio button groups
       $calc.find('input[type=radio][data-group]').on('change', function() {
         var group = $(this).data('group');
         $('.group_' + group).find('input[type=checkbox]').prop('checked', false);

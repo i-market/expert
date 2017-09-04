@@ -19,11 +19,10 @@
                     <div class="commercial_proposal error">
                         <input type="text" name="EMAIL" value="<?= $params['EMAIL'] ?>" placeholder="Введите ваш E-mail">
                         <label>
-                            <? // TODO api uri ?>
                             <button ic-post-to="<?= $apiUri ?>"
                                     ic-select-from-response=".total_price_block"
                                     ic-target="closest .total_price_block"
-                                    <? // TODO override inherited value ?>
+                                    <? // override inherited value ?>
                                     ic-replace-target="false">
                                 Получить предложение
                             </button>

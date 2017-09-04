@@ -80,12 +80,12 @@ class Examination {
         $services = !_::get($opts, 'render_modals', true)
             ? []
             : array_map(function($service) {
-            // TODO optimize
-            $data = Services::data('examination');
-            $ctx = ExaminationRequest::context(ExaminationRequest::initialState($data), $service);
-            $form = Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
-            return array_merge($service, ['form' => $form]);
-        }, _::pick(Services::services(), ['examination']));
+                // TODO optimize
+                $data = Services::data('examination');
+                $ctx = ExaminationRequest::context(ExaminationRequest::initialState($data), $service);
+                $form = Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
+                return array_merge($service, ['form' => $form]);
+            }, _::pick(Services::services(), ['examination']));
         return [
             'services' => $services,
             'apiEndpoint' => '/api/services/examination/calculator/calculate',
@@ -102,6 +102,25 @@ class Examination {
     }
 
     static function proposalParams($state, $outgoingId, $opts = []) {
+        assert(isset($state['result']));
+        $creationDate = isset($opts['creation_date'])
+            ? $opts['creation_date']
+            : new \DateTime();
+        $d = clone $creationDate;
+        $endingDate = $d->add(new \DateInterval('P3M'));
+        return [
+            'type' => 'examination',
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение экспертизы',
+            'outgoingId' => $outgoingId,
+            'date' => Services::formatFullDate($creationDate),
+            'endingDate' => Services::formatFullDate($endingDate),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'time' => $state['model']['TIME'],
+            'tables' => self::proposalTables($state['model']),
+            'output' => array_merge([
+                'dest' => 'F'
+            ], _::get($opts, 'output' ,[]))
+        ];
     }
 
     static function options($entities) {
@@ -208,5 +227,38 @@ class Examination {
     }
 
     static function proposalTables($model) {
+        $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
+        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $listFn = function($entities) use ($nameFn) {
+            return Services::listHtml(array_map($nameFn, $entities));
+        };
+        return [
+            [
+                'heading' => 'Сведения об объекте (объектах) экспертизы',
+                'rows' => array_map($formatRow, [
+                    ['Описание объекта (объектов)', 'DESCRIPTION'],
+                    ['Количество объектов', 'SITE_COUNT'],
+                    ['Категория предметов экспертизы', 'SITE_CATEGORY', $nameFn],
+                    ['Необходимость выезда на объект(ы)', 'NEEDS_VISIT', $nameFn],
+                    ['Местонахождение', 'LOCATION', $nameFn],
+                    ['Адрес (адреса)', 'ADDRESS'],
+                    ['Назначение объекта (объектов)', 'USED_FOR', $nameFn],
+                    ['Общая площадь объекта (объектов)', 'TOTAL_AREA'],
+                    ['Общий строительный объем объекта (объектов)', 'VOLUME'],
+                    ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
+                    ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
+                    ['Количество подземных этажей', 'UNDERGROUND_FLOORS'],
+                    ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
+                    ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
+                    ['Наличие документов', 'DOCUMENTS', $listFn]
+                ])
+            ],
+            [
+                'heading' => 'Цели и задачи экспертизы',
+                'rows' => [
+                    [$listFn($model['GOALS'])]
+                ]
+            ]
+        ];
     }
 }

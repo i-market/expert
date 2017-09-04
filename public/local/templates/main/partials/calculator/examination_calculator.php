@@ -64,7 +64,7 @@ $macros = new macros($state);
                             </div>
                         </div>
                     </div>
-                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория экспертизы', ['required' => true]) ?>
+                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория предметов экспертизы', ['required' => true]) ?>
                     <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов) экспертизы', ['required' => true]) ?>
                     <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', [
                         'required' => true,
@@ -184,13 +184,14 @@ $macros = new macros($state);
                                                 <? elseif ($el['type'] === 'option'): ?>
                                                     <? $opt = $el['value'] ?>
                                                     <? $id = "goal_{$filterVal}_{$i}_{$j}" ?>
+                                                    <? $isChecked = in_array($opt['value'], v::get($state, 'params.GOALS', [])) ?>
                                                     <div class="wrap_checkbox">
                                                         <input name="GOALS[]"
                                                                value="<?= $opt['value'] ?>"
                                                                type="checkbox"
                                                                hidden="hidden"
                                                                id="<?= $id ?>"
-                                                            <?= in_array($opt['value'], $state['params']['GOALS']) ? 'checked' : '' ?>>
+                                                               <?= $isChecked ? ' checked' : '' ?>>
                                                         <label for="<?= $id ?>"><?= $opt['text'] ?></label>
                                                     </div>
                                                 <? endif ?>

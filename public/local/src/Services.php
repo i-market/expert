@@ -136,7 +136,7 @@ class Services {
 
     static function formatList($items) {
         return join("\n", array_map(function($item) {
-            return '✓ '.$item;
+            return '- '.$item;
         }, $items));
     }
 
@@ -229,32 +229,32 @@ class Services {
         static $validators = null;
         $requiredId = v::notOptional();
         if ($validators === null) {
-        $validators = [
-            'SITE_COUNT' => v::intType()->positive(),
-            'SITE_CATEGORY' => $requiredId,
-            'DISTANCE_BETWEEN_SITES' =>
-                $params['SITE_COUNT'] === 1
-                    ? v::alwaysValid()
-                    : $requiredId,
-            'DESCRIPTION' => v::stringType()->notEmpty(),
-            'LOCATION' => $requiredId,
-            'USED_FOR' => $requiredId,
-            'TOTAL_AREA' => v::intType()->positive(),
-            'VOLUME' => v::optional(v::intType()->positive()),
-            // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
-            'FLOORS' => v::callback(function($values) {
-                return is_array($values) && _::matches($values, function($v) {
-                    return v::notOptional()->intType()->validate($v);
-                });
-            }),
-            'UNDERGROUND_FLOORS' =>
-                $params['HAS_UNDERGROUND_FLOORS']
-                    ? v::intType()->positive()
-                    : v::alwaysValid(),
-            'DURATION' => $requiredId,
-            'TRANSPORT_ACCESSIBILITY' => $requiredId,
-            'DOCUMENTS' => v::arrayType()
-        ];
+            $validators = [
+                'SITE_COUNT' => v::intType()->positive(),
+                'SITE_CATEGORY' => $requiredId,
+                'DISTANCE_BETWEEN_SITES' =>
+                    $params['SITE_COUNT'] === 1
+                        ? v::alwaysValid()
+                        : $requiredId,
+                'DESCRIPTION' => v::stringType()->notEmpty(),
+                'LOCATION' => $requiredId,
+                'USED_FOR' => $requiredId,
+                'TOTAL_AREA' => v::intType()->positive(),
+                'VOLUME' => v::optional(v::intType()->positive()),
+                // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
+                'FLOORS' => v::callback(function ($values) {
+                    return is_array($values) && _::matches($values, function ($v) {
+                        return v::notOptional()->intType()->validate($v);
+                    });
+                }),
+                'UNDERGROUND_FLOORS' =>
+                    $params['HAS_UNDERGROUND_FLOORS']
+                        ? v::intType()->positive()
+                        : v::alwaysValid(),
+                'DURATION' => $requiredId,
+                'TRANSPORT_ACCESSIBILITY' => $requiredId,
+                'DOCUMENTS' => v::arrayType()
+            ];
         }
         assert(isset($validators[$key]));
         return v::key($key, $validators[$key], $mandatory);
@@ -334,7 +334,7 @@ class Services {
         $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
         $value = _::get($model, $key);
         $html = is_callable($funcMaybe) ? $funcMaybe($value) : $value;
-        return ["<strong>{$label}</strong>", in_array($html, ['', null]) ? '—' : $html];
+        return ["<strong>{$label}</strong>", self::orNotSpecified($html)];
     }
 
     static function generateProposalFile($proposalParams, $host = null) {

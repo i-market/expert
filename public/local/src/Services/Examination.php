@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Components;
 use App\Services;
 use Core\Underscore as _;
 use Core\Util;
@@ -76,7 +77,15 @@ class Examination {
         if (isset($state['errors']['GOALS'])) {
             $state['errors']['GOALS_FILTER'] = $state['errors']['GOALS'];
         }
+        $services = array_map(function($service) {
+            // TODO optimize
+            $data = Services::data('examination');
+            $ctx = ExaminationRequest::context(ExaminationRequest::initialState($data), $service);
+            $form = Components::renderServiceForm('partials/service_forms/examination_form', $ctx);
+            return array_merge($service, ['form' => $form]);
+        }, _::pick(Services::services(), ['examination']));
         return [
+            'services' => $services,
             'apiEndpoint' => '/api/services/examination/calculator/calculate',
             'state' => $state,
             'options' => self::options($state['data_set']['MULTIPLIERS']),

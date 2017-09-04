@@ -223,3 +223,4 @@ $macros = new macros($state);
         <?= v::render('partials/calculator/result_block', $resultBlock) ?>
     </form>
 </section>
+<? v::appendToView('modals', v::render('partials/services_modals', ['services' => $services])) ?>

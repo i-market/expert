@@ -52,15 +52,4 @@ use App\View as v;
         </div>
     </div>
 </section>
-<? ob_start() ?>
-<? foreach ($services as $service): ?>
-    <div class="modal service-request" id="<?= $service['requestModalId'] ?>">
-        <div class="block">
-            <span class="close">×</span>
-            <form data-api-endpoint="<?= $service['apiEndpoint'] ?>" novalidate>
-                <?= $service['form'] ?>
-            </form>
-        </div>
-    </div>
-<? endforeach ?>
-<? v::appendToView('modals', ob_get_clean()) ?>
+<? v::appendToView('modals', v::render('partials/services_modals', ['services' => $services])) ?>

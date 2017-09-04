@@ -225,8 +225,10 @@ class Services {
     }
 
     static function keyValidator($key, $params, $mandatory = true) {
+        // cache validators
+        static $validators = null;
         $requiredId = v::notOptional();
-        // TODO refactor: optimize
+        if ($validators === null) {
         $validators = [
             'SITE_COUNT' => v::intType()->positive(),
             'SITE_CATEGORY' => $requiredId,
@@ -253,6 +255,7 @@ class Services {
             'TRANSPORT_ACCESSIBILITY' => $requiredId,
             'DOCUMENTS' => v::arrayType()
         ];
+        }
         assert(isset($validators[$key]));
         return v::key($key, $validators[$key], $mandatory);
     }

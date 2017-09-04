@@ -65,7 +65,7 @@ class Examination {
         return $state;
     }
 
-    static function calculatorContext($state) {
+    static function calculatorContext($state, $opts = []) {
         $params = $state['params'];
         $siteCount = _::get($params, 'SITE_COUNT', 1);
         $floorInputs = array_map(function($num) {
@@ -77,7 +77,9 @@ class Examination {
         if (isset($state['errors']['GOALS'])) {
             $state['errors']['GOALS_FILTER'] = $state['errors']['GOALS'];
         }
-        $services = array_map(function($service) {
+        $services = !_::get($opts, 'render_modals', true)
+            ? []
+            : array_map(function($service) {
             // TODO optimize
             $data = Services::data('examination');
             $ctx = ExaminationRequest::context(ExaminationRequest::initialState($data), $service);

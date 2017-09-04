@@ -130,7 +130,7 @@ class Api {
                 $params = array_merge($defaults, self::normalizeParams($request->params()));
                 $data = Services::data($type);
                 $state = Examination::state($params, $request->action, $data, _::get($params, 'validate', true));
-                $context = Examination::calculatorContext($state);
+                $context = Examination::calculatorContext($state, ['render_modals' => false]);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]

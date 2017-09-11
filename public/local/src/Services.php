@@ -351,9 +351,9 @@ class Services {
         return $response;
     }
 
-    static function sendProposalEmail($emailTo, $filePaths) {
+    static function sendProposalEmail($emailTo, $fileIds) {
         return App::getInstance()->sendMail(Events::PROPOSAL, ['EMAIL_TO' => $emailTo], App::SITE_ID, [
-            'event' => ['FILE' => $filePaths]
+            'event' => ['FILE' => $fileIds]
         ]);
     }
 
@@ -361,16 +361,5 @@ class Services {
         $ts = $datetime->getTimestamp();
         $month = Util::monthRu(intval(date('n', $ts)));
         return join(' ', [date('d', $ts), $month, date('Y', $ts), 'г.']);
-    }
-
-    static function recordProposal($_type, $_email) {
-        $conn = Application::getConnection();
-        // TODO refactor: use mysqli which supports binding/prepared statements
-        $type = $conn->getSqlHelper()->forSql($_type);
-        $email = $conn->getSqlHelper()->forSql($_email);
-        $conn->query("insert into proposals (type, email, created) values ('{$type}', '{$email}', now())");
-        $todayCount = $conn->queryScalar('select count(*) from proposals where date(created) = curdate()');
-        $seqNum = $todayCount + 1;
-        return date("dm-{$seqNum}/y");
     }
 }

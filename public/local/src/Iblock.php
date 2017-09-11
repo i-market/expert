@@ -41,6 +41,7 @@ class Iblock {
     const INDIVIDUAL_REQUESTS = 'individual_requests';
     const DESIGN_REQUESTS = 'design_requests';
     const OVERSIGHT_REQUESTS = 'oversight_requests';
+    const PROPOSALS = 'proposals';
 
     static function groupBySection($elements, $iblockId, $sections = null) {
         if ($sections === null) {

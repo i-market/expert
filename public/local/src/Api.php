@@ -15,6 +15,9 @@ use App\Services\Oversight;
 use App\Services\OversightRequest;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
+use Bitrix\Iblock\ElementTable;
+use Bitrix\Main\Application;
+use Bitrix\Main\Type as Type;
 use CFile;
 use CIBlockElement;
 use Core\Env;
@@ -57,13 +60,40 @@ class Api {
         return $params;
     }
 
-    static function sendProposalEmail($proposalParams, $email) {
-        $response = Services::generateProposalFile($proposalParams);
-        // TODO refactor: move error handling to `generateProposalFile`
-        assert($response !== false, $response);
-        $path = $response;
-        assert(file_exists($path), $path);
-        return Services::sendProposalEmail($email, [$path]);
+    static function sendProposalEmail(callable $proposalParamsFn, $email) {
+        $iblockId = IblockTools::find(Iblock::INBOX_TYPE, IBlock::PROPOSALS)->id();
+        $today = new Type\DateTime(date('Y-m-d'), 'Y-m-d');
+        $todayCount = ElementTable::getCount([
+            'IBLOCK_ID' => $iblockId,
+            '>=DATE_CREATE' => $today
+        ]);
+        $outgoingId = date('dm-'.strval($todayCount + 1).'/y');
+        $conn = Application::getConnection();
+        $conn->startTransaction();
+        try {
+            $response = Services::generateProposalFile($proposalParamsFn($outgoingId));
+            assert($response !== false, $response);
+            $path = $response;
+            assert(file_exists($path), $path);
+
+            $fileId = CFile::SaveFile(CFile::MakeFileArray($path), 'iblock');
+            $el = new CIBlockElement();
+            $result = $el->Add([
+                'IBLOCK_ID' => $iblockId,
+                'NAME' => $outgoingId,
+                'PROPERTY_VALUES' => [
+                    'EMAIL' => $email,
+                    'FILE' => $fileId
+                ]
+            ]);
+            assert($result, $el->LAST_ERROR);
+
+            $conn->commitTransaction();
+            return Services::sendProposalEmail($email, [$fileId]);
+        } catch (\Exception $e) {
+            $conn->rollbackTransaction();
+            throw $e;
+        }
     }
 
     // TODO tmp: debugging data
@@ -97,8 +127,9 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Monitoring::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
-                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
+                    self::sendProposalEmail(function($outgoingId) use ($state, $opts) {
+                        return Monitoring::proposalParams($state, $outgoingId, $opts);
+                    }, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/monitoring_calculator', $context).self::debugScript();
@@ -116,8 +147,9 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Inspection::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
-                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
+                    self::sendProposalEmail(function($outgoingId) use ($state, $opts) {
+                        return Inspection::proposalParams($state, $outgoingId, $opts);
+                    }, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/inspection_calculator', $context).self::debugScript();
@@ -135,8 +167,9 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Examination::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
-                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
+                    self::sendProposalEmail(function($outgoingId) use ($state, $opts) {
+                        return Examination::proposalParams($state, $outgoingId, $opts);
+                    }, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/examination_calculator', $context).self::debugScript();
@@ -154,8 +187,9 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Oversight::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
-                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
+                    self::sendProposalEmail(function($outgoingId) use ($state, $opts) {
+                        return Oversight::proposalParams($state, $outgoingId, $opts);
+                    }, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/oversight_calculator', $context).self::debugScript();
@@ -171,8 +205,9 @@ class Api {
                     $opts = App::getInstance()->env() === Env::DEV
                         ? ['output' => ['debug' => true]]
                         : [];
-                    $proposalParams = Individual::proposalParams($state, Services::recordProposal($type, $params['EMAIL']), $opts);
-                    self::sendProposalEmail($proposalParams, $params['EMAIL']);
+                    self::sendProposalEmail(function($outgoingId) use ($state, $opts) {
+                        return Individual::proposalParams($state, $outgoingId, $opts);
+                    }, $params['EMAIL']);
                     $context['resultBlock']['screen'] = 'sent';
                 }
                 return v::render('partials/calculator/individual_calculator', $context).self::debugScript();

@@ -72,12 +72,12 @@ class Api {
         return "<script>console.log({$json})</script>";
     }
 
+    // TODO DRY
     // TODO sanitize params
     static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
             $router->respond('POST', '/callback-request', function($request, $response) {
-                // TODO sanitize params
                 $params = $request->params();
                 $state = App::requestCallback($params);
                 return v::render('partials/callback_request_form', [

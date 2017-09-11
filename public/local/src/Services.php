@@ -30,7 +30,6 @@ class Services {
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
 
     private static function dataFilePath($type) {
-        // TODO
         $tmpPath = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
         return Util::joinPath([$tmpPath, "{$type}.json"]);
     }
@@ -347,7 +346,7 @@ class Services {
                 'content' => http_build_query($proposalParams)
             ]
         ]);
-        // have to do it through http request because pdf generation requires bitrix-incompatible php configuration
+        // doing it with a http request because mpdf requires bitrix-incompatible php configuration
         $response = file_get_contents("http://{$host}/proposals/", false, $requestCtx);
         return $response;
     }

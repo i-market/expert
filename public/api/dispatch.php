@@ -1,8 +1,6 @@
 <?php
 
 use App\Api;
-use App\App;
-use Core\Env;
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 

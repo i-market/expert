@@ -88,8 +88,9 @@ class Api {
             ]);
             assert($result, $el->LAST_ERROR);
 
+            $ret = Services::sendProposalEmail($email, [$fileId]);
             $conn->commitTransaction();
-            return Services::sendProposalEmail($email, [$fileId]);
+            return $ret;
         } catch (\Exception $e) {
             $conn->rollbackTransaction();
             throw $e;

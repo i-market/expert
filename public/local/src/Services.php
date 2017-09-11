@@ -227,18 +227,18 @@ class Services {
     static function keyValidator($key, $params, $mandatory = true) {
         // cache validators
         static $validators = null;
-        $requiredId = v::notOptional();
+        $requiredId = function() { return v::notOptional(); };
         if ($validators === null) {
             $validators = [
                 'SITE_COUNT' => v::intType()->positive(),
-                'SITE_CATEGORY' => $requiredId,
+                'SITE_CATEGORY' => $requiredId(),
                 'DISTANCE_BETWEEN_SITES' =>
                     $params['SITE_COUNT'] === 1
                         ? v::alwaysValid()
-                        : $requiredId,
+                        : $requiredId(),
                 'DESCRIPTION' => v::stringType()->notEmpty(),
-                'LOCATION' => $requiredId,
-                'USED_FOR' => $requiredId,
+                'LOCATION' => $requiredId(),
+                'USED_FOR' => $requiredId(),
                 'TOTAL_AREA' => v::intType()->positive(),
                 'VOLUME' => v::optional(v::intType()->positive()),
                 // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
@@ -251,13 +251,14 @@ class Services {
                     $params['HAS_UNDERGROUND_FLOORS']
                         ? v::intType()->positive()
                         : v::alwaysValid(),
-                'DURATION' => $requiredId,
-                'TRANSPORT_ACCESSIBILITY' => $requiredId,
+                'DURATION' => $requiredId(),
+                'TRANSPORT_ACCESSIBILITY' => $requiredId(),
                 'DOCUMENTS' => v::arrayType()
             ];
         }
         assert(isset($validators[$key]));
-        return v::key($key, $validators[$key], $mandatory);
+        $validator = clone $validators[$key];
+        return v::key($key, $validator, $mandatory);
     }
 
     static function dereferenceParams($params, $dataSet, callable $findEntity) {

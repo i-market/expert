@@ -49,6 +49,62 @@ $macros = new macros($state);
                     ]) ?>
                     <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) экспертизы', ['required' => true]) ?>
                     <div class="wrap_calc_item">
+                        <? $name = 'NEEDS_VISIT' ?>
+                        <? $needsVisit = v::get($state, ['params', $name], false) ?>
+                        <p class="title">Необходимость выезда на объект(ы) <span class="red"></span></p>
+                        <div class="inner">
+                            <div class="left left--radio hidden_block">
+                                <input type="radio" hidden="hidden" value="1" <?= $needsVisit ? 'checked' : '' ?> name="<?= $name ?>" id="<?= $name.'_true' ?>" class="open_block" data-name="needs-visit-dropdown">
+                                <label for="<?= $name.'_true' ?>" class="radio_label">Да</label>
+                                <input type="radio" hidden="hidden" value="0" <?= !$needsVisit ? 'checked' : '' ?> name="<?= $name ?>" id="<?= $name.'_false' ?>" data-name="needs-visit-dropdown">
+                                <label for="<?= $name.'_false' ?>" class="radio_label">Нет</label>
+                            </div>
+                            <div class="right">
+                                <? $macros->showTooltip($name) ?>
+                            </div>
+                        </div>
+                    </div>
+                    <? // needs_visit expanding block ?>
+                    <div <?= $needsVisit ? 'style="display: block"' : '' ?> class="wrap_calc_item_block wrap_calc_item_block--some needs-visit-dropdown">
+                        <?
+                        $wrapInput = function($name, $contentFn) use ($macros) {
+                            list($_, $error) = $macros->valueErrorPair($name);
+                            ?>
+                            <div class="<?= !v::isEmpty($error) ? 'error' : '' ?>">
+                                <? $contentFn($name) ?>
+                            </div>
+                            <?
+                        };
+                        ?>
+                        <? $wrapInput('LOCATION', function($name) use ($macros, $options) { ?>
+                            <div class="top">
+                                <p class="title">Местонахождение <span class="red">*</span></p>
+                            </div>
+                            <? $macros->showSelectInput($name, $options[$name]) ?>
+                        <? }) ?>
+                        <? $wrapInput('ADDRESS', function($name) use ($macros) { ?>
+                            <div class="top">
+                                <p class="title">Адрес(a) <span class="red">*</span></p>
+                            </div>
+                            <? $macros->showInputInput($name) ?>
+                        <? }) ?>
+                        <? if (v::get($state, ['params', 'SITE_COUNT'], 1) > 1): ?>
+                            <? $wrapInput('DISTANCE_BETWEEN_SITES', function($name) use ($macros, $options) { ?>
+                                <? $macros->showDistanceSelect($name, $options[$name], 'Удаленность объектов друг от друга', [
+                                    'required' => true,
+                                    // TODO show warning? see requirements
+                                    'show_warning' => false
+                                ]) ?>
+                            <? }) ?>
+                        <? endif ?>
+                        <? $wrapInput('TRANSPORT_ACCESSIBILITY', function($name) use ($macros, $options) { ?>
+                            <div class="top">
+                                <p class="title">Транспортная доступность <span class="red">*</span></p>
+                            </div>
+                            <? $macros->showSelectInput($name, $options[$name]) ?>
+                        <? }) ?>
+                    </div>
+                    <div class="wrap_calc_item">
                         <? $name = 'FOR_LEGAL_CASE' ?>
                         <p class="title">Для суда</p>
                         <div class="inner hidden_block">
@@ -89,62 +145,6 @@ $macros = new macros($state);
                         ]) ?>
                     </div>
                     <?= v::render('partials/calculator/fields/underground_floors', get_defined_vars()) ?>
-                    <div class="wrap_calc_item">
-                        <? $name = 'NEEDS_VISIT' ?>
-                        <? $needsVisit = v::get($state, ['params', $name], false) ?>
-                        <p class="title">Необходимость выезда на объект(ы) <span class="red"></span></p>
-                        <div class="inner">
-                            <div class="left left--radio hidden_block">
-                                <input type="radio" hidden="hidden" value="1" <?= $needsVisit ? 'checked' : '' ?> name="<?= $name ?>" id="<?= $name.'_true' ?>" class="open_block" data-name="needs-visit-dropdown">
-                                <label for="<?= $name.'_true' ?>" class="radio_label">Да</label>
-                                <input type="radio" hidden="hidden" value="0" <?= !$needsVisit ? 'checked' : '' ?> name="<?= $name ?>" id="<?= $name.'_false' ?>" data-name="needs-visit-dropdown">
-                                <label for="<?= $name.'_false' ?>" class="radio_label">Нет</label>
-                            </div>
-                            <div class="right">
-                                <? $macros->showTooltip($name) ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div <?= $needsVisit ? 'style="display: block"' : '' ?> class="wrap_calc_item_block wrap_calc_item_block--some needs-visit-dropdown">
-                        <?
-                        // TODO refactor
-                        $wrapInput = function($name, $contentFn) use ($macros) {
-                            list($_, $error) = $macros->valueErrorPair($name);
-                            ?>
-                            <div class="<?= !v::isEmpty($error) ? 'error' : '' ?>">
-                                <? $contentFn($name) ?>
-                            </div>
-                            <?
-                        };
-                        ?>
-                        <? $wrapInput('LOCATION', function($name) use ($macros, $options) { ?>
-                            <div class="top">
-                                <p class="title">Местонахождение <span class="red">*</span></p>
-                            </div>
-                            <? $macros->showSelectInput($name, $options[$name]) ?>
-                        <? }) ?>
-                        <? $wrapInput('ADDRESS', function($name) use ($macros) { ?>
-                            <div class="top">
-                                <p class="title">Адрес(a) <span class="red">*</span></p>
-                            </div>
-                            <? $macros->showInputInput($name) ?>
-                        <? }) ?>
-                        <? if (v::get($state, ['params', 'SITE_COUNT'], 1) > 1): ?>
-                            <? $wrapInput('DISTANCE_BETWEEN_SITES', function($name) use ($macros, $options) { ?>
-                                <? $macros->showDistanceSelect($name, $options[$name], 'Удаленность объектов друг от друга', [
-                                    'required' => true,
-                                    // TODO show warning? see requirements
-                                    'show_warning' => false
-                                ]) ?>
-                            <? }) ?>
-                        <? endif ?>
-                        <? $wrapInput('TRANSPORT_ACCESSIBILITY', function($name) use ($macros, $options) { ?>
-                            <div class="top">
-                                <p class="title">Транспортная доступность <span class="red">*</span></p>
-                            </div>
-                            <? $macros->showSelectInput($name, $options[$name]) ?>
-                        <? }) ?>
-                    </div>
                 </div>
                 <div class="right_side">
                     <? $macros->showSelect('GOALS_FILTER', $options['GOALS_FILTER'], 'Цели и задачи экспертизы', [

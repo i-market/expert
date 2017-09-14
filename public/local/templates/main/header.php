@@ -74,7 +74,7 @@ if (App::useBitrixAsset()) {
                         ); ?>
                     </div>
                     <form action="/search/">
-                        <input name="q" type="text" placeholder="Найти">
+                        <input name="q" type="text" placeholder="Найти" autocomplete="off">
                         <button type="submit"></button>
                     </form>
                 </div>

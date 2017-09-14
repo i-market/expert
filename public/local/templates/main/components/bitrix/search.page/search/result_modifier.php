@@ -18,13 +18,16 @@ $ibMeta = function($item) {
 $getId = function($code) {
     return IblockTools::find(Iblock::CONTENT_TYPE, $code)->id();
 };
+// TODO refactor mutation
+$seenIdsRef = [];
 $arResult['BY_TYPE'] = _::map([
     'VIDEOS' => [Iblock::VIDEOS],
     'IMAGES' => [Iblock::IMAGES, Iblock::CONTACT_GALLERY]
-], function($codes) use ($arResult, $ibMeta, $getId) {
+], function($codes) use (&$seenIdsRef, $arResult, $ibMeta, $getId) {
     $matching = array_filter($arResult['SEARCH'], function($item) use ($codes, $ibMeta, $getId) {
         return in_array($ibMeta($item)['IBLOCK_ID'], array_map($getId, $codes));
     });
+    $seenIdsRef += _::pluck($matching, 'ID');
     return _::map($matching, function($item) use ($codes, $ibMeta, $getId) {
         $result = CIBlockElement::GetByID($ibMeta($item)['ID']);
         $element = _::first(Iblock::collectElements($result));
@@ -40,11 +43,9 @@ $arResult['BY_TYPE'] = _::map([
         return _::set($item, 'ELEMENT', $element);
     });
 });
-$arResult['BY_TYPE']['DEFAULT'] = array_filter($arResult['SEARCH'], function($item) use ($arResult) {
-    return _::matches($arResult['BY_TYPE'], function($items) use ($item) {
-        return _::matches($items, _::partial('in_array', $item));
-    });
+$arResult['BY_TYPE']['DEFAULT'] = array_filter($arResult['SEARCH'], function($item) use ($seenIdsRef) {
+    return !in_array($item['ID'], $seenIdsRef);
 });
-if (count($arResult['SEARCH']) !== Util::sum(array_map('count', $arResult['BY_TYPE']))) {
+if (count($arResult['SEARCH']) !== array_reduce(array_map('count', $arResult['BY_TYPE']), _::operator('+'), 0)) {
     trigger_error('something went wrong while grouping search results by media type', E_USER_WARNING);
 }

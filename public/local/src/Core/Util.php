@@ -122,16 +122,14 @@ class Util {
         }
     }
 
+    /** @deprecated use `Underscore::operator` */
     static function sum(array $xs) {
-        return array_reduce($xs, function($acc, $x) {
-            return $acc + $x;
-        }, 0);
+        return array_reduce($xs, _::operator('+'), 0);
     }
 
+    /** @deprecated use `Underscore::operator` */
     static function product(array $xs) {
-        return array_reduce($xs, function($acc, $x) {
-            return $acc * $x;
-        }, 1);
+        return array_reduce($xs, _::operator('*'), 1);
     }
 
     // TODO refactor: move to `NewsListLike`

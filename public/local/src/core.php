@@ -281,6 +281,27 @@ class Underscore extends ArraysMethods {
     }
 
     /**
+     * Supports: '.', '+', '-', '*', and '/' operators
+     * @param string $operator Infix operator to use
+     */
+    static function operator($operator) {
+        static $cache;
+        if (!$cache) {
+            $cache = [
+                '.' => function ($x, $y) { return $x . $y; },
+                '+' => function ($x, $y) { return $x + $y; },
+                '-' => function ($x, $y) { return $x - $y; },
+                '*' => function ($x, $y) { return $x * $y; },
+                '/' => function ($x, $y) { return $x / $y; }
+            ];
+        }
+        if (!isset($cache[$operator])) {
+            throw new \InvalidArgumentException("Not defined for {$operator}");
+        }
+        return $cache[$operator];
+    }
+
+    /**
      * @param $array
      * @param Closure $closure
      * @return mixed

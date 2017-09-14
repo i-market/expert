@@ -4,11 +4,10 @@ use App\Iblock;
 use App\Videos;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
-use Core\Util;
 
 $ibMeta = function($item) {
     if ($item['MODULE_ID'] !== 'iblock') {
-        return null;
+        return [];
     }
     return [
         'ID' => $item['ITEM_ID'],
@@ -25,7 +24,7 @@ $arResult['BY_TYPE'] = _::map([
     'IMAGES' => [Iblock::IMAGES, Iblock::CONTACT_GALLERY]
 ], function($codes) use (&$seenIdsRef, $arResult, $ibMeta, $getId) {
     $matching = array_filter($arResult['SEARCH'], function($item) use ($codes, $ibMeta, $getId) {
-        return in_array($ibMeta($item)['IBLOCK_ID'], array_map($getId, $codes));
+        return in_array(_::get($ibMeta($item), 'IBLOCK_ID'), array_map($getId, $codes));
     });
     $seenIdsRef += _::pluck($matching, 'ID');
     return _::map($matching, function($item) use ($codes, $ibMeta, $getId) {

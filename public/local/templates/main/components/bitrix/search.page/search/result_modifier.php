@@ -5,6 +5,18 @@ use App\Videos;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
 
+$mediaTypes = [
+    'VIDEOS' => [Iblock::VIDEOS],
+    'IMAGES' => [
+        Iblock::IMAGES,
+        Iblock::INFO_BLOCK_GALLERY,
+        Iblock::CONTACT_GALLERY,
+
+        // TODO not sure about these. link to doc files?
+        Iblock::CERTIFICATES,
+        Iblock::TESTIMONIALS,
+    ]
+];
 $ibMeta = function($item) {
     if ($item['MODULE_ID'] !== 'iblock') {
         return [];
@@ -19,10 +31,7 @@ $getId = function($code) {
 };
 // TODO refactor mutation
 $seenIdsRef = [];
-$arResult['BY_TYPE'] = _::map([
-    'VIDEOS' => [Iblock::VIDEOS],
-    'IMAGES' => [Iblock::IMAGES, Iblock::CONTACT_GALLERY]
-], function($codes) use (&$seenIdsRef, $arResult, $ibMeta, $getId) {
+$arResult['BY_TYPE'] = _::map($mediaTypes, function($codes) use (&$seenIdsRef, $arResult, $ibMeta, $getId) {
     $matching = array_filter($arResult['SEARCH'], function($item) use ($codes, $ibMeta, $getId) {
         return in_array(_::get($ibMeta($item), 'IBLOCK_ID'), array_map($getId, $codes));
     });

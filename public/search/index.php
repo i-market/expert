@@ -27,7 +27,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
         "PAGER_SHOW_ALWAYS" => "Y",
         "PAGER_TEMPLATE" => "",
         "PAGER_TITLE" => "Результаты поиска",
-        "PAGE_RESULT_COUNT" => "50",
+        "PAGE_RESULT_COUNT" => PHP_INT_MAX,
         "RESTART" => "N",
         "SHOW_WHEN" => "N",
         "SHOW_WHERE" => "Y",

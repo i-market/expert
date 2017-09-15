@@ -4,6 +4,7 @@ use App\Iblock;
 use App\Videos;
 use Bex\Tools\Iblock\IblockTools;
 use Core\Underscore as _;
+use Core\Strings as str;
 
 $mediaTypes = [
     'VIDEOS' => [Iblock::VIDEOS],
@@ -14,7 +15,7 @@ $mediaTypes = [
 
         // TODO not sure about these. link to doc files?
         Iblock::CERTIFICATES,
-        Iblock::TESTIMONIALS,
+//        Iblock::TESTIMONIALS,
     ]
 ];
 $ibMeta = function($item) {
@@ -56,4 +57,17 @@ $arResult['BY_TYPE']['DEFAULT'] = array_filter($arResult['SEARCH'], function($it
 });
 if (count($arResult['SEARCH']) !== array_reduce(array_map('count', $arResult['BY_TYPE']), _::operator('+'), 0)) {
     trigger_error('something went wrong while grouping search results by media type', E_USER_WARNING);
+}
+$linklessItems = array_filter($arResult['SEARCH'], function($item) {
+    // e.g. starts with "?sphrase_id=..."
+    return !str::startsWith($item['URL'], '/');
+});
+if (!_::isEmpty($linklessItems)) {
+    $iblockIds = array_unique(array_reduce($linklessItems, function($acc, $item) use ($ibMeta) {
+        $meta = $ibMeta($item);
+        return !_::isEmpty($meta) ? _::append($acc, $meta['IBLOCK_ID']) : $acc;
+    }, []));
+    $listStr = '['.join(', ', $iblockIds).']';
+    $count = count($linklessItems);
+    trigger_error("search results: {$count} items for query '${$arResult['REQUEST']['QUERY']}' don't have a proper link. iblocks: {$listStr}", E_USER_WARNING);
 }

@@ -45,7 +45,7 @@ $arResult['BY_TYPE'] = _::map($mediaTypes, function($codes) use (&$seenIdsRef, $
                 $element[$picKey] = CFile::GetFileArray($element[$picKey]);
             }
         }
-        if ($ibMeta($item)['IBLOCK_ID'] === $getId(Iblock::VIDEOS)) {
+        if ($ibMeta($item)['IBLOCK_ID'] == $getId(Iblock::VIDEOS)) {
             $videoId = Videos::youtubeIdMaybe($element['PROPERTIES']['LINK']['VALUE']);
             $element['YOUTUBE_SRC'] = 'https://www.youtube.com/embed/'.$videoId;
         }

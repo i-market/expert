@@ -279,6 +279,7 @@ class Services {
 
     static function findEntity2($field, $val, $entities) {
         $findRec = function($xs, $pred) {
+            // TODO refactor: why reduce?
             $reducer = function($result, $x) use (&$reducer, $xs, $pred) {
                 if (isset($x['ID']) && $pred($x)) {
                     return $x;

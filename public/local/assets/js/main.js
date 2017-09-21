@@ -405,17 +405,15 @@
       });
       $examination.each(function() {
         var $usedFor = $(this).find('select[name="USED_FOR"]');
-        var $needsVisit = $(this).find('input[name="NEEDS_VISIT"]');
         function checkCondition() {
-          var needsVisit = $needsVisit.filter(':checked').val() === '1';
-          if ($usedFor.val() === '22' && needsVisit) {
+          if ($usedFor.val() === '22') {
             // TODO refactor: extract function. see mockup/script.js
             var $modal = $('#request-examination');
             $modal.fadeIn(100);
             $modal.find('.block').fadeIn(100);
           }
         }
-        $usedFor.add($needsVisit).on('change', checkCondition);
+        $usedFor.on('change', checkCondition);
         checkCondition();
 
         var $source = $(this).find('select[name="SITE_CATEGORY"]');

@@ -150,11 +150,11 @@ class Services {
         }, $array);
     }
 
-    static function formatTotalPrice($totalPrice) {
-        return Util::formatCurrency(round($totalPrice), ['cents' => false]).' руб./мес.';
+    static function formatTotalPrice($totalPrice, $unit) {
+        return Util::formatCurrency(round($totalPrice), ['cents' => false]).' '.$unit;
     }
 
-    static function resultBlockContext($state, $apiUri, $summaryValues) {
+    static function resultBlockContext($state, $apiUri, $priceUnit, $summaryValues) {
         $ret = [
             'apiUri' => $apiUri,
             'screen' => 'hidden'
@@ -163,7 +163,7 @@ class Services {
             $ret = array_merge($ret, [
                 'screen' => 'result',
                 'result' => [
-                    'total_price' => Services::formatTotalPrice($state['result']['total_price']),
+                    'total_price' => Services::formatTotalPrice($state['result']['total_price'], $priceUnit),
                     'summary_values' => $summaryValues
                 ],
                 'params' => ['EMAIL' => _::get($state, 'params.EMAIL', '')],

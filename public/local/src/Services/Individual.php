@@ -4,11 +4,12 @@ namespace App\Services;
 
 use App\Services;
 use Core\Underscore as _;
-use Core\Util;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Individual {
+    static $priceUnit = 'руб.';
+
     static function initialState($data) {
         return [
             'data_set' => $data['MULTIPLE_BUILDINGS'],
@@ -49,7 +50,7 @@ class Individual {
         $summaryValues = $state['result']['duration'] > 0
             ? ['Продолжительность выполнения работ' => Services::formatDurationWorkdays(strval($state['result']['duration']))]
             : [];
-        $resultBlock = Services::resultBlockContext($state, '/api/services/individual/calculator/send_proposal', $summaryValues);
+        $resultBlock = Services::resultBlockContext($state, '/api/services/individual/calculator/send_proposal', self::$priceUnit, $summaryValues);
         return [
             'apiEndpoint' => '/api/services/individual/calculator/calculate',
             'state' => $state,
@@ -72,7 +73,7 @@ class Individual {
             'outgoingId' => $outgoingId,
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
-            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'duration' => Services::formatDurationWorkdays($state['result']['duration']),
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([

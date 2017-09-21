@@ -10,6 +10,8 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Examination {
+    static $priceUnit = 'руб.';
+
     static function initialState($data) {
         return [
             'data_set' => $data['SINGLE_BUILDING'],
@@ -71,7 +73,7 @@ class Examination {
         $floorInputs = array_map(function($num) {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
-        $resultBlock = Services::resultBlockContext($state, '/api/services/examination/calculator/send_proposal', [
+        $resultBlock = Services::resultBlockContext($state, '/api/services/examination/calculator/send_proposal', self::$priceUnit, [
             'Срок выполнения' => $state['model']['TIME']
         ]);
         if (isset($state['errors']['GOALS'])) {
@@ -114,7 +116,7 @@ class Examination {
             'outgoingId' => $outgoingId,
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
-            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'time' => $state['model']['TIME'],
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([

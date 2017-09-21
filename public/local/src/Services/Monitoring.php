@@ -10,6 +10,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
 class Monitoring {
+    static $priceUnit = 'руб./мес.';
     // TODO deprecated
     private $repo;
 
@@ -92,7 +93,7 @@ class Monitoring {
         $floorInputs = array_map(function($num) {
             return ['label' => "Строение {$num}"];
         }, range(1, $siteCount));
-        $resultBlock = Services::resultBlockContext($state, '/api/services/monitoring/calculator/send_proposal', [
+        $resultBlock = Services::resultBlockContext($state, '/api/services/monitoring/calculator/send_proposal', self::$priceUnit, [
             'Продолжительность выполнения работ' => Services::formatDurationMonths($state['model']['DURATION']['NAME'])
         ]);
         $options = _::update(self::options($state['data_set']['MULTIPLIERS']), 'DURATION', function($opts) {
@@ -202,7 +203,7 @@ class Monitoring {
             'outgoingId' => $outgoingId,
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
-            'totalPrice' => Services::formatTotalPrice($state['result']['total_price']),
+            'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'duration' => Services::formatDurationMonths($state['model']['DURATION']['NAME']),
             'tables' => self::proposalTables($state['model']),
             'output' => array_merge([

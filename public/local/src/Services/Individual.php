@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services;
 use Core\Underscore as _;
+use Core\Util;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
@@ -56,7 +57,8 @@ class Individual {
             'state' => $state,
             'options' => self::options($state['data_set']['ENTITIES']),
             'heading' => 'Определение стоимости<br> выполнения отдельных видов работ',
-            'resultBlock' => $resultBlock
+            'resultBlock' => $resultBlock,
+            'formatPrice' => function($num) { return Util::formatCurrency($num, ['cents' => false]); }
         ];
     }
 

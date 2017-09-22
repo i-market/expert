@@ -86,9 +86,9 @@ $macros = new macros($state);
                                     <td><?= $entity['UNIT'] ?></td>
                                     <td>
                                         <? if (!v::isEmpty($entity['OLD_PRICE'])): ?>
-                                            <p class="through"><?= $entity['OLD_PRICE'] ?></p>
+                                            <p class="through"><?= $formatPrice($entity['OLD_PRICE']) ?></p>
                                         <? endif ?>
-                                        <p><?= $entity['PRICE'] ?></p>
+                                        <p><?= $formatPrice($entity['PRICE']) ?></p>
                                     </td>
                                     <td><?= $entity['DURATION'] ?></td>
                                     <td>

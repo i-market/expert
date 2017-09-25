@@ -11,7 +11,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
 <section class="technical_base_section">
     <div class="wrap">
         <div class="wrap_title">
-            <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+            <h2><? $APPLICATION->ShowTitle(false) ?></h2>
         </div>
         <div class="wrap_title">
             <? $APPLICATION->IncludeComponent(

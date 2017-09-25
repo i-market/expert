@@ -4,7 +4,7 @@ use App\View as v;
 ?>
 <section class="work_examples">
     <div class="wrap wrap--small">
-        <h1><?= $APPLICATION->GetTitle(false) ?></h1>
+        <h1><? $APPLICATION->ShowTitle(false) ?></h1>
         <h4 class="blue_color">
             <? $APPLICATION->IncludeComponent(
                 "bitrix:main.include",

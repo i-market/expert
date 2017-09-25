@@ -10,7 +10,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
 <section class="useful_literature">
     <div class="wrap">
         <div class="wrap_title">
-            <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+            <h2><? $APPLICATION->ShowTitle(false) ?></h2>
         </div>
         <? $APPLICATION->IncludeComponent(
             "bitrix:news.list",

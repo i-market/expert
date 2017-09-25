@@ -10,7 +10,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
 
 <section class="contacts_section">
     <div class="wrap">
-        <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+        <h2><? $APPLICATION->ShowTitle(false) ?></h2>
     </div>
     <div class="wrap wrap--small">
         <div class="contacts_info">

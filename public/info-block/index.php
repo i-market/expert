@@ -13,7 +13,7 @@ $APPLICATION->SetPageProperty('hide_bottom_banners', 'Y');
 <section class="useful_literature">
     <div class="wrap">
         <div class="wrap_title">
-            <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+            <h2><? $APPLICATION->ShowTitle(false) ?></h2>
         </div>
         <div class="wrap_title">
             <? $APPLICATION->IncludeComponent(

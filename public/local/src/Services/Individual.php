@@ -56,7 +56,7 @@ class Individual {
             'apiEndpoint' => '/api/services/individual/calculator/calculate',
             'state' => $state,
             'options' => self::options($state['data_set']['ENTITIES']),
-            'heading' => 'Определение стоимости<br> выполнения отдельных видов работ',
+            'heading' => 'Стоимость и сроки выполнения отдельных видов работ по экспертизе и обследованию. Стоимость и сроки выполнения экспертизы отдельных материалов, деталей, изделий, узлов, конструкций, элементов конструкций и пр.',
             'resultBlock' => $resultBlock,
             'formatPrice' => function($num) { return Util::formatCurrency($num, ['cents' => false]); }
         ];

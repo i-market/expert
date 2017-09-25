@@ -87,7 +87,7 @@ class App extends \Core\App {
             },
             'shareUrlsFn' => function() use (&$APPLICATION) {
                 // defer to get the title
-                return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle());
+                return ShareButtons::shareUrls(self::requestUrl(), $APPLICATION->GetTitle(false));
             },
             'adminEmailMaybe' => $this->adminEmailMaybe(),
             'sentry' => [

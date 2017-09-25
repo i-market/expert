@@ -199,7 +199,7 @@ $APPLICATION->SetPageProperty('hide_bottom_banners', 'Y');
                 "SECTION_CODE" => "",
                 "SECTION_FIELDS" => array("", ""),
                 "SECTION_ID" => "",
-                "SECTION_URL" => "gallery/#SECTION_ID#/#SECTION_CODE#/",
+                "SECTION_URL" => "gallery/#SECTION_ID#/",
                 "SECTION_USER_FIELDS" => array("", ""),
                 "SHOW_PARENT_NAME" => "N",
                 "TOP_DEPTH" => "1",

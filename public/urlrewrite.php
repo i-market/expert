@@ -1,9 +1,9 @@
 <?
 $arUrlRewrite = array(
     array(
-        "CONDITION" => "#^/info-block/gallery/(\d+)/#",
-        "RULE" => "SECTION_ID=\$1",
-        "ID" => "",
+        "CONDITION" => "#^/info-block/gallery/#",
+        "RULE" => "",
+        "ID" => "bitrix:catalog",
         "PATH" => "/info-block/gallery/index.php",
     ),
 	array(

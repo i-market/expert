@@ -10,6 +10,14 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
   Options +FollowSymLinks
   RewriteEngine On
+
+  # 301 redirects
+  # TODO services/*
+  RewriteRule ^new(/.*)?$ / [L,R=301]
+  RewriteRule ^company(/.*)?$ /about/ [L,R=301]
+  RewriteRule "^primery zakluheniy(/.*)?$" /our-work/ [L,R=301]
+  RewriteRule "^texniheckay_baza(/.*)?$" /equipment/ [L,R=301]
+
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteCond %{REQUEST_FILENAME} !-d

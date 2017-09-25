@@ -226,11 +226,19 @@
         // TODO improve ux: animate
         $distanceBlock.find('.warning').toggle($(this).val() === '>3km');
       });
-      $calc.find('.goals-filter').on('change', function() {
-        var active = $(this).val();
-        $calc.find('[data-goals-filter]').each(function() {
-          $(this).toggle($(this).attr('data-goals-filter') === active);
-          $(this).find('input[type=checkbox]').prop('checked', false);
+      $calc.find('.goals-filter').each(function() {
+        var $select = $(this);
+        var prevValue = $select.val();
+        $select.on('change', function() {
+          var active = $(this).val();
+          if (prevValue !== active) {
+            $calc.find('[data-goals-filter]').each(function() {
+              $(this).toggle($(this).attr('data-goals-filter') === active);
+              $(this).find('input[type=checkbox]').prop('checked', false);
+            });
+            // mutate
+            prevValue = active;
+          }
         });
       });
       $calc.find('.structures-to-inspect').each(function() {

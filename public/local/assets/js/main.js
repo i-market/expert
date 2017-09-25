@@ -92,6 +92,14 @@
     }
   }
 
+  function updateRadios($inputs, disabled) {
+    $inputs.each(function() {
+      var dis = _.includes(disabled, getId($(this)));
+      $(this).prop('disabled', dis);
+      $('label[for="' + $(this).attr('id') + '"').toggleClass('disabled', dis);
+    });
+  }
+
   function and(constraints) {
     return function(selected) {
       function loop(fns, result) {
@@ -424,21 +432,52 @@
         $usedFor.on('change', checkCondition);
         checkCondition();
 
-        var $source = $(this).find('select[name="SITE_CATEGORY"]');
-        var $target = $(this).find('select[name="GOALS_FILTER"]');
-        var constraint = merge([
-          equals({
-            1: [7],
-            2: [1, 2, 4, 7],
-            3: rangeInc(1, 6)
-          })
-        ]);
-        function update() {
-          var selected = selectSelection($source);
-          updateSelect($target, constraint(selected));
-        }
-        $source.on('change', update);
-        update();
+        var $siteCategory = $(this).find('select[name="SITE_CATEGORY"]');
+        var $goalsFilter = $(this).find('select[name="GOALS_FILTER"]');
+        var $needsVisitRadios = $(this).find('input[name="NEEDS_VISIT"]');
+        (function() {
+          var constraint = merge([
+            equals({
+              1: [7],
+              2: [1, 2, 4, 7],
+              3: rangeInc(1, 6)
+            })
+          ]);
+          function update() {
+            var selected = selectSelection($siteCategory);
+            updateSelect($goalsFilter, constraint(selected));
+          }
+          $siteCategory.on('change', update);
+          update();
+        })();
+        (function() {
+          var constraint = merge([
+            equals({
+              1: [0],
+              2: [1],
+              3: [1]
+            })
+          ]);
+          function update() {
+            var selected = selectSelection($siteCategory);
+            updateRadios($needsVisitRadios, constraint(selected));
+            // auto check the only available option
+            var $enabled = $needsVisitRadios.filter(':enabled');
+            if ($enabled.length === 1) {
+              $enabled.prop('checked', true);
+              $enabled.trigger('change');
+            }
+          }
+          $siteCategory.on('change', update);
+          update();
+        })();
+      });
+      // on closing a dropdown block reset its inputs
+      $examination.find('.needs-visit-dropdown').on('closeBlock.app', function() {
+        var $inputLikes = $(this).find('input, select');
+        $inputLikes.val('');
+        // notify fs-dropdown with change event
+        $inputLikes.trigger('change');
       });
       $calc.filter('.calculator--monitoring').find('.structures').each(function() {
         constrainSelection($(this), [

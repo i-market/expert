@@ -48,6 +48,7 @@ $macros = new macros($state);
                         ])
                     ]) ?>
                     <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) экспертизы', ['required' => true]) ?>
+                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория предметов экспертизы', ['required' => true]) ?>
                     <div class="wrap_calc_item">
                         <? $name = 'NEEDS_VISIT' ?>
                         <? $needsVisit = v::get($state, ['params', $name], false) ?>
@@ -120,7 +121,6 @@ $macros = new macros($state);
                             </div>
                         </div>
                     </div>
-                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория предметов экспертизы', ['required' => true]) ?>
                     <? $macros->showSelect('USED_FOR', $options['USED_FOR'], 'Назначение объекта(ов) экспертизы', ['required' => true]) ?>
                     <? $macros->showInput('TOTAL_AREA', 'Общая площадь объекта(ов), кв.м', [
                         'required' => true,

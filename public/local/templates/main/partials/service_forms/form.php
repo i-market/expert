@@ -23,9 +23,14 @@ use App\View as v;
         }
     </style>
     <h2>Заявка</h2>
-    <? if (!v::isEmpty($requestFormSubheading)): ?>
-        <h3><?= $requestFormSubheading ?></h3>
-    <? endif ?>
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:main.include",
+        "",
+        Array(
+            "AREA_FILE_SHOW" => "file",
+            "PATH" => v::includedArea("what-we-do/request_forms/{$code}.php")
+        )
+    ); ?>
     <p class="top_text"><? $APPLICATION->IncludeComponent(
             "bitrix:main.include",
             "",

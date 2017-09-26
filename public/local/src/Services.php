@@ -85,7 +85,6 @@ class Services {
             return [
                 'code' => $code,
                 'name' => $element['NAME'],
-                'requestFormSubheading' => $element['PROPERTIES']['REQUEST_FORM_SUBHEADING']['VALUE'],
                 'detailLink' => View::path($detail),
                 'calcLink' => $code === 'design' ? null : View::path($detail.'/calculator'),
                 'requestModalId' => 'request-'.$code,

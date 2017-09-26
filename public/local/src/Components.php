@@ -14,7 +14,7 @@ use Core\Util;
 use App\Services\MonitoringRequest;
 
 class Components {
-    static function showBannersSection($iblockSection) {
+    static function showBannersSection($iblockSection, $childSection = null) {
         global $APPLICATION;
         $classLists = [
             'bottom' => ['some_section--last'],
@@ -75,7 +75,8 @@ class Components {
                 "SORT_BY2" => "SORT",
                 "SORT_ORDER1" => "DESC",
                 "SORT_ORDER2" => "ASC",
-                "CLASS_LIST" => $classList
+                "CLASS_LIST" => $classList,
+                "CHILD_SECTION" => $childSection
             )
         );
     }

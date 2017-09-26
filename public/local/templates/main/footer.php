@@ -11,10 +11,16 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP)
 <? $APPLICATION->AddBufferContent(function() {
     return App::renderLayoutFooter();
 }) ?>
-<? $APPLICATION->AddBufferContent(function() use ($showBottomBannersFn) {
+<? $APPLICATION->AddBufferContent(function() use (&$APPLICATION, $showBottomBannersFn) {
     ob_start();
     if ($showBottomBannersFn()) {
-        Components::showBannersSection('bottom');
+        $child = 'bottom';
+        $parent = $APPLICATION->GetProperty('banners_section_code');
+        if ($parent !== null) {
+            Components::showBannersSection($parent, $child);
+        } else {
+            Components::showBannersSection($child);
+        }
     }
     return ob_get_clean();
 }) ?>

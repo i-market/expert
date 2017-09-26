@@ -10,6 +10,19 @@
     state: {}
   };
 
+  var hash = window.location.hash.substr(1);
+  App.hashQuery = hash.split('&').reduce(function(result, item) {
+    var parts = item.split('=');
+    result[parts[0]] = parts[1];
+    return result;
+  }, {});
+
+  function openModal($modal) {
+    // TODO refactor: merge with mockup/script.js implementation
+    $modal.fadeIn(100);
+    $modal.find('.block').fadeIn(100);
+  }
+
   $(document).ajaxError(function() {
     // TODO make it closeable
     $('#global-error-message').show();
@@ -168,14 +181,8 @@
   function init($scope) {
     $('.work_examples_inner').each(function() {
       var $component = $(this);
-      var hash = window.location.hash.substr(1);
-      var hashQuery = hash.split('&').reduce(function(result, item) {
-        var parts = item.split('=');
-        result[parts[0]] = parts[1];
-        return result;
-      }, {});
-      if (_.has(hashQuery, 'backFrom')) {
-        var sectionId = hashQuery['backFrom'];
+      if (_.has(App.hashQuery, 'back-from')) {
+        var sectionId = App.hashQuery['back-from'];
         // expand accordion item containing the section from which we navigated from
         $component.find('[data-id='+ sectionId +']').closest('.accordeon_inner').prev().click();
       }
@@ -430,10 +437,7 @@
         var $usedFor = $(this).find('select[name="USED_FOR"]');
         function checkCondition() {
           if ($usedFor.val() === '22') {
-            // TODO refactor: extract function. see mockup/script.js
-            var $modal = $('#request-examination');
-            $modal.fadeIn(100);
-            $modal.find('.block').fadeIn(100);
+            openModal($('#request-examination'));
           }
         }
         $usedFor.on('change', checkCondition);
@@ -635,5 +639,10 @@
       initServiceRequestForm($(this));
     });
     init($('body'));
+
+    if (_.has(App.hashQuery, 'modal')) {
+      var modalId = App.hashQuery['modal'];
+      openModal($('#' + modalId));
+    }
   });
 })();

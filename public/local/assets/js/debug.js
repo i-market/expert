@@ -3,18 +3,18 @@
   function wrap(text) {
     return '<div style="position: absolute; z-index: 1; background: royalblue; color: white; padding: 5px; font-size: 14px; font-weight: bold;">'+text+'</div>';
   }
+  function firstMatch(selectors) {
+    var result = $(_.first(selectors)).first();
+    if (result.length) {
+      return result;
+    } else {
+      return firstMatch(_.tail(selectors));
+    }
+  }
   function display() {
     var other = {};
     _.forEach(data.multipliers, function(mult, name) {
       var selectors = _.split('[name="'+name+'"], [name="'+name+'[]"] + label, [name="'+name+'[]"]', ',');
-      function firstMatch(selectors) {
-        var result = $(_.first(selectors)).first();
-        if (result.length) {
-          return result;
-        } else {
-          return firstMatch(_.tail(selectors));
-        }
-      }
       var $inputs = firstMatch(selectors);
       $inputs.after(wrap(mult));
       if ($inputs.length === 0) {

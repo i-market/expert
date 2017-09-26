@@ -157,7 +157,9 @@ class CalculatorMacros {
                 <option value="<?= $option['value'] ?>"<?= $selected ? ' selected' : '' ?>><?= $option['text'] ?></option>
             <? endforeach ?>
         </select>
-        <div class="error-message"><?= $error ?></div>
+        <? if (!$opts['show_warning']): ?>
+            <div class="error-message"><?= $error ?></div>
+        <? endif ?>
         <?
     }
 

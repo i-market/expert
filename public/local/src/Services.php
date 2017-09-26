@@ -224,40 +224,42 @@ class Services {
     }
 
     static function keyValidator($key, $params, $mandatory = true) {
-        // cache validators
-        static $validators = null;
         $requiredId = function() { return v::notOptional(); };
-        if ($validators === null) {
-            $validators = [
-                'SITE_COUNT' => v::intType()->positive(),
-                'SITE_CATEGORY' => $requiredId(),
-                'DISTANCE_BETWEEN_SITES' =>
-                    $params['SITE_COUNT'] === 1
-                        ? v::alwaysValid()
-                        : $requiredId(),
-                'DESCRIPTION' => v::stringType()->notEmpty(),
-                'LOCATION' => $requiredId(),
-                'USED_FOR' => $requiredId(),
-                'TOTAL_AREA' => v::intType()->positive(),
-                'VOLUME' => v::optional(v::intType()->positive()),
-                // have to use custom `callback` validator because e.g. built-in `each` validator hides the field name
-                'FLOORS' => v::callback(function ($values) {
-                    return is_array($values) && _::matches($values, function ($v) {
-                        return v::notOptional()->intType()->validate($v);
-                    });
-                }),
-                'UNDERGROUND_FLOORS' =>
-                    $params['HAS_UNDERGROUND_FLOORS']
-                        ? v::intType()->positive()
-                        : v::alwaysValid(),
-                'DURATION' => $requiredId(),
-                'TRANSPORT_ACCESSIBILITY' => $requiredId(),
-                'DOCUMENTS' => v::arrayType()
-            ];
+        switch ($key) {
+            case 'SITE_COUNT': $v = v::intType()->positive(); break;
+            case 'SITE_CATEGORY': $v = $requiredId(); break;
+            case 'DISTANCE_BETWEEN_SITES':
+                $v = $params['SITE_COUNT'] === 1
+                    ? v::alwaysValid()
+                    : v::allOf(
+                        $requiredId(),
+                        v::not(v::equals(self::$distanceSpecialValue))
+                    );
+                break;
+            case 'DESCRIPTION': $v = v::stringType()->notEmpty(); break;
+            case 'LOCATION': $v = $requiredId(); break;
+            case 'USED_FOR': $v = $requiredId(); break;
+            case 'TOTAL_AREA': $v = v::intType()->positive(); break;
+            case 'VOLUME': $v = v::optional(v::intType()->positive()); break;
+            // have to use custom `callback` validator because e.g. built-in `each` validator hides field names
+            case 'FLOORS':
+                $v = v::callback(function($values) {
+                    return is_array($values) && _::matches($values, function($v) {
+                            return v::notOptional()->intType()->validate($v);
+                        });
+                });
+                break;
+            case 'UNDERGROUND_FLOORS':
+                $v = $params['HAS_UNDERGROUND_FLOORS']
+                    ? v::intType()->positive()
+                    : v::alwaysValid();
+                break;
+            case 'DURATION': $v = $requiredId(); break;
+            case 'TRANSPORT_ACCESSIBILITY': $v = $requiredId(); break;
+            case 'DOCUMENTS': $v = v::arrayType(); break;
+            default: $v = v::alwaysValid(); break;
         }
-        assert(isset($validators[$key]));
-        $validator = clone $validators[$key];
-        return v::key($key, $validator, $mandatory);
+        return v::key($key, $v, $mandatory);
     }
 
     static function dereferenceParams($params, $dataSet, callable $findEntity) {

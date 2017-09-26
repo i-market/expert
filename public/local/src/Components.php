@@ -94,6 +94,7 @@ class Components {
 
     static function renderServicesSection() {
         $services = array_map(function($service) {
+            // TODO refactor: DRY
             if ($service['code'] === 'monitoring') {
                 $data = Services::data('monitoring');
                 $ctx = MonitoringRequest::context(MonitoringRequest::initialState($data), $service);

@@ -231,8 +231,15 @@
         }
       });
       $distanceBlock.find('select').on('change', function() {
-        // TODO improve ux: animate
-        $distanceBlock.find('.warning').toggle($(this).val() === '>3km');
+        var disable = $(this).val() === '>3km';
+        // TODO disallow submitting the form
+        var $warning = $distanceBlock.find('.warning');
+        var duration = 200;
+        if (disable) {
+          $warning.slideDown(duration);
+        } else {
+          $warning.slideUp(duration);
+        }
       });
       $calc.find('.goals-filter').each(function() {
         var $select = $(this);

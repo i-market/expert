@@ -33,7 +33,7 @@ use App\View as v;
                 "AREA_FILE_SHOW" => "file",
                 "PATH" => v::includedArea('what-we-do/request_form_help.php')
             )
-        ); ?> Также, Вы можете определить стоимость и сроки выполнения работ, заполнив <a href="<?= $service['calcLink'] ?>" class="red">On-line форму</a>.</p>
+        ); ?> Также, Вы можете определить стоимость и сроки выполнения работ, заполнив <a href="<?= $calcLink ?>" class="red">On-line форму</a>.</p>
     <?= $inputs ?>
     <div class="wrap_robot_block">
         <?= v::render('partials/form_error_message', [

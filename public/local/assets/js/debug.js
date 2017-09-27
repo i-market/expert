@@ -21,7 +21,9 @@
         other[name] = mult;
       }
     });
-    other['Цена за метр'] = data.price_per_square_meter;
+    if (_.has(data, 'price_per_square_meter')) {
+      other['Цена за метр'] = data.price_per_square_meter;
+    }
     $('.total_price').prepend(wrap(_.map(other, function(mult, name) { return name+' = '+mult; }).join(', ')));
   }
   $(document).one('ajaxStop', display);

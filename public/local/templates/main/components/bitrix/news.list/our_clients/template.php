@@ -18,7 +18,7 @@ $showCard = function($item, $template) {
     <div class="grid">
         <? foreach ($arResult['COLUMNS'] as $column): ?>
             <? list($first, $second) = $column['ITEMS'] ?>
-            <div class="item col col_4">
+            <div class="item">
                 <? $showCard($first, $this) ?>
                 <? $showCard($second, $this) ?>
             </div>

@@ -399,6 +399,7 @@
           '14.7 4: 1-3'
         ];
         function translate(prefix, n) {
+          // TODO refactor: hardcoded entity offsets
           var offsetByPrefix = {
             '14.1': 0,
             '14.2': 40,
@@ -472,7 +473,6 @@
           function update() {
             var selected = selectSelection($siteCategory);
             updateRadios($needsVisitRadios, constraint(selected));
-            // auto check the only available option
             var $enabled = $needsVisitRadios.filter(':enabled');
             if ($enabled.length === 1) {
               $enabled.prop('checked', true);
@@ -613,7 +613,7 @@
         return data;
       },
       add: function(e, data) {
-        // show
+        // TODO refactor: get the initial value beforehand
         $progress.css('display', 'flex');
         data.submit();
       },
@@ -644,5 +644,78 @@
       var modalId = App.hashQuery['modal'];
       openModal($('#' + modalId));
     }
+
+    $('.our_objects .grid').slick({
+      adaptiveHeight: true, // take margins into account
+      rows: 2,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      prevArrow: $('.our_objects_section .prev'),
+      nextArrow: $('.our_objects_section .next'),
+      responsive: [
+        {
+          breakpoint: 1025,
+          settings: {
+            rows: 2,
+            slidesToShow: 2
+          }
+        },
+        {
+          breakpoint: 767,
+          settings: {
+            rows: 1,
+            slidesToShow: 1
+          }
+        }
+      ]
+    });
+    $('.banner_slider').slick({
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      prevArrow: $('.wrap_banner_slider .prev'),
+      nextArrow: $('.wrap_banner_slider .next')
+    });
+    $('.our_clients .grid').slick({
+      adaptiveHeight: true,
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      prevArrow: $('.our_clients_section .prev'),
+      nextArrow: $('.our_clients_section .next'),
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 2
+          }
+        },
+        {
+          breakpoint: 767,
+          settings: {
+            slidesToShow: 1
+          }
+        }
+      ]
+    });
+    $('.our_reviews .grid').slick({
+      adaptiveHeight: true,
+      slidesToShow: 5,
+      slidesToScroll: 1,
+      prevArrow: $('.our_reviews_section .prev'),
+      nextArrow: $('.our_reviews_section .next'),
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 4
+          }
+        },
+        {
+          breakpoint: 767,
+          settings: {
+            slidesToShow: 2
+          }
+        }
+      ]
+    });
   });
 })();

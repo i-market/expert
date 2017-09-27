@@ -6,7 +6,8 @@
   "dependencies": {
     "blueimp-file-upload": "^9.18.0",
     "intercooler": "^1.1.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "slick-carousel": "git+https://github.com/kenwheeler/slick.git#dcdc97c995ba946afe98440fbb5c77620a8ca580"
   },
   "devDependencies": {
     "browser-sync": "^2.18.12",
@@ -21,7 +22,7 @@
   },
   "scripts": {
     "build:mockup": "./scripts/build-mockup.sh",
-    "build:vendor:js": "./scripts/build-vendor-js.sh",
+    "build:vendor:js": "./scripts/build-vendor.sh",
     "build:copy": "cp -R assets/. ${npm_package_config_dist}",
     "build": "npm run build:mockup && npm run build:vendor:js && npm run build:copy",
     "browsersync": "browser-sync start --proxy ${PROXY:-localhost} -f ${npm_package_config_dist}/css/*.css -f ${npm_package_config_dist}/js/*.js --no-open",

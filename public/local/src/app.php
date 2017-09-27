@@ -132,6 +132,7 @@ class App extends \Core\App {
     }
 
     static function assets() {
+        // using css and js from different versions of slick. fingers crossed.
         $styles = array_map(function($path) {
             return View::asset($path);
         }, [
@@ -150,7 +151,7 @@ class App extends \Core\App {
                 return View::asset($path);
             }, [
                 'js/vendor/jquery.fancybox.min.js',
-                'js/vendor/slick.min.js',
+                'js/vendor/slick.js',
                 'js/vendor/tooltipster.bundle.min.js',
                 'js/vendor/core.js',
                 'js/vendor/dropdown.js', // dropdown.js depends on core.js

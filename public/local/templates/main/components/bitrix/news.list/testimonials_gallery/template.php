@@ -6,7 +6,7 @@ use App\View as v;
     <div class="grid">
         <? foreach ($arResult['ITEMS'] as $item): ?>
             <? // TODO resize images ?>
-            <a class="item gallery col col_5" href="<?= $item['DETAIL_PICTURE']['SRC'] ?>">
+            <a class="item gallery" href="<?= $item['DETAIL_PICTURE']['SRC'] ?>">
                 <span class="img" id="<?= v::addEditingActions($item, $this) ?>">
                     <img src="<?= $item['DETAIL_PICTURE']['SRC'] ?>" alt="<?= $item['DETAIL_PICTURE']['ALT'] ?>">
                 </span>

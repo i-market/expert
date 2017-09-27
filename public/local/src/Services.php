@@ -194,9 +194,10 @@ class Services {
 
     static function entities2options($x) {
         if (isset($x['ID'])) {
-            // TODO tmp: don't strip anything for testing purposes
-//            return ['value' => $x['ID'], 'text' => str::capitalize(Parser::stripNumbering($x['NAME']), false)];
-            return ['value' => $x['ID'], 'text' => str::capitalize($x['NAME'], false)];
+            $name = App::getInstance()->isDebugEnabled()
+                ? $x['NAME']
+                : Parser::stripNumbering($x['NAME']);
+            return ['value' => $x['ID'], 'text' => str::capitalize($name, false)];
         } elseif (is_array($x)) {
             return array_map([self::class, 'entities2options'], $x);
         } else {

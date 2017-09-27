@@ -43,6 +43,11 @@ class App extends \Core\App {
         };
     }
 
+    function isDebugEnabled() {
+        // TODO get from config
+        return true;
+    }
+
     /**
      * @return Monitoring
      */

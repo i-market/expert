@@ -97,8 +97,10 @@ class Api {
         }
     }
 
-    // TODO tmp: debugging data
     static function debugScript() {
+        if (!App::getInstance()->isDebugEnabled()) {
+            return '';
+        }
         $json = json_encode(Services\Calculator::$debug);
         $src = v::asset('js/debug.js');
         return "<script>window._data = {$json};</script><script src='{$src}'></script>";

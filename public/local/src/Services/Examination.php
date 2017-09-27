@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\App;
 use App\Components;
 use App\Services;
 use Core\Underscore as _;
@@ -165,9 +166,10 @@ class Examination {
                 return _::flatMap($root, _::partial($flatten, 0));
             }
         });
-        $goalsFilter = _::map(array_keys($opts['GOALS']), function($name, $idx) {
-            // TODO tmp: don't strip anything for testing purposes
-//            return ['value' => strval($idx), 'text' => Parser::stripNumbering($name)];
+        $goalsFilter = _::map(array_keys($opts['GOALS']), function($_name, $idx) {
+            $name = App::getInstance()->isDebugEnabled() ?
+                $_name
+                : Parser::stripNumbering($_name);
             return ['value' => strval($idx + 1), 'text' => $name];
         });
         return array_merge($opts, [

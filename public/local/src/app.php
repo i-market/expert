@@ -138,16 +138,21 @@ class App extends \Core\App {
 
     static function assets() {
         // using css and js from different versions of slick. fingers crossed.
-        $styles = array_map(function($path) {
-            return View::asset($path);
-        }, [
-            'css/lib/normalize.min.css',
-            'css/lib/jquery.fancybox.min.css',
-            'css/lib/slick.css',
-            'css/lib/tooltipster.bundle.min.css',
-            'css/lib/dropdown.css',
-            'css/main.css'
-        ]);
+        $styles = array_merge(
+            [
+                'https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800&amp;subset=cyrillic-ext'
+            ],
+            array_map(function($path) {
+                return View::asset($path);
+            }, [
+                'css/lib/normalize.min.css',
+                'css/lib/jquery.fancybox.min.css',
+                'css/lib/slick.css',
+                'css/lib/tooltipster.bundle.min.css',
+                'css/lib/dropdown.css',
+                'css/main.css'
+            ])
+        );
         $scripts = array_merge(
             [
                 '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js',

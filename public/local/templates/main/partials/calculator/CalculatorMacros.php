@@ -45,7 +45,7 @@ class CalculatorMacros {
             <p class="title"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></p>
             <div class="inner">
                 <div class="left<?= !v::isEmpty($error) ? ' error' : '' ?>">
-                    <textarea name="<?= $name ?>"><?= $value ?></textarea>
+                    <textarea name="<?= $name ?>" class="stretch-to-fit"><?= $value ?></textarea>
                     <div class="error-message"><?= $error ?></div>
                 </div>
                 <div class="right">

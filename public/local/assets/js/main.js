@@ -17,12 +17,6 @@
     return result;
   }, {});
 
-  function openModal($modal) {
-    // TODO refactor: merge with mockup/script.js implementation
-    $modal.fadeIn(100);
-    $modal.find('.block').fadeIn(100);
-  }
-
   $(document).ajaxError(function() {
     // TODO make it closeable
     $('#global-error-message').show();
@@ -32,6 +26,7 @@
   // "constraint" is a function mapping selected options to ones that should be disabled
 
   // TODO refactor: namespace it
+  // TODO refactor: extract entity ids
 
   /** @deprecated */
   function constrainSelection($component, constraints) {
@@ -178,6 +173,30 @@
     return {prefix: match[1], selected: match[2], disabled: match[3]};
   }
 
+  function stretchToFit($textarea, initialHeight) {
+    $textarea.css('height', 0);
+    var hasMultipleLines = $textarea[0].scrollHeight > initialHeight;
+    if (hasMultipleLines) {
+      var padding = parseFloat($textarea.css('padding-top'));
+      $textarea.css('height', $textarea[0].scrollHeight + padding);
+    } else {
+      $textarea.css('height', initialHeight);
+    }
+  }
+
+  function initStretching($scope) {
+    $scope.find('textarea.stretch-to-fit:visible').each(function() {
+      var $textarea = $(this);
+      var initialHeight = $textarea.innerHeight();
+      var stretch = function() { stretchToFit($textarea, initialHeight) };
+      stretch();
+      $textarea.on('change input', function() {
+        setTimeout(stretch, 0);
+      });
+    });
+  }
+
+  // TODO refactor: split this monster
   function init($scope) {
     $('.work_examples_inner').each(function() {
       var $component = $(this);
@@ -187,8 +206,6 @@
         $component.find('[data-id='+ sectionId +']').closest('.accordeon_inner').prev().click();
       }
     });
-
-    // calculators
 
     function setExpandableTo($el, state) {
       var targetSel = $el.attr('data-target');
@@ -205,9 +222,15 @@
       $el.attr('data-state', saveState(state));
     }
 
+    initStretching($scope);
+    // textarea needs to be visible to calculate the initial height
+    $scope.on('openModal.app', function(evt) {
+      initStretching($(evt.target));
+    });
+
     // TODO refactor: split up this monster of a function
-    var sel = '.calculator, .calculator--monitoring, .calculator--inspection';
-    $scope.find(sel).addBack(sel).each(function() {
+    var calcSel = '.calculator, .calculator--monitoring, .calculator--inspection';
+    $scope.find(calcSel).addBack(calcSel).each(function() {
       var $calc = $(this);
       $calc.find('.calculator__expandable-title').each(function() {
         // TODO refactor: maintaining state between ajax requests
@@ -320,6 +343,7 @@
       });
       var $examination = $calc.filter('.calculator--examination');
       $examination.find('.goals').each(function() {
+        // TODO refactor: optimize expensive constraint building
         var anyOfEntries = [
           '14.1 1: 2-10,12-38',
           '14.1 2: 1,3-6,10,12-13,17,19,22,24,26,28,30,32,34,36,38',
@@ -438,7 +462,7 @@
         var $usedFor = $(this).find('select[name="USED_FOR"]');
         function checkCondition() {
           if ($usedFor.val() === '22') {
-            openModal($('#request-examination'));
+            Mockup.openModal($('#request-examination'));
           }
         }
         $usedFor.on('change', checkCondition);
@@ -447,41 +471,45 @@
         var $siteCategory = $(this).find('select[name="SITE_CATEGORY"]');
         var $goalsFilter = $(this).find('select[name="GOALS_FILTER"]');
         var $needsVisitRadios = $(this).find('input[name="NEEDS_VISIT"]');
-        (function() {
-          var constraint = merge([
-            equals({
-              1: [7],
-              2: [1, 2, 4, 7],
-              3: rangeInc(1, 6)
-            })
-          ]);
-          function update() {
-            var selected = selectSelection($siteCategory);
-            updateSelect($goalsFilter, constraint(selected));
+        var goalsConstraint = merge([
+          equals({
+            1: [7],
+            2: [1, 2, 4, 7],
+            3: rangeInc(1, 6)
+          })
+        ]);
+        var needsVisitConstraint = merge([
+          equals({
+            1: [0],
+            2: [1],
+            3: [1]
+          })
+        ]);
+        function update() {
+          var selected = selectSelection($siteCategory);
+          updateSelect($goalsFilter, goalsConstraint(selected));
+
+          updateRadios($needsVisitRadios, needsVisitConstraint(selected));
+          var $enabled = $needsVisitRadios.filter(':enabled');
+          if ($enabled.length === 1) {
+            $enabled.prop('checked', true);
+            $enabled.trigger('change');
           }
-          $siteCategory.on('change', update);
-          update();
-        })();
-        (function() {
-          var constraint = merge([
-            equals({
-              1: [0],
-              2: [1],
-              3: [1]
-            })
-          ]);
-          function update() {
-            var selected = selectSelection($siteCategory);
-            updateRadios($needsVisitRadios, constraint(selected));
-            var $enabled = $needsVisitRadios.filter(':enabled');
-            if ($enabled.length === 1) {
-              $enabled.prop('checked', true);
-              $enabled.trigger('change');
-            }
+
+          var hideUsedFor = _.includes(selected, 3);
+          // TODO ux: animate
+          var $formItem = $usedFor.closest('.wrap_calc_item');
+          $formItem.toggle(!hideUsedFor);
+          if (hideUsedFor) {
+            // TODO refactor: extract the function to reset inputs
+            var $inputLikes = $formItem.find('input, select');
+            $inputLikes.val('');
+            // notify fs-dropdown with change event
+            $inputLikes.trigger('change');
           }
-          $siteCategory.on('change', update);
-          update();
-        })();
+        }
+        $siteCategory.on('change', update);
+        update();
       });
       // on closing a dropdown block reset its inputs
       $examination.find('.needs-visit-dropdown').on('closeBlock.app', function() {
@@ -497,14 +525,17 @@
             [rangeInc(2, 9), [1]]
           ])
         ]);
-      })
+      });
     });
   }
 
   Intercooler.ready(function($el) {
     Mockup.initForms($el);
     initFormErrorMessage($el);
-    init($el);
+    // TODO refactor: sort out intercooler.ready, document.ready and `init` stuff
+    if (!$el.is('body')) {
+      init($el);
+    }
   });
 
   // TODO refactor
@@ -569,9 +600,11 @@
           }
         },
         complete: function() {
+          // TODO refactor the whole init/re-init mess
           Mockup.initForms($form);
           setLoading(false);
           initFormErrorMessage($form);
+          initStretching($form);
         }
       });
     });
@@ -642,7 +675,7 @@
 
     if (_.has(App.hashQuery, 'modal')) {
       var modalId = App.hashQuery['modal'];
-      openModal($('#' + modalId));
+      Mockup.openModal($('#' + modalId));
     }
 
     $('.gallery').fancybox({

@@ -42,7 +42,7 @@ class FormMacros {
         list($value, $error) = $this->valueErrorPair($name);
         ?>
         <div class="wrap_input<?= !v::isEmpty($error) ? ' error' : '' ?>">
-            <textarea name="<?= $name ?>"><?= $value ?></textarea>
+            <textarea name="<?= $name ?>" class="stretch-to-fit"><?= $value ?></textarea>
             <span class="input_text<?= !v::isEmpty($value) ? ' focus' : '' ?>"><?= $label.($opts['required'] ? self::$requiredMark : '') ?></span>
             <div class="error-message"><?= $error ?></div>
         </div>

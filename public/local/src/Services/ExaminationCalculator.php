@@ -160,8 +160,6 @@ class ExaminationCalculator extends Calculator {
 
     function multipliers($params, $dataSet) {
         $ignoredKeys = ['TOTAL_AREA', 'VOLUME', 'PRICES'];
-        // TODO temporary ignore while we're missing distance data
-        $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
         if (!$params['HAS_UNDERGROUND_FLOORS']) {
             $ignoredKeys[] = 'UNDERGROUND_FLOORS';
         }
@@ -175,6 +173,9 @@ class ExaminationCalculator extends Calculator {
         }
         if ($params['SITE_COUNT'] === 1) {
             $ignoredKeys[] = 'DISTANCE_BETWEEN_SITES';
+        }
+        if ($params['SITE_CATEGORY'] == '3') {
+            $ignoredKeys[] = 'USED_FOR';
         }
         $knownKeys = array_keys($dataSet['MULTIPLIERS']);
         $requiredKeys = array_diff($knownKeys, $ignoredKeys);

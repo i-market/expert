@@ -178,22 +178,6 @@ class Examination {
                 _::pluck($goalsFilter, 'value'),
                 array_map($mergeOptions, $uiElementsByRoot)
             ),
-            // TODO missing examination data
-            // see also calculator/multipliers method ignored key
-            'DISTANCE_BETWEEN_SITES' => Services::entities2options([
-                1 => [
-                    "ID" => "1",
-                    "NAME" => "Объекты находятся в одном месте",
-                ],
-                2 => [
-                    "ID" => "2",
-                    "NAME" => "Расстояние между объектами не более 0,5 км",
-                ],
-                3 => [
-                    "ID" => "3",
-                    "NAME" => "Расстояние между объектами 0,5-3 км",
-                ],
-            ])
         ]);
     }
 
@@ -203,7 +187,9 @@ class Examination {
             Services::keyValidator('SITE_COUNT', $params),
             Services::keyValidator('DESCRIPTION', $params),
             Services::keyValidator('SITE_CATEGORY', $params),
-            Services::keyValidator('USED_FOR', $params),
+            $params['SITE_CATEGORY'] == '3'
+                ? v::key('USED_FOR', v::alwaysValid())
+                : Services::keyValidator('USED_FOR', $params),
             Services::keyValidator('TOTAL_AREA', $params),
             Services::keyValidator('VOLUME', $params),
             Services::keyValidator('FLOORS', $params),

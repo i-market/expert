@@ -18,7 +18,7 @@
       var selectors = _.split('[name="'+name+'"], [name="'+name+'[]"] + label, [name="'+name+'[]"]', ',');
       var $inputs = firstMatch(selectors);
       var text = mult + (!_.isEmpty(factors)
-        ? ' = ' + _.concat([1], factors).join(' * ')
+        ? ' = ' + factors.join(' * ')
         : '');
       $inputs.after(wrap(text));
       if ($inputs.length === 0) {

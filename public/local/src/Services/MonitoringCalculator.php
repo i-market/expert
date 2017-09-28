@@ -63,12 +63,12 @@ class MonitoringCalculator extends Calculator {
                         return $entity['VALUE'];
                     }
                 }, $val);
-                return u::product($multipliers);
+                return u::product($this->debugFactors($field, $multipliers));
             } elseif (is_array($val)) {
                 $multipliers = array_map(function($v) use (&$multiplierRec, $field, $dataSet) {
                     return $multiplierRec($v, $field, $dataSet);
                 }, $val);
-                return u::product($multipliers);
+                return u::product($this->debugFactors($field, $multipliers));
             }
             $entity = Services::findEntity($field, $val, $dataSet);
             if ($field === 'DOCUMENTS') {

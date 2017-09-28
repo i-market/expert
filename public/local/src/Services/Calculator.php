@@ -27,4 +27,9 @@ abstract class Calculator {
     static function parseNumericPredicate($str) {
         return Parser::parseNumericPredicate($str);
     }
+
+    protected function debugFactors($field, $factors) {
+        self::$debug['factors'][$field] = $factors;
+        return $factors;
+    }
 }

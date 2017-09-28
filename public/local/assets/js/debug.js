@@ -14,11 +14,15 @@
   function display() {
     var other = {};
     _.forEach(data.multipliers, function(mult, name) {
+      var factors = _.get(data, ['factors', name], []);
       var selectors = _.split('[name="'+name+'"], [name="'+name+'[]"] + label, [name="'+name+'[]"]', ',');
       var $inputs = firstMatch(selectors);
-      $inputs.after(wrap(mult));
+      var text = mult + (!_.isEmpty(factors)
+        ? ' = ' + _.concat([1], factors).join(' * ')
+        : '');
+      $inputs.after(wrap(text));
       if ($inputs.length === 0) {
-        other[name] = mult;
+        other[name] = text;
       }
     });
     if (_.has(data, 'price_per_square_meter')) {

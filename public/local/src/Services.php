@@ -246,7 +246,7 @@ class Services {
                 $v = v::callback(function($values) {
                     return is_array($values) && _::matches($values, function($v) {
                             return v::notOptional()->intType()->validate($v);
-                        }) && array_reduce($values, _::operator('+'), 0);
+                        }) && array_reduce($values, _::operator('+'), 0) > 0;
                 });
                 break;
             case 'UNDERGROUND_FLOORS':

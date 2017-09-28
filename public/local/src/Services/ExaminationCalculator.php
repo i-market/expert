@@ -185,7 +185,7 @@ class ExaminationCalculator extends Calculator {
                 $multipliers = array_map(function($v) use (&$findMult, $field) {
                     return $findMult($v, $field);
                 }, $val);
-                return u::product($this->debugFactors($field, $multipliers));
+                return u::product($this->debugFactors($field, '*', $multipliers));
             }
             $entity = Services::findEntity($field, $val, $dataSet);
             if (in_array($field, ['DOCUMENTS'])) {
@@ -201,7 +201,7 @@ class ExaminationCalculator extends Calculator {
                 $views = $this->goalViews($dataSet);
                 $matchingViews = $this->matchingGoalViews($x, $views);
                 $multipliers = $this->reduceGoalViews($x, $matchingViews);
-                return u::product($this->debugFactors($field, $multipliers));
+                return u::sum($this->debugFactors($field, '+', $multipliers));
             } elseif ($field === 'FLOORS') {
                 return $findMult(u::sum($x), $field);
             } else {

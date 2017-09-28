@@ -15,11 +15,11 @@
   function display() {
     var other = {};
     _.forEach(data.multipliers, function(mult, name) {
-      var factors = _.get(data, ['factors', name], []);
+      var factors = _.get(data, ['factors', name], {value: []});
       var selectors = _.split('[name="'+name+'"], [name="'+name+'[]"] + label, [name="'+name+'[]"]', ',');
       var $inputs = firstMatch(selectors);
-      var text = mult + (factors.length > 1
-        ? ' = ' + factors.join(' * ')
+      var text = mult + (factors.value.length > 1
+        ? ' = ' + factors.value.join(' '+factors.operator+' ')
         : '');
       $inputs.after(wrap(text));
       if ($inputs.length === 0) {

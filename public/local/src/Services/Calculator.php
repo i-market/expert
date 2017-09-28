@@ -26,8 +26,12 @@ abstract class Calculator {
         return Parser::parseNumericPredicate($str);
     }
 
-    protected function debugFactors($field, $factors) {
-        self::$debug['factors'][$field] = array_values($factors);
+    // TODO rename factors
+    protected function debugFactors($field, $operator, $factors) {
+        self::$debug['factors'][$field] = [
+            'operator' => $operator,
+            'value' => array_values($factors)
+        ];
         return $factors;
     }
 }

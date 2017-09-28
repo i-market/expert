@@ -47,7 +47,7 @@ class OversightCalculator extends Calculator {
                 $multipliers = array_map(function($v) use (&$findMult, $field) {
                     return $findMult($v, $field);
                 }, $val);
-                return u::product($this->debugFactors($field, $multipliers));
+                return u::product($this->debugFactors($field, '*', $multipliers));
             }
             $entity = Services::findEntity($field, $val, $dataSet);
             if (in_array($field, ['DOCUMENTS'])) {

@@ -645,6 +645,10 @@
       openModal($('#' + modalId));
     }
 
+    $('.gallery').fancybox({
+      scrolling: 'yes'
+    });
+
     $('.our_objects .grid').slick({
       adaptiveHeight: true, // take margins into account
       rows: 2,

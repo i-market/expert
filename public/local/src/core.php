@@ -352,6 +352,7 @@ class Strings extends StringsMethods {
     }
 
     static function replaceAll($s, $pattern, $replacement) {
+        // TODO bug: this will go into an infinite loop some of the time for sure
         while(preg_match($pattern, $s)) {
             $s = preg_replace($pattern, $replacement, $s);
         }

@@ -75,8 +75,9 @@ class Api {
             assert($response !== false, $response);
             $path = $response;
             assert(file_exists($path), $path);
-
-            $fileId = CFile::SaveFile(CFile::MakeFileArray($path), 'iblock');
+            $outgoingIdSegment = preg_replace('/\D/', '-', $outgoingId);
+            $humaneFilename = "tse_{$outgoingIdSegment}.pdf";
+            $fileId = CFile::SaveFile(_::set(CFile::MakeFileArray($path), 'name', $humaneFilename), 'iblock');
             $el = new CIBlockElement();
             $result = $el->Add([
                 'IBLOCK_ID' => $iblockId,

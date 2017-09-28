@@ -15,9 +15,7 @@ abstract class Calculator {
 
     function totalPrice($totalArea, $multipliers) {
         $scale = 2; // копейки
-        $multiplier = array_reduce(array_values($multipliers), function($acc, $x) {
-            return $acc + $x;
-        }, 0);
+        $multiplier = array_reduce(array_values($multipliers), _::operator('*'), 1);
         $price = round($this->pricePerSquareMeter($totalArea), $scale);
         self::$debug['price_per_square_meter'] = $price;
         return $price * $totalArea * $multiplier;

@@ -1,7 +1,8 @@
 (function(data) {
   console.log(data);
   function wrap(text) {
-    return '<div style="position: absolute; z-index: 1; background: royalblue; color: white; padding: 5px; font-size: 14px; font-weight: bold;">'+text+'</div>';
+    var style = 'position: absolute; z-index: 1; background: royalblue; color: white; padding: 5px; font-size: 14px; font-weight: bold; text-align: left; max-width: 200px;';
+    return '<div style="'+style+'">'+text+'</div>';
   }
   function firstMatch(selectors) {
     var result = $(_.first(selectors)).first();
@@ -17,7 +18,7 @@
       var factors = _.get(data, ['factors', name], []);
       var selectors = _.split('[name="'+name+'"], [name="'+name+'[]"] + label, [name="'+name+'[]"]', ',');
       var $inputs = firstMatch(selectors);
-      var text = mult + (!_.isEmpty(factors)
+      var text = mult + (factors.length > 1
         ? ' = ' + factors.join(' * ')
         : '');
       $inputs.after(wrap(text));
@@ -27,6 +28,7 @@
     });
     if (_.has(data, 'price_per_square_meter')) {
       other['Цена за метр'] = data.price_per_square_meter;
+      other['Коэффициент'] = _.values(data.multipliers).join(' * ')
     }
     $('.total_price').prepend(wrap(_.map(other, function(mult, name) { return name+' = '+mult; }).join(', ')));
   }

@@ -27,7 +27,7 @@ abstract class Calculator {
     }
 
     protected function debugFactors($field, $factors) {
-        self::$debug['factors'][$field] = $factors;
+        self::$debug['factors'][$field] = array_values($factors);
         return $factors;
     }
 }

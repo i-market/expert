@@ -113,7 +113,7 @@ class Services {
             // TODO full path name (contact[person] instead of person)
             return _::set($acc, $e->getName(), $e->getMessage());
         }, []);
-        $ret = _::update($ret, 'FLOORS', _::constantly('В каждом поле должно быть положительное число.'));
+        $ret = _::update($ret, 'FLOORS', _::constantly('Должно быть положительным числом.'));
         return $ret;
     }
 
@@ -246,7 +246,7 @@ class Services {
                 $v = v::callback(function($values) {
                     return is_array($values) && _::matches($values, function($v) {
                             return v::notOptional()->intType()->validate($v);
-                        });
+                        }) && array_reduce($values, _::operator('+'), 0);
                 });
                 break;
             case 'UNDERGROUND_FLOORS':

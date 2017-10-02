@@ -616,6 +616,9 @@
       return '<img src="/images/file-icon.svg.php?extension=' + ext + '">';
     }
     function renderFile(file, session) {
+      if (_.get(file, 'error')) {
+        return '';
+      }
       var fileId = session + '/' + file.filename;
       return '<div class="file">'
         + '<input type="hidden" name="fileIds[]" value="' + fileId + '"/>'
@@ -636,9 +639,14 @@
     };
     var $files = $component.find('.files');
     var $progress = $component.find('.progress');
+    var $errorMessage = $component.find('.error-message');
+    var megabyte = 1000000;
     $component.find('.fileupload').fileupload({
       dataType: 'json',
       singleFileUploads: false,
+      // TODO validation
+      // see -validation and `processQueue`, -process overrides `add` function below. not sure how to integrate it yet.
+      // maxFileSize: 25 * megabyte,
       formData: function(form) {
         var data = form.serializeArray();
         // FormData supports only string values
@@ -653,11 +661,21 @@
       done: function(e, data) {
         state.session = data.result.session;
         hideProgress($progress);
-        $.each(data.result.files, function (index, file) {
+        $.each(data.result.files, function(index, file) {
           $(renderFile(file, state.session)).appendTo($files);
         });
+        var errors = _.reduce(data.result.files, function(acc, file) {
+          if (_.get(file, 'error')) {
+            // TODO "filename: error" would be nice
+            acc.push(file.error);
+          }
+          return acc;
+        }, []);
+        var error = _.uniq(errors).join('\n');
+        $errorMessage.text(error).toggle(!_.isEmpty(error));
       },
       fail: function(e, data) {
+        // ajax-level failure, won't be called on validation
         // TODO notify the user
         hideProgress($progress);
       }

@@ -62,7 +62,7 @@ class FormMacros {
     }
 
     static function showFilesBlock($label) {
-        $id = Util::uniqueId('fileupload-input');
+        $id = 'fileupload-input-'.Util::uniqueId();
         ?>
         <div class="wrap_add_file keep">
             <input data-url="/api/fileupload"
@@ -77,6 +77,7 @@ class FormMacros {
                 <div class="loader"></div>
                 <div class="text"></div>
             </div>
+            <div class="error-message" style="display: none"></div>
             <div class="choose_file">
                 <label for="<?= $id ?>" class="big_btn">
                     <span class="text"><span>Прикрепить файл к заявке</span></span>

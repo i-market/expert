@@ -22,11 +22,14 @@ use CFile;
 use CIBlockElement;
 use Core\Env;
 use Core\FileUpload;
+use Core\MimeTypes;
+use Core\MimeTypeValidator;
 use Core\Strings as str;
 use Core\Underscore as _;
 use Core\Util;
 use FileUpload\FileSystem;
 use FileUpload\PathResolver;
+use FileUpload\Validator;
 use Klein\Klein;
 
 class Api {
@@ -414,17 +417,35 @@ class Api {
                 $session = basename($session);
                 $uploadDir = Util::joinPath([self::fileuploadDir(), $session]);
                 mkdir($uploadDir);
-                $filesystem = new FileSystem\Simple($uploadDir);
-                $pathResolver = new PathResolver\Simple($uploadDir);
                 $fileupload = new FileUpload($_FILES['files'], $_SERVER);
+                $filesystem = new FileSystem\Simple();
+                $pathResolver = new PathResolver\Simple($uploadDir);
                 $fileupload->setFileSystem($filesystem);
                 $fileupload->setPathResolver($pathResolver);
+                $allowed = array_merge(MimeTypes::document(), ['text/*', 'image/*']);
+                $limitMb = 25;
+                // see also client side file size validation (might not be implemented)
+                $sizeValidator = new Validator\SizeValidator($limitMb.'M');
+                $sizeValidator->setErrorMessages([
+                    Validator\SizeValidator::FILE_SIZE_IS_TOO_LARGE => "Максимальный размер файла: {$limitMb} МБ",
+                    Validator\SizeValidator::FILE_SIZE_IS_TOO_SMALL => "Минимальный размер файла: 0",
+                ]);
+                $fileupload->addValidator($sizeValidator);
+                $mimeValidator = new MimeTypeValidator($allowed, function ($isValid, $mime) {
+                    if (!$isValid) {
+                        // TODO log to sentry
+//                        trigger_error("rejected file upload with mime type `{$mime}`", E_USER_ERROR);
+                    }
+                });
+                $mimeValidator->setErrorMessages([
+                    MimeTypeValidator::INVALID_MIMETYPE => 'Недопустимый тип файла'
+                ]);
+                $fileupload->addValidator($mimeValidator);
                 list($files, $headers) = $fileupload->processAll();
                 foreach($headers as $header => $value) {
                     header($header.': '.$value);
                 }
-                $fileArrays = array_map(function($file) {
-                    /** @var \FileUpload\File $file */
+                $fileArrays = array_map(function(\FileUpload\File $file) {
                     $absPath = $file->getRealPath();
                     $filename = $file->getFilename();
                     list($name, $ext) = Util::splitFileExtension($absPath);
@@ -436,7 +457,7 @@ class Api {
                         'humanSize' => Util::humanFileSize(filesize($absPath))
                     ]);
                 }, $files);
-                return json_encode([
+                return $response->json([
                     'session' => $session,
                     'files' => $fileArrays
                 ]);

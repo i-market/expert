@@ -46,7 +46,7 @@ use App\View as v;
             'action' => 'отправить заявку'
         ]) ?>
         <?= v::render('partials/form_loader') ?>
-        <button type="submit" class="big_btn">
+        <button type="submit" class="recaptcha big_btn" data-sitekey="<?= $recaptchaKey ?>">
             <span class="text"><span>Отправить заявку</span></span>
             <span class="img">
                 <img src="<?= v::asset('images/plane.svg') ?>">

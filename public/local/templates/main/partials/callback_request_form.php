@@ -28,7 +28,7 @@ $macros = new macros($state);
     </div>
     <div class="wrap_robot_block">
         <?= v::render('partials/form_loader') ?>
-        <button type="submit" class="big_btn">
+        <button type="submit" class="recaptcha big_btn" data-sitekey="<?= \App\App::recaptchaKey() ?>">
             <span class="text"><span>Перезвоните мне</span></span>
             <span class="img">
                 <img src="<?= v::asset('images/telephone.svg') ?>">

@@ -17,8 +17,10 @@ use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 use Bitrix\Iblock\ElementTable;
 use Bitrix\Main\Application;
+use Bitrix\Main\Config\Configuration;
 use Bitrix\Main\Type as Type;
 use CFile;
+use CHTTP;
 use CIBlockElement;
 use Core\Env;
 use Core\FileUpload;
@@ -31,6 +33,7 @@ use FileUpload\FileSystem;
 use FileUpload\PathResolver;
 use FileUpload\Validator;
 use Klein\Klein;
+use ReCaptcha\ReCaptcha;
 
 class Api {
     static function fileuploadDir() {
@@ -110,9 +113,35 @@ class Api {
         return "<script>window._data = {$json};</script><script src='{$src}'></script>";
     }
 
+    static function dispatch() {
+        try {
+            // TODO refactor into a middleware
+            $recaptchaResponse = _::get($_REQUEST, 'g-recaptcha-response');
+            if ($recaptchaResponse !== null) {
+                $secretKey = _::get(Configuration::getValue('app'), 'recaptcha.secret_key');
+                $recaptcha = new ReCaptcha($secretKey);
+                $result = $recaptcha->verify($recaptchaResponse);
+                $isHttpFailure = _::contains($result->getErrorCodes(), 'invalid-json');
+                $isSuccess = $result->isSuccess() || $isHttpFailure;
+                if (!$isSuccess) {
+                    // TODO log recaptcha failure
+                    CHTTP::SetStatus('403 Forbidden');
+                    echo 'Неверная капча';
+                    return null;
+                }
+            }
+            return self::router()->dispatch();
+        } catch (\Exception $e) {
+            CHTTP::SetStatus('500 Internal Server Error');
+            // TODO check that its a klein exception
+            // unwrap klein exception
+            throw $e->getPrevious();
+        }
+    }
+
     // TODO DRY
     // TODO sanitize params
-    static function router() {
+    private static function router() {
         $router = new Klein();
         $router->with('/api', function () use ($router) {
             $router->respond('POST', '/callback-request', function($request, $response) {

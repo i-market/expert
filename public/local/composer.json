@@ -12,7 +12,8 @@
         "pimple/pimple": "~3.0",
         "phpoffice/phpspreadsheet": "dev-master",
         "mpdf/mpdf": "^6.1",
-        "functional-php/trampoline": "^1.1"
+        "functional-php/trampoline": "^1.1",
+        "google/recaptcha": "^1.1"
     },
     "autoload": {
         "files": ["src/core.php", "src/app.php"],

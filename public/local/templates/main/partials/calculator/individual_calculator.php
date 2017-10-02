@@ -121,12 +121,7 @@ $macros = new macros($state);
                     </div>
                 <? endif ?>
                 <?= v::render('partials/form_loader') ?>
-                <button type="submit" class="big_btn">
-                    <span class="text"><span>Выполнить расчет</span></span>
-                    <span class="img">
-    <img src="<?= v::asset('images/calc.svg') ?>">
-  </span>
-                </button>
+                <?= v::render('partials/calculator/submit_button') ?>
             </div>
         </div>
         <?= v::render('partials/calculator/result_block', $resultBlock) ?>

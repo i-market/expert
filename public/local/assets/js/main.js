@@ -1,3 +1,21 @@
+// called on load by recaptcha
+window.initRecaptcha = function($scope) {
+  $scope = $scope || $('body');
+  $scope.find('.recaptcha:visible').each(function() {
+    var $el = $(this);
+    var state = {};
+    state.widgetId = grecaptcha.render(this, {
+      'sitekey': $el.attr('data-sitekey'),
+      'size': 'invisible',
+      'callback': function() {
+        $el.closest('form').submit();
+      },
+      'expired-callback': function() {
+        grecaptcha.reset(state.widgetId);
+      }
+    });
+  });
+};
 (function() {
   'use strict';
 
@@ -535,6 +553,7 @@
     // TODO refactor: sort out intercooler.ready, document.ready and `init` stuff
     if (!$el.is('body')) {
       init($el);
+      initRecaptcha($el);
     }
   });
 
@@ -605,6 +624,7 @@
           setLoading(false);
           initFormErrorMessage($form);
           initStretching($form);
+          initRecaptcha($form);
         }
       });
     });
@@ -689,7 +709,12 @@
     $('.service-request form').each(function() {
       initServiceRequestForm($(this));
     });
-    init($('body'));
+
+    var $root = $('body');
+    init($root);
+    $($root).on('openModal.app', function(evt) {
+      initRecaptcha($(evt.target));
+    });
 
     if (_.has(App.hashQuery, 'modal')) {
       var modalId = App.hashQuery['modal'];
@@ -699,6 +724,7 @@
     $('.gallery').fancybox({
       scrolling: 'yes'
     });
+
 
     $('.our_objects .grid').slick({
       adaptiveHeight: true, // take margins into account

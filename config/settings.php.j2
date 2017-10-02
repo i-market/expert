@@ -74,11 +74,15 @@ return array (
       'sentry' => array(
         'enabled' => {{ 'true' if sentry.enabled else 'false' }},
         'dsn' => '{{ sentry.dsn }}',
-        'public_dsn' => '{{ sentry.public_dsn }}'
+        'public_dsn' => '{{ sentry.public_dsn }}',
       ),
       'youtube_data_api' => array(
-        'key' => '{{ youtube_data_api.key }}'
-      )
-    )
+        'key' => '{{ youtube_data_api.key }}',
+      ),
+      'recaptcha' => array(
+        'site_key' => '{{ recaptcha.site_key }}',
+        'secret_key' => '{{ recaptcha.secret_key }}',
+      ),
+    ),
   ),
 );

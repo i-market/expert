@@ -177,12 +177,20 @@ class App extends \Core\App {
                 'js/vendor/intercooler.js',
                 'js/script.js',
                 'js/main.js',
-            ])
+            ]),
+            [
+                // make sure recaptcha loads after onload callback is defined
+                'https://www.google.com/recaptcha/api.js?onload=initRecaptcha&render=explicit'
+            ]
         );
         return [
             'styles' => $styles,
             'scripts' => $scripts
         ];
+    }
+
+    static function recaptchaKey() {
+        return _::get(Configuration::getValue('app'), 'recaptcha.site_key');
     }
 }
 

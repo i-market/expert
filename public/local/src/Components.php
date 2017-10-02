@@ -88,8 +88,13 @@ class Components {
         };
         // TODO refactor: this was supposed to be done using template inheritance,
         // but plate's `section` function causes a decoding error for some reason (gzip enabled)
-        $inputs = v::render($templateName, array_merge($context, ['getValue' => $getValue]));
-        return v::render('partials/service_forms/form', array_merge($context, ['inputs' => $inputs]));
+        $inputs = v::render($templateName, array_merge($context, [
+            'getValue' => $getValue, // TODO `getValue` unused?
+        ]));
+        return v::render('partials/service_forms/form', array_merge($context, [
+            'inputs' => $inputs,
+            'recaptchaKey' => App::recaptchaKey()
+        ]));
     }
 
     static function renderServicesSection() {

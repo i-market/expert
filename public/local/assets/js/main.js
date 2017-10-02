@@ -1,4 +1,7 @@
-// called on load by recaptcha
+// TODO refactor the whole init/re-init mess
+// TODO refactor: extract entity ids
+
+/** called on load by recaptcha */
 window.initRecaptcha = function($scope) {
   $scope = $scope || $('body');
   $scope.find('.recaptcha:visible').each(function() {
@@ -42,9 +45,6 @@ window.initRecaptcha = function($scope) {
 
   // --- selection constraints ---
   // "constraint" is a function mapping selected options to ones that should be disabled
-
-  // TODO refactor: namespace it
-  // TODO refactor: extract entity ids
 
   /** @deprecated */
   function constrainSelection($component, constraints) {
@@ -619,7 +619,6 @@ window.initRecaptcha = function($scope) {
           }
         },
         complete: function() {
-          // TODO refactor the whole init/re-init mess
           Mockup.initForms($form);
           setLoading(false);
           initFormErrorMessage($form);

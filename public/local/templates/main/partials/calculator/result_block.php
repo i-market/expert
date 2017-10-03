@@ -23,7 +23,9 @@
                                     ic-select-from-response=".total_price_block"
                                     ic-target="closest .total_price_block"
                                     <? // override inherited value ?>
-                                    ic-replace-target="false">
+                                    ic-replace-target="false"
+                                    class="recaptcha"
+                                    data-sitekey="<?= App\App::recaptchaKey() ?>">
                                 Получить предложение
                             </button>
                             <span class="ico"></span>

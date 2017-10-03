@@ -1,6 +1,6 @@
 <? use App\View as v; ?>
 
-<button type="submit" class="recaptcha big_btn" data-sitekey="<?= App\App::recaptchaKey() ?>">
+<button type="submit" class="big_btn">
     <span class="text"><span>Выполнить расчет</span></span>
     <span class="img">
     <img src="<?= v::asset('images/calc.svg') ?>">

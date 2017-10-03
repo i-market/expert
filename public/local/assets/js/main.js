@@ -1,22 +1,42 @@
 // TODO refactor the whole init/re-init mess
 // TODO refactor: extract entity ids
 
+if (typeof console === 'undefined') {
+  var noop = function() {};
+  console = {log: noop, warn: noop, error: noop};
+}
+
+window.App = {
+  state: {}
+};
+
 /** called on load by recaptcha */
 window.initRecaptcha = function($scope) {
   $scope = $scope || $('body');
-  $scope.find('.recaptcha:visible').each(function() {
+  $scope.find('.recaptcha').each(function() {
     var $el = $(this);
-    var state = {};
+    var state = {element: this};
+    // handle intercooler elements
+    var isIntercooler = $el.is('[ic-post-to]');
+    if (isIntercooler) {
+      $el.off('click');
+    }
     state.widgetId = grecaptcha.render(this, {
       'sitekey': $el.attr('data-sitekey'),
       'size': 'invisible',
       'callback': function() {
-        $el.closest('form').submit();
+        if (isIntercooler) {
+          Intercooler.triggerRequest($el);
+        } else {
+          $el.closest('form').submit();
+        }
       },
       'expired-callback': function() {
         grecaptcha.reset(state.widgetId);
+        console.log('reset recaptcha', state)
       }
     });
+    console.log('render recaptcha', state)
   });
 };
 (function() {
@@ -26,10 +46,6 @@ window.initRecaptcha = function($scope) {
   // import lodash
   // import intercooler
   // import Mockup from mockup/script.js
-
-  window.App = {
-    state: {}
-  };
 
   var hash = window.location.hash.substr(1);
   App.hashQuery = hash.split('&').reduce(function(result, item) {
@@ -711,9 +727,6 @@ window.initRecaptcha = function($scope) {
 
     var $root = $('body');
     init($root);
-    $($root).on('openModal.app', function(evt) {
-      initRecaptcha($(evt.target));
-    });
 
     if (_.has(App.hashQuery, 'modal')) {
       var modalId = App.hashQuery['modal'];

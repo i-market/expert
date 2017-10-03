@@ -38,6 +38,28 @@ class Services {
         return file_put_contents(self::dataFilePath($type), json_encode($data));
     }
 
+    static function augmentData($data) {
+        foreach ($data as &$dataSetRef) {
+            if (isset($dataSetRef['MULTIPLIERS']['FLOORS'])) {
+                $zeroMaybe = _::find($dataSetRef['MULTIPLIERS']['FLOORS'], function($ent) {
+                    return $ent['NAME'] === '0';
+                });
+                $oneMaybe = _::find($dataSetRef['MULTIPLIERS']['FLOORS'], function($ent) {
+                    return $ent['NAME'] === '1';
+                });
+                if ($zeroMaybe === null && $oneMaybe !== null) {
+                    $dataSetRef['MULTIPLIERS']['FLOORS'][] = [
+                        'ID' => '0',
+                        'NAME' => '0',
+                        // if floors == 0 pretend that it equals 1
+                        'VALUE' => $oneMaybe['VALUE']
+                    ];
+                }
+            }
+        }
+        return $data;
+    }
+
     static function data($type) {
         // TODO implement storage
         $tmp = true;
@@ -45,7 +67,7 @@ class Services {
             if (file_exists(self::dataFilePath($type)) && _::get($_REQUEST, 'cache', true)) {
                 $content = file_get_contents(self::dataFilePath($type));
                 assert($content !== false);
-                return json_decode($content, true);
+                return self::augmentData(json_decode($content, true));
             }
             // use fixtures for development convenience
             $pair = [
@@ -60,7 +82,7 @@ class Services {
             $parseFile = [new $class, 'parseFile'];
             $data = $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $file]));
             file_put_contents(self::dataFilePath($type), json_encode($data));
-            return $data;
+            return self::augmentData($data);
         } else {
             throw new \Exception('not implemented');
         }
@@ -113,7 +135,7 @@ class Services {
             // TODO full path name (contact[person] instead of person)
             return _::set($acc, $e->getName(), $e->getMessage());
         }, []);
-        $ret = _::update($ret, 'FLOORS', _::constantly('Должно быть положительным числом.'));
+        $ret = _::update($ret, 'FLOORS', _::constantly('Пожалуйста, укажите количество этажей или 0 в зависимости от типа объекта.'));
         return $ret;
     }
 
@@ -246,7 +268,7 @@ class Services {
                 $v = v::callback(function($values) {
                     return is_array($values) && _::matches($values, function($v) {
                             return v::notOptional()->intType()->validate($v);
-                        }) && array_reduce($values, _::operator('+'), 0) > 0;
+                        }) && array_reduce($values, _::operator('+'), 0) >= 0;
                 });
                 break;
             case 'UNDERGROUND_FLOORS':

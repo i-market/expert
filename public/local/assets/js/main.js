@@ -39,6 +39,7 @@ window.initRecaptcha = function($scope) {
     console.log('render recaptcha', state)
   });
 };
+
 (function() {
   'use strict';
 
@@ -46,6 +47,10 @@ window.initRecaptcha = function($scope) {
   // import lodash
   // import intercooler
   // import Mockup from mockup/script.js
+
+  // TODO ux: stop `scrollTop` animation when the user scrolls
+  // same as in mockup
+  var scrollDuration = 700;
 
   var hash = window.location.hash.substr(1);
   App.hashQuery = hash.split('&').reduce(function(result, item) {
@@ -58,6 +63,32 @@ window.initRecaptcha = function($scope) {
     // TODO make it closeable
     $('#global-error-message').show();
   });
+
+  function scrollOffset(pos) {
+    return pos - $(window).height() / 3;
+  }
+
+  function setAccordionItem($component, $item, _state, _opts) {
+    var opts = _.defaults(_opts || {}, {animate: true});
+    var $title = $item.find('.accordeon_title');
+    var $inner = $item.find('.accordeon_inner');
+    var state = _state === 'toggle'
+      ? $title.hasClass('active') ? 'collapse' : 'expand'
+      : _state;
+    var duration = 100;
+    if (state === 'expand') {
+      $title.addClass('active');
+      $component.find('.accordeon_item').not($item).each(function() {
+        setAccordionItem($component, $(this), 'collapse', opts);
+      });
+      opts.animate ? $inner.slideDown(duration) : $inner.show();
+    } else if (state === 'collapse') {
+      $title.removeClass('active');
+      opts.animate ? $inner.slideUp(duration) : $inner.hide();
+    } else {
+      log.error('unknown state', state);
+    }
+  }
 
   // --- selection constraints ---
   // "constraint" is a function mapping selected options to ones that should be disabled
@@ -234,10 +265,16 @@ window.initRecaptcha = function($scope) {
   function init($scope) {
     $('.work_examples_inner').each(function() {
       var $component = $(this);
-      if (_.has(App.hashQuery, 'back-from')) {
-        var sectionId = App.hashQuery['back-from'];
+      if (_.has(App.hashQuery, 'section')) {
+        var sectionId = App.hashQuery['section'];
         // expand accordion item containing the section from which we navigated from
-        $component.find('[data-id='+ sectionId +']').closest('.accordeon_inner').prev().click();
+        var $section = $component.find('[data-id='+ sectionId +']');
+        var $item = $section.closest('.accordeon_item');
+        var $accordion = $item.closest('.accordeon');
+        setAccordionItem($accordion, $item, 'expand', {animate: false});
+        $('body, html').animate({
+          scrollTop: scrollOffset($section.offset().top)
+        }, scrollDuration);
       }
     });
 
@@ -573,25 +610,22 @@ window.initRecaptcha = function($scope) {
     }
   });
 
-  // TODO refactor
   function initFormErrorMessage($form) {
     var $formMsg = $form.find('.form-message');
     $formMsg.filter('.error').on('click', function() {
       var $firstError = $form.find('.error:first');
       if ($firstError.length) {
         var $modal = $form.closest('.modal');
-        // TODO extract scrolling
-        var duration = 700;
         if ($modal.length) {
           $modal.animate({
-            scrollTop: $firstError.offset().top - $modal.find('.block').offset().top
-          }, duration);
+            scrollTop: scrollOffset($firstError.offset().top - $modal.find('.block').offset().top)
+          }, scrollDuration);
         } else {
           // TODO refactor: .title works for `individual` calculator, but that's just a happy accident
           var $title = $firstError.closest(':has(.title)').find('.title');
           $('body, html').animate({
-            scrollTop: ($title.length ? $title : $firstError).offset().top
-          }, duration);
+            scrollTop: scrollOffset(($title.length ? $title : $firstError).offset().top)
+          }, scrollDuration);
         }
       }
     });
@@ -737,6 +771,15 @@ window.initRecaptcha = function($scope) {
       scrolling: 'yes'
     });
 
+    $('.accordeon').each(function() {
+      var $component = $(this);
+      $component.find('.accordeon_item').each(function() {
+        var $item = $(this);
+        $item.find('.accordeon_title').on('click', function() {
+          setAccordionItem($component, $item, 'toggle');
+        });
+      });
+    });
 
     $('.our_objects .grid').slick({
       adaptiveHeight: true, // take margins into account

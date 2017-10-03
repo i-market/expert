@@ -11,7 +11,7 @@ use App\View as v;
 </div>
 <? if (isset($arResult['PATH'][0]['SECTION_PAGE_URL'])): ?>
     <div class="bottom_btn bottom_btn--back">
-        <a href="<?= $arResult['PATH'][0]['SECTION_PAGE_URL'].'#back-from='.$arResult['ID'] ?>" class="big_btn">
+        <a href="<?= $arResult['PATH'][0]['SECTION_PAGE_URL'].'#section='.$arResult['ID'] ?>" class="big_btn">
         <span class="img">
             <img src="<?= v::asset('images/arrow_left_white.svg') ?>">
         </span>

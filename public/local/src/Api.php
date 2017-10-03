@@ -481,7 +481,7 @@ class Api {
                 $pathResolver = new PathResolver\Simple($uploadDir);
                 $fileupload->setFileSystem($filesystem);
                 $fileupload->setPathResolver($pathResolver);
-                $allowed = array_merge(MimeTypes::document(), ['text/*', 'image/*']);
+                $allowed = array_merge(MimeTypes::document(), ['text/*', 'image/*', 'video/*']);
                 $limitMb = 25;
                 // see also client side file size validation (might not be implemented)
                 $sizeValidator = new Validator\SizeValidator($limitMb.'M');

@@ -44,7 +44,8 @@ class MimeTypes {
             [
                 'text/plain',
                 'text/csv',
-                'application/pdf'
+                'application/pdf',
+                'application/rtf'
             ],
             self::$word,
             self::$excel,

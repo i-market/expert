@@ -196,13 +196,8 @@ if (App::useBitrixAsset()) {
     <? $APPLICATION->AddBufferContent(function() use (&$APPLICATION, $showTopBannersFn) {
         ob_start();
         if ($showTopBannersFn()) {
-            $parent = $APPLICATION->GetProperty('banners_section_code');
-            $child = 'top';
-            if ($parent !== null) {
-                Components::showBannersSection($parent, $child);
-            } else {
-                Components::showBannersSection($child);
-            }
+            $parent = $APPLICATION->GetProperty('banners_section_code', 'default');
+            Components::showBannersSection($parent, 'top');
         }
         return ob_get_clean();
     }) ?>

@@ -6,7 +6,7 @@ use App\Iblock;
 use App\View as v;
 use Bex\Tools\Iblock\IblockTools;
 
-extract(App::getInstance()->layoutContext(), EXTR_SKIP)
+extract(App::getInstance()->layoutContext(), EXTR_SKIP);
 ?>
 <? $APPLICATION->AddBufferContent(function() {
     return App::renderLayoutFooter();
@@ -14,13 +14,8 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP)
 <? $APPLICATION->AddBufferContent(function() use (&$APPLICATION, $showBottomBannersFn) {
     ob_start();
     if ($showBottomBannersFn()) {
-        $child = 'bottom';
-        $parent = $APPLICATION->GetProperty('banners_section_code');
-        if ($parent !== null) {
-            Components::showBannersSection($parent, $child);
-        } else {
-            Components::showBannersSection($child);
-        }
+        $parent = $APPLICATION->GetProperty('banners_section_code', 'default');
+        Components::showBannersSection($parent, 'bottom');
     }
     return ob_get_clean();
 }) ?>

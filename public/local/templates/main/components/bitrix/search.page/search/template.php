@@ -66,8 +66,7 @@ use App\View as v;
                 <? endforeach ?>
             </div>
         <? endif ?>
-        <? // pagination doesn't play well with by-type grouping right now ?>
-        <? // $arResult['NAV_STRING'] ?>
+        <?= $arResult['NAV_STRING'] ?>
     </div>
 </section>
 

@@ -53,7 +53,7 @@ class EventHandlers {
             if ($cache->startDataCache(Services::$cacheTtl, 'service-data:'.$type, App::CACHE_DIR)) {
                 $cache->endDataCache($data);
             }
-            // TODO log caching issues to sentry
+            // TODO log caching issues to sentry (else branch)
             return true;
         } catch (\Exception $e) {
             // TODO log to sentry

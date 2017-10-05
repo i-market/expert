@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use Core\Util;
-// TODO remove dependency
-use League\Csv\Reader;
-use Core\Underscore as _;
 use Core\Nullable as nil;
 use Core\Strings as str;
+use Core\Underscore as _;
+use Core\Util;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\BaseReader;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,6 +17,24 @@ abstract class Parser {
     protected $keyValueSections = ['СРОКИ' => 'TIME'];
 
     abstract function parseFile($path);
+
+    /**
+     * @return Parser
+     * @throws \Exception
+     */
+    static function forType($type) {
+        $class = [
+            'monitoring' => MonitoringParser::class,
+            'inspection' => InspectionParser::class,
+            'examination' => ExaminationParser::class,
+            'oversight' => OversightParser::class,
+            'individual' => IndividualParser::class
+        ];
+        if (!isset($class[$type])) {
+            throw new \Exception("unknown service type `{$type}`");
+        }
+        return new $class[$type];
+    }
 
     function classifyCells($cells) {
         return [

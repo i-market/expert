@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Services\Parser;
 use CIBlockElement;
 use Core\Util;
 use Exception;
@@ -28,6 +29,7 @@ class EventHandlers {
     }
 
     static function beforeServiceDataAddOrUpdate(&$fieldsRef) {
+        global $APPLICATION;
         $fileProp = PropertyTable::query()->setSelect(['ID'])->setFilter([
             'IBLOCK_ID' => $fieldsRef['IBLOCK_ID'],
             'CODE' => 'FILE'
@@ -39,10 +41,24 @@ class EventHandlers {
             $file = CFile::GetFileArray($fileId);
             return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $file['SRC']]);
         });
-        // TODO handle parsing error
-        $data = App::getInstance()->container['monitoring_parser']->parseFile($path);
-        assert(App::getInstance()->container['monitoring_repo']->save($data) !== false);
-        return true;
+        $parser = Parser::forType($fieldsRef['CODE']);
+        try {
+            $data = $parser->parseFile($path);
+            if (!is_array($data) || _::isEmpty($data)) {
+                throw new Exception('parsing error');
+            }
+            // TODO optimize: put data in cache
+            return true;
+        } catch (\Exception $e) {
+            // TODO log to sentry
+            $errors = _::reduce($parser->log, function($acc, $pair) {
+                list($type, $msg) = $pair;
+                return $type === 'error' ? _::append($acc, $msg) : $acc;
+            }, []);
+            $sentences = _::prepend($errors, 'Ошибка парсинга: неожиданная структура файла.');
+            $APPLICATION->ThrowException(join(' ', $sentences));
+            return false;
+        }
     }
 
     static function beforeVideoAddOrUpdate(&$fieldsRef) {

@@ -23,7 +23,7 @@ if (class_exists('Bitrix\Main\Loader')) {
 
 class App extends \Core\App {
     const SITE_ID = 's1';
-
+    const CACHE_DIR = 'app';
     /**
      * @var Engine
      */

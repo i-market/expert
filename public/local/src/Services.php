@@ -4,11 +4,10 @@ namespace App;
 
 use App\Services\Parser;
 use Bex\Tools\Iblock\IblockTools;
-use Bitrix\Main\Application;
+use Bitrix\Main\Data\Cache;
 use Bitrix\Main\Loader;
 use CFile;
 use CIBlockElement;
-use Core\Env;
 use Core\Nullable as nil;
 use Core\Strings as str;
 use Core\Underscore as _;
@@ -22,6 +21,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 class Services {
+    static $cacheTtl = 31536000; // one year
     // fields that act the same most of the time
     static $structures = ['STRUCTURES_TO_MONITOR', 'STRUCTURES_TO_INSPECT'];
     static $distanceSpecialValue = '>3km';
@@ -29,6 +29,7 @@ class Services {
     // TODO refactor empty checkbox list message
     const EMPTY_LIST_MESSAGE = 'Пожалуйста, выберите хотя бы один элемент.';
 
+    /** @deprecated */
     private static function dataFilePath($type) {
         $tmpPath = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
         return Util::joinPath([$tmpPath, "{$type}.json"]);
@@ -60,40 +61,57 @@ class Services {
         return $data;
     }
 
-    static function data($type) {
-        // TODO implement storage
-        $tmp = true;
-        if ($tmp || App::getInstance()->env() === Env::DEV) {
-            if (file_exists(self::dataFilePath($type)) && _::get($_REQUEST, 'cache', true)) {
-                $content = file_get_contents(self::dataFilePath($type));
-                assert($content !== false);
-                return self::augmentData(json_decode($content, true));
-            }
-            // use fixtures for development convenience
-            $pair = [
-                'monitoring' => [Services\MonitoringParser::class, 'Мониторинг калькуляторы.xlsx'],
-                'inspection' => [Services\InspectionParser::class, 'Обследование калькуляторы.xlsx'],
-                'examination' => [Services\ExaminationParser::class, 'Экспертиза калькуляторы.xlsx'],
-                'oversight' => [Services\OversightParser::class, 'Технадзор контроль калькуляторы.xlsx'],
-                'individual' => [Services\IndividualParser::class, 'Техническая экспертиза калькуляторы.xlsx']
-            ];
-            list($class, $file) = $pair[$type];
-            /** @var callable $parseFile */
-            $parseFile = [new $class, 'parseFile'];
-            $data = $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $file]));
-            file_put_contents(self::dataFilePath($type), json_encode($data));
-            return self::augmentData($data);
-        } else {
-            throw new \Exception('not implemented');
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    /** for development. probably outdated by now. */
+    private static function fixtureData($type) {
+        if (file_exists(self::dataFilePath($type)) && _::get($_REQUEST, 'cache', true)) {
+            $content = file_get_contents(self::dataFilePath($type));
+            assert($content !== false);
+            return json_decode($content, true);
         }
-//        $dataMaybe = _::get(self::$data, $type);
-//        if ($dataMaybe !== null) {
-//            return $dataMaybe;
-//        }
-//        $content = file_get_contents(self::dataFilePath($type));
-//        assert($content !== false);
-//        self::$data[$type] = json_decode($content, true);
-//        return self::$data[$type];
+        $fileByType = [
+            'monitoring' => 'Мониторинг калькуляторы.xlsx',
+            'inspection' => 'Обследование калькуляторы.xlsx',
+            'examination' => 'Экспертиза калькуляторы.xlsx',
+            'oversight' => 'Технадзор контроль калькуляторы.xlsx',
+            'individual' => 'Техническая экспертиза калькуляторы.xlsx'
+        ];
+        assert(isset($fileByType[$type]));
+        /** @var callable $parseFile */
+        $parseFile = [Parser::forType($type), 'parseFile'];
+        $data = $parseFile(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], 'local/fixtures/calculator', $fileByType[$type]]));
+        file_put_contents(self::dataFilePath($type), json_encode($data));
+        return $data;
+    }
+
+    static function rawData($type) {
+        // TODO implement easy cache invalidation for development
+        $getData = function() use ($type) {
+            $el = new CIBlockElement();
+            $element = _::first(Iblock::collectElements($el->GetList([], [
+                'IBLOCK_ID' => IblockTools::find(Iblock::SERVICES_TYPE, Iblock::SERVICE_DATA)->id(),
+                'CODE' => $type
+            ])));
+            assert($element !== null);
+            $file = CFile::GetFileArray($element['PROPERTIES']['FILE']['VALUE']);
+            $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $file['SRC']]);
+            return Parser::forType($type)->parseFile($path);
+        };
+        $cache = Cache::createInstance();
+        if ($cache->initCache(self::$cacheTtl, 'service-data:'.$type, App::CACHE_DIR)) {
+            return $cache->getVars();
+        } elseif ($cache->startDataCache()) {
+            $data = $getData();
+            $cache->endDataCache($data);
+            return $data;
+        } else {
+            // TODO log caching issues
+            return $getData();
+        }
+    }
+
+    static function data($type) {
+        return self::augmentData(self::rawData($type));
     }
 
     static function services() {

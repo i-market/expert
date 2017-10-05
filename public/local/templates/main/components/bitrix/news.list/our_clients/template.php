@@ -6,7 +6,7 @@ $showCard = function($item, $template) {
     ?>
     <div class="img">
         <? if ($item !== null): ?>
-            <img src="<?= v::resize($item['PREVIEW_PICTURE']['SRC'], 300, 300) ?>"
+            <img src="<?= v::resize($item['PREVIEW_PICTURE'], 300, 300) ?>"
                  alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>"
                  id="<?= v::addEditingActions($item, $template) ?>">
         <? endif ?>

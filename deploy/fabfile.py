@@ -347,6 +347,8 @@ def deploy(skip_slack=False):
         fab.execute(git_ftp, 'push')
         # clear bitrix cache
         fab.execute(clear_cache)
+        # TODO warm up service data cache
+        fab.puts('TODO warm up service data cache')
         # migrate db
         # notify in slack if remote
         name = ', '.join(fab.env.roles)

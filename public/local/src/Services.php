@@ -97,6 +97,7 @@ class Services {
             $path = Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $file['SRC']]);
             return Parser::forType($type)->parseFile($path);
         };
+        // TODO extract caching code. see event handlers.
         $cache = Cache::createInstance();
         if ($cache->initCache(self::$cacheTtl, 'service-data:'.$type, App::CACHE_DIR)) {
             return $cache->getVars();

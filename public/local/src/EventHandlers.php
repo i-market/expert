@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Services\Parser;
+use Bitrix\Main\Data\Cache;
 use CIBlockElement;
 use Core\Util;
 use Exception;
@@ -41,13 +42,18 @@ class EventHandlers {
             $file = CFile::GetFileArray($fileId);
             return Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $file['SRC']]);
         });
-        $parser = Parser::forType($fieldsRef['CODE']);
+        $type = $fieldsRef['CODE'];
+        $parser = Parser::forType($type);
         try {
             $data = $parser->parseFile($path);
             if (!is_array($data) || _::isEmpty($data)) {
                 throw new Exception('parsing error');
             }
-            // TODO optimize: put data in cache
+            $cache = Cache::createInstance();
+            if ($cache->startDataCache(Services::$cacheTtl, 'service-data:'.$type, App::CACHE_DIR)) {
+                $cache->endDataCache($data);
+            }
+            // TODO log caching issues to sentry
             return true;
         } catch (\Exception $e) {
             // TODO log to sentry

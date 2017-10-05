@@ -1664,7 +1664,7 @@ class InspectionCalculatorTest extends TestCase {
             "FLOORS" => 1.0,
             "HAS_UNDERGROUND_FLOORS" => 0.9,
             "INSPECTION_GOAL" => 1.0,
-            "STRUCTURES_TO_INSPECT" => 3.24,
+            "STRUCTURES_TO_INSPECT" => 3.6,
             "DISTANCE_BETWEEN_SITES" => 0.9,
             "TRANSPORT_ACCESSIBILITY" => 0.8,
             "DOCUMENTS" => 0.9801,

@@ -136,7 +136,7 @@ class MonitoringTest extends TestCase {
                     "PACKAGE_SELECTION" => "INDIVIDUAL",
                 ],
                 "result" => [
-                    "total_price" => 57658.104,
+                    "total_price" => 6975.3398003638295,
                 ],
             ],
             "heading" => "Определение стоимости<br> проведения мониторинга",
@@ -155,7 +155,7 @@ class MonitoringTest extends TestCase {
                 "apiUri" => "/api/services/monitoring/calculator/send_proposal",
                 "screen" => "result",
                 "result" => [
-                    "total_price" => "57 658 руб./мес.",
+                    "total_price" => "6 975 руб./мес.",
                     "summary_values" => [
                         "Продолжительность выполнения работ" => "1 месяц",
                     ],

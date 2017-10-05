@@ -3317,7 +3317,7 @@ class MonitoringCalculatorTest extends TestCase {
             'HAS_UNDERGROUND_FLOORS' => 1,
             'UNDERGROUND_FLOORS' => 1.2,
             'MONITORING_GOAL' => 0.90000000000000002,
-            'STRUCTURES_TO_MONITOR' => 0.00093636000000000012,
+            'STRUCTURES_TO_MONITOR' => 0.69999999999999996,
             'DURATION' => 1.2,
             'TRANSPORT_ACCESSIBILITY' => 0.80000000000000004,
             'DOCUMENTS' => 0.96059600999999994,
@@ -3327,6 +3327,6 @@ class MonitoringCalculatorTest extends TestCase {
 
     function testTotalPrice() {
         $calc = new MonitoringCalculator();
-        $this->assertEquals(120000 * 4.6 * (2 + 1.5), $calc->totalPrice(120000, [2, 1.5]));
+        $this->assertEquals(120000 * 4.6 * (2 * 1.5), $calc->totalPrice(120000, [2, 1.5]));
     }
 }

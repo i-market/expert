@@ -29,7 +29,7 @@ class InspectionTest extends TestCase {
             "outgoingId" => "some-outgoing-id",
             "date" => "10 июля 2017 г.",
             "endingDate" => "10 октября 2017 г.",
-            "totalPrice" => "13 171 684 руб./мес.",
+            "totalPrice" => "13 171 684 руб.",
             "time" => "20 раб. дн.",
             "tables" => [
                 [

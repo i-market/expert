@@ -6,9 +6,10 @@ $showCard = function($item, $template) {
     ?>
     <div class="img">
         <? if ($item !== null): ?>
-            <img src="<?= v::resize($item['PREVIEW_PICTURE'], 300, 300) ?>"
-                 alt="<?= $item['PREVIEW_PICTURE']['ALT'] ?>"
-                 id="<?= v::addEditingActions($item, $template) ?>">
+            <div class="img__inner"
+                 style="background: url('<?= v::resize($item['PREVIEW_PICTURE'], 300, 300) ?>')no-repeat center center / contain"
+                 title="<?= $item['PREVIEW_PICTURE']['ALT'] ?>"
+                 id="<?= v::addEditingActions($item, $template) ?>"></div>
         <? endif ?>
     </div>
     <?

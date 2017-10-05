@@ -706,10 +706,15 @@ window.initRecaptcha = function($scope) {
     var state = {
       session: null
     };
+    var maxFileCount = 10;
+    var maxFileErrorMessage = 'Извините, максимальное количество файлов ('+maxFileCount+') уже загружено.';
     var $files = $component.find('.files');
     var $progress = $component.find('.progress');
     var $errorMessage = $component.find('.error-message');
     var megabyte = 1000000;
+    function setErrorMessage(message) {
+      $errorMessage.text(message).toggle(!_.isEmpty(message));
+    }
     $component.find('.fileupload').fileupload({
       dataType: 'json',
       singleFileUploads: false,
@@ -723,9 +728,15 @@ window.initRecaptcha = function($scope) {
         return data;
       },
       add: function(e, data) {
-        // TODO refactor: get the initial value beforehand
-        $progress.css('display', 'flex');
-        data.submit();
+        // surely there is a better way to get the number of uploaded files
+        var uploadedFileCount = data.form.find('input[name="fileIds[]"]').length;
+        if (uploadedFileCount < maxFileCount) {
+          // TODO refactor: get the initial value beforehand
+          $progress.css('display', 'flex');
+          data.submit();
+        } else {
+          setErrorMessage(maxFileErrorMessage);
+        }
       },
       done: function(e, data) {
         state.session = data.result.session;
@@ -740,8 +751,7 @@ window.initRecaptcha = function($scope) {
           }
           return acc;
         }, []);
-        var error = _.uniq(errors).join('\n');
-        $errorMessage.text(error).toggle(!_.isEmpty(error));
+        setErrorMessage(_.uniq(errors).join('\n'));
       },
       fail: function(e, data) {
         // ajax-level failure, won't be called on validation

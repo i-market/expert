@@ -7,7 +7,7 @@ $showCard = function($item, $template) {
     <div class="img">
         <? if ($item !== null): ?>
             <div class="img__inner"
-                 style="background: url('<?= v::resize($item['PREVIEW_PICTURE'], 300, 300) ?>')no-repeat center center / contain"
+                 style="background-image: url('<?= v::resize($item['PREVIEW_PICTURE'], 300, 300) ?>'), linear-gradient(0deg, #e7edf3, #e7edf3)"
                  title="<?= $item['PREVIEW_PICTURE']['ALT'] ?>"
                  id="<?= v::addEditingActions($item, $template) ?>"></div>
         <? endif ?>

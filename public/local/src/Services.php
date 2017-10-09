@@ -21,7 +21,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 class Services {
-    static $cacheTtl = 31536000; // one year
+    static $cacheTtl = PHP_INT_MAX;
     // fields that act the same most of the time
     static $structures = ['STRUCTURES_TO_MONITOR', 'STRUCTURES_TO_INSPECT'];
     static $distanceSpecialValue = '>3km';

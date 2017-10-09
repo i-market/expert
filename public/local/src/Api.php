@@ -199,6 +199,7 @@ class Api {
                             return Inspection::proposalParams($state, $outgoingId, $opts);
                         }, $params['EMAIL']);
                         $context['resultBlock']['screen'] = 'sent';
+                        return $context;
                     });
                 }
                 return v::render('partials/calculator/inspection_calculator', $context).self::debugScript();
@@ -221,6 +222,7 @@ class Api {
                             return Examination::proposalParams($state, $outgoingId, $opts);
                         }, $params['EMAIL']);
                         $context['resultBlock']['screen'] = 'sent';
+                        return $context;
                     });
                 }
                 return v::render('partials/calculator/examination_calculator', $context).self::debugScript();
@@ -243,6 +245,7 @@ class Api {
                             return Oversight::proposalParams($state, $outgoingId, $opts);
                         }, $params['EMAIL']);
                         $context['resultBlock']['screen'] = 'sent';
+                        return $context;
                     });
                 }
                 return v::render('partials/calculator/oversight_calculator', $context).self::debugScript();
@@ -263,6 +266,7 @@ class Api {
                             return Individual::proposalParams($state, $outgoingId, $opts);
                         }, $params['EMAIL']);
                         $context['resultBlock']['screen'] = 'sent';
+                        return $context;
                     });
                 }
                 return v::render('partials/calculator/individual_calculator', $context).self::debugScript();

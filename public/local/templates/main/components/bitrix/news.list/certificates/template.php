@@ -3,18 +3,18 @@
 use App\View as v;
 ?>
 <? foreach ($arResult['SECTIONS'] as $section): ?>
+    <? $hasFile = !v::isEmpty($section['FILE']) ?>
     <div class="certificates_item" id="<?= $section['CODE'] ?>">
         <div id="<?= v::addEditingActions($section, $this, 'section') ?>">
             <div class="wrap_title">
-                <h4><?= $section['NAME'] ?></h4>
-                <? if (!v::isEmpty($section['FILE'])): ?>
-                    <? $extension = v::upper($section['FILE']['EXTENSION']) ?>
-                    <? // TODO improve microcopy ?>
-                    <? $downloadText = 'Скачать '.$extension.', '.$section['FILE']['HUMAN_SIZE'] ?>
-                    <a class="download_doc" href="<?= $section['FILE']['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
-                <? endif ?>
+                <h4 class="<?= $hasFile ? 'before-download' : '' ?>"><?= $section['NAME'] ?></h4>
             </div>
-            <div class="grid">
+            <? if ($hasFile): ?>
+                <a class="download download--top" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
+                    <?= 'Скачать '.v::upper($section['FILE']['EXTENSION']) ?>
+                </a>
+            <? endif ?>
+            <div class="grid <?= count($section['ITEMS']) < 3 ? 'grid--center' : '' ?>">
                 <? foreach ($section['ITEMS'] as $item): ?>
                     <? $file = $item['FILE'] ?>
                     <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
@@ -25,12 +25,21 @@ use App\View as v;
                         </span>
                             <span class="text"><?= $item['NAME'] ?></span>
                         </a>
-                        <? $extension = v::upper($file['EXTENSION']) ?>
-                        <? $downloadText = "Скачать ${extension}, ${file['HUMAN_SIZE']}" ?>
-                        <a class="download_sert" href="<?= $file['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
+
+                        <? if (v::isEmpty($section['FILE'])): ?>
+                            <? $extension = v::upper($file['EXTENSION']) ?>
+                            <? $downloadText = "Скачать ${extension}" ?>
+                            <? // TODO resize ?>
+                            <a class="download_sert" href="<?= $file['SRC'] ?>" target="_blank"><?= $downloadText ?></a>
+                        <? endif ?>
                     </div>
                 <? endforeach ?>
             </div>
+            <? if ($hasFile): ?>
+                <a class="download download--bottom" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
+                    <?= 'Скачать '.v::upper($section['FILE']['EXTENSION']) ?>
+                </a>
+            <? endif ?>
         </div>
     </div>
 <? endforeach ?>

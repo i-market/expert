@@ -25,7 +25,7 @@ templates = {
     'dbconn.php.j2': 'bitrix/php_interface/dbconn.php'
 }
 asset_build_command = 'npm install && npm run build'
-# TODO needs configuration such as the url to run tests against
+# TODO test configuration
 test_command = 'npm test'
 git_ftp_syncroot = 'public'
 
@@ -184,7 +184,8 @@ def push_configs():
 @fab.task
 def git_ftp(args):
     ftp = environment()['ftp']
-    git_ftp_args = ['--user', ftp['user'], '--passwd', ftp['password'], ftp['url'], '--syncroot', git_ftp_syncroot]
+    # TODO wrap args in quotes
+    git_ftp_args = ['--user', ftp['user'], '--passwd', '"'+ftp['password']+'"', ftp['url'], '--syncroot', git_ftp_syncroot]
     with lcd('..'):
         fab.local('git-ftp {} {}'.format(args, ' '.join(git_ftp_args)))
 
@@ -317,41 +318,33 @@ def upload_upload():
     fab.execute(upload_dir, '../public/upload', 'upload', opts=['--ignore-existing'])
 
 
+# TODO download_upload
+# rsync --recursive --archive --compress --itemize-changes --ignore-existing imarketru@i-market.ru:/var/www/imarketru/data/www/expert-staging.i-market.ru/upload/ ../public/upload/
+
+
 @fab.task
 def deploy(skip_slack=False):
     env = environment()
     fab.execute(ensure_not_dirty)
-    # TODO
+    # TODO run tests before deploying
     # fab.execute(test)
-    # maintenance mode on
-    # push configs
     fab.execute(push_configs)
-    # push staging robots.txt
     fab.execute(push_robots)
     # TODO refactor cwd
     cwd = '../public/local'
     with lcd(cwd):
-        # local composer install
         if os.path.exists(os.path.join(cwd, 'composer.json')):
             fab.local('composer install')
-        # local npm install and build assets
         fab.local(asset_build_command)
     if not env['local']:
-        # sync directories: build, composer vendor, mockup
         for rel_path in ['templates/main/build', 'vendor']:
-            # TODO optimize composer's vendor sync: look for changes in composer.json?
             fab.execute(upload_dir, '../public/local/' + rel_path, 'local/' + rel_path)
         fab.execute(upload_upload)
         # TODO `git-ftp init` for initial deployment?
-        # git-ftp push
         fab.execute(git_ftp, 'push')
-        # clear bitrix cache
         fab.execute(clear_cache)
         # TODO warm up service data cache
         fab.puts('TODO warm up service data cache')
-        # migrate db
-        # notify in slack if remote
         name = ', '.join(fab.env.roles)
         if not skip_slack:
             fab.execute(slack, 'Deployed to `{}` at {}, commit: {}'.format(name, env['ftp']['url'], last_commit_sha()))
-        # maintenance mode off

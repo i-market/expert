@@ -86,7 +86,7 @@ window.initRecaptcha = function($scope) {
       $title.removeClass('active');
       opts.animate ? $inner.slideUp(duration) : $inner.hide();
     } else {
-      log.error('unknown state', state);
+      conosle.error('unknown state', state);
     }
   }
 

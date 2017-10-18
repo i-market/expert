@@ -1,21 +1,19 @@
 <? if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
 
 use App\View as v;
+use Core\Strings as str;
 ?>
 <? // TODO refactor ?>
 <? foreach ($arResult['SECTIONS'] as $section): ?>
     <? $hasFile = !v::isEmpty($section['FILE']) ?>
-    <? $fileName = !v::isEmpty($section['FILE']) ? $section['UF_FILE_NAME'] : '' ?>
+    <? $fileName = !v::isEmpty($section['FILE'])
+        ? str::ifEmpty($section['UF_FILE_NAME'], v::upper($section['FILE']['EXTENSION']))
+        : '' ?>
     <div class="certificates_item" id="<?= $section['CODE'] ?>">
         <div id="<?= v::addEditingActions($section, $this, 'section') ?>">
             <div class="wrap_title">
-                <h4 class="<?= $hasFile ? 'before-download' : '' ?>"><?= $section['NAME'] ?></h4>
+                <h4><?= $section['NAME'] ?></h4>
             </div>
-            <? if ($hasFile): ?>
-                <a class="download download--top" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
-                    <?= 'Скачать '.$fileName ?>
-                </a>
-            <? endif ?>
             <div class="grid <?= count($section['ITEMS']) < 3 ? 'grid--center' : '' ?>">
                 <? foreach ($section['ITEMS'] as $item): ?>
                     <? $file = $item['FILE'] ?>

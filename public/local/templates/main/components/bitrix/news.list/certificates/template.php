@@ -37,6 +37,9 @@ use App\View as v;
                     </div>
                 <? endforeach ?>
             </div>
+            <div class="section-description">
+                <?= $section['DESCRIPTION'] ?>
+            </div>
             <? if ($hasFile): ?>
                 <a class="download download--bottom" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
                     <?= 'Скачать '.$fileName ?>

@@ -2,8 +2,10 @@
 
 use App\View as v;
 ?>
+<? // TODO refactor ?>
 <? foreach ($arResult['SECTIONS'] as $section): ?>
     <? $hasFile = !v::isEmpty($section['FILE']) ?>
+    <? $fileName = !v::isEmpty($section['FILE']) ? $section['UF_FILE_NAME'] : '' ?>
     <div class="certificates_item" id="<?= $section['CODE'] ?>">
         <div id="<?= v::addEditingActions($section, $this, 'section') ?>">
             <div class="wrap_title">
@@ -11,7 +13,7 @@ use App\View as v;
             </div>
             <? if ($hasFile): ?>
                 <a class="download download--top" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
-                    <?= 'Скачать '.v::upper($section['FILE']['EXTENSION']) ?>
+                    <?= 'Скачать '.$fileName ?>
                 </a>
             <? endif ?>
             <div class="grid <?= count($section['ITEMS']) < 3 ? 'grid--center' : '' ?>">
@@ -37,7 +39,7 @@ use App\View as v;
             </div>
             <? if ($hasFile): ?>
                 <a class="download download--bottom" href="<?= $section['FILE']['SRC'] ?>" target="_blank">
-                    <?= 'Скачать '.v::upper($section['FILE']['EXTENSION']) ?>
+                    <?= 'Скачать '.$fileName ?>
                 </a>
             <? endif ?>
         </div>

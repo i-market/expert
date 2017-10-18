@@ -16,7 +16,8 @@ $items = array_map(function($item) use ($transformFile) {
     $file = $item['DISPLAY_PROPERTIES']['FILE']['FILE_VALUE'];
     return _::set($item, 'FILE', $transformFile($file));
 }, $arResult['ITEMS']);
-$result = CIBlockSection::GetList([], ['IBLOCK_ID' => $arResult['ID']], false, ['IBLOCK_ID', 'ID', 'NAME', 'CODE', 'UF_FILE']);
+$result = CIBlockSection::GetList([], ['IBLOCK_ID' => $arResult['ID']], false,
+    ['IBLOCK_ID', 'ID', 'NAME', 'CODE', 'UF_FILE', 'UF_FILE_NAME']);
 $sections = array_map(function($section) use ($transformFile) {
     $file = CFile::GetFileArray($section['UF_FILE']);
     return _::set($section, 'FILE', $transformFile($file));

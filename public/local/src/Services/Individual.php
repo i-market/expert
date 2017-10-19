@@ -19,6 +19,17 @@ class Individual {
         ];
     }
 
+    private static function multiplier($count, $multipliers) {
+        return _::get($multipliers, strval($count), function () use ($multipliers, $count) {
+            $maxKey = max(...array_keys($multipliers));
+            return $count > $maxKey ? $multipliers[$maxKey] : 1;
+        });
+    }
+
+    private static function totalPrice($prices, $multipliers) {
+        return array_reduce($prices, _::operator('+'), 0) * self::multiplier(count($prices), $multipliers);
+    }
+
     static function state($params, $action, $data, $validate = true) {
         $dataSet = $data['MULTIPLE_BUILDINGS'];
         $state = [
@@ -37,12 +48,12 @@ class Individual {
             };
             $model = Services::dereferenceParams($params, $dataSet, $findEntity);
             $state['model'] = $model;
-            $state['result'] = array_reduce($model['SERVICES'], function($acc, $service) {
-                $x = _::update($acc, 'total_price', function($price) use ($service) {
-                    return $price + intval($service['PRICE']);
-                });
-                return _::update($x, 'duration', _::partial('max', intval($service['DURATION'])));
-            }, ['total_price' => 0, 'duration' => 0]);
+            $maxDuration = max(..._::append(_::pluck($model['SERVICES'], 'DURATION'), 0));
+            $prices = array_map('intval', _::pluck($model['SERVICES'], 'PRICE'));
+            $state['result'] = [
+                'total_price' => self::totalPrice($prices, $dataSet['COUNT_MULTIPLIERS']),
+                'duration' => $maxDuration
+            ];
         }
         return $state;
     }

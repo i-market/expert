@@ -233,7 +233,7 @@ window.initRecaptcha = function($scope) {
 
   function parseConstraintEntry(str) {
     // concise constraint format
-    var match = str.match(/^(\S+) (\d+(?:-\d+)?,?)+: (nil|(\d+(?:-\d+)?,?)+)$/);
+    var match = str.match(/^(\S+) ((?:\d+(?:-\d+)?,?)+): (nil|(?:\d+(?:-\d+)?,?)+)$/);
     console.assert(match !== null);
     return {prefix: match[1], selected: match[2], disabled: match[3]};
   }
@@ -262,6 +262,7 @@ window.initRecaptcha = function($scope) {
   }
 
   var examinationGoalsConstraint = (function() {
+    var allOfEntries = [];
     var anyOfEntries = [
       '14.1 1: 2-10,12-38',
       '14.1 2: 1,3-6,10,12-13,17,19,22,24,26,28,30,32,34,36,38',
@@ -352,28 +353,31 @@ window.initRecaptcha = function($scope) {
       };
       return n + offsetByPrefix[prefix];
     }
-    var anyOfPairs = _.map(anyOfEntries, function(entry) {
-      var res = parseConstraintEntry(entry);
-      function ids(str) {
-        if (str === 'nil') {
-          return [];
-        }
-        return _.flatMap(_.split(str, ','), function(s) {
-          if (_.includes(s, '-')) {
-            var parts = _.map(_.split(s, '-'), _.toInteger);
-            return rangeInc(parts[0], parts[1]);
-          } else {
-            return [_.toInteger(s)];
+    function pairs(entries) {
+      return _.map(entries, function(entry) {
+        var res = parseConstraintEntry(entry);
+        function ids(str) {
+          if (str === 'nil') {
+            return [];
           }
-        });
-      }
-      return [
-        _.map(ids(res.selected), _.partial(translate, res.prefix)),
-        _.map(ids(res.disabled), _.partial(translate, res.prefix))
-      ]
-    });
+          return _.flatMap(_.split(str, ','), function(s) {
+            if (_.includes(s, '-')) {
+              var parts = _.map(_.split(s, '-'), _.toInteger);
+              return rangeInc(parts[0], parts[1]);
+            } else {
+              return [_.toInteger(s)];
+            }
+          });
+        }
+        return [
+          _.map(ids(res.selected), _.partial(translate, res.prefix)),
+          _.map(ids(res.disabled), _.partial(translate, res.prefix))
+        ]
+      });
+    }
     return merge([
-      allOf(anyOfPairs)
+      allOf(pairs(allOfEntries)),
+      anyOf(pairs(anyOfEntries))
     ]);
   })();
 

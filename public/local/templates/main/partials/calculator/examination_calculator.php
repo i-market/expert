@@ -48,7 +48,7 @@ $macros = new macros($state);
                         ])
                     ]) ?>
                     <? $macros->showTextarea('DESCRIPTION', 'Описание объекта(ов) экспертизы', ['required' => true]) ?>
-                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория предметов экспертизы', ['required' => true]) ?>
+                    <? $macros->showSelect('SITE_CATEGORY', $options['SITE_CATEGORY'], 'Категория объектов экспертизы', ['required' => true]) ?>
                     <div class="wrap_calc_item">
                         <? $name = 'NEEDS_VISIT' ?>
                         <? $needsVisit = v::get($state, ['params', $name], false) ?>

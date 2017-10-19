@@ -185,7 +185,8 @@ class CalculatorMacros {
         <?
     }
 
-    function showCheckboxList($name, $options, $label, $opts) {
+    function showCheckboxList($name, $options, $label, $_opts = []) {
+        $opts = array_merge(['required' => false], $_opts);
         list($value, $error) = $this->valueErrorPair($name);
         $prefix = Util::uniqueId().'_'.$name;
         ?>

@@ -78,7 +78,7 @@ $macros = new macros($state);
                         'required' => true,
                         'class' => 'construction-phase'
                     ]) ?>
-                    <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
+                    <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов') ?>
                 </div>
             </div>
         </div>

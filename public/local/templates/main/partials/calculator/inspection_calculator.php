@@ -95,7 +95,7 @@ $macros = new macros($state);
                             'state' => 'expanded'
                         ]) ?>
                     </div>
-                    <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов', ['required' => true]) ?>
+                    <? $macros->showCheckboxList('DOCUMENTS', $options['DOCUMENTS'], 'Наличие документов') ?>
                 </div>
             </div>
         </div>

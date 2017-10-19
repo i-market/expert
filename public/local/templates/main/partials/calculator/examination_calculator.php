@@ -85,7 +85,7 @@ $macros = new macros($state);
                         <? }) ?>
                         <? $wrapInput('ADDRESS', function($name) use ($macros) { ?>
                             <div class="top">
-                                <p class="title">Адрес(a) <span class="red">*</span></p>
+                                <p class="title">Адрес(a)</p>
                             </div>
                             <? $macros->showInputInput($name) ?>
                         <? }) ?>

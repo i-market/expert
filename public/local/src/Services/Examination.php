@@ -198,7 +198,7 @@ class Examination {
                 ? v::alwaysValid()
                 : v::allOf(
                     Services::keyValidator('LOCATION', $params),
-                    v::key('ADDRESS', v::stringType()->notEmpty()),
+                    v::key('ADDRESS', v::stringType()),
                     Services::keyValidator('DISTANCE_BETWEEN_SITES', $params, false),
                     Services::keyValidator('TRANSPORT_ACCESSIBILITY', $params)
                 ),

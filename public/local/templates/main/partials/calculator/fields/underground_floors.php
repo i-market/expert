@@ -1,5 +1,6 @@
 <?
 use App\View as v;
+use App\Templates\CalculatorMacros as macros;
 ?>
 <? $hasUndergroundFloors = 'HAS_UNDERGROUND_FLOORS' ?>
 <div class="wrap_calc_item">
@@ -16,7 +17,10 @@ use App\View as v;
         </div>
     </div>
 </div>
-<? $macros->showConditionalInput('UNDERGROUND_FLOORS', 'Количество подземных этажей', [
+<? // TODO refactor ?>
+<? $name = 'UNDERGROUND_FLOORS' ?>
+<? $label = 'Количество подземных этажей' ?>
+<? $opts = [
     'required' => true,
     'class' => 'underground_floors',
     'show' => $showUndergroundFloors,
@@ -24,4 +28,24 @@ use App\View as v;
     'input_attrs' => v::attrs([
         'min' => 1
     ])
-]) ?>
+] ?>
+<? list($value, $error) = $macros->valueErrorPair($name); ?>
+<div class="wrap_calc_item_block<?= !v::isEmpty($error) ? ' error' : '' ?><?= $opts['class'] ? ' '.$opts['class'] : '' ?>"<?= $opts['show'] ? ' style="display: block"' : '' ?>>
+    <div class="top">
+        <p class="title"><?= $label.($opts['required'] ? macros::$requiredMark : '') ?></p>
+    </div>
+    <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
+    <div class="error-message"><?= $error ?></div>
+    <div class="bottom">
+        <div class="text text--hint">
+            <? $APPLICATION->IncludeComponent(
+                "bitrix:main.include",
+                "",
+                Array(
+                    "AREA_FILE_SHOW" => "file",
+                    "PATH" => v::includedArea('what-we-do/calculators/underground_floors_hint.php')
+                )
+            ); ?>
+        </div>
+    </div>
+</div>

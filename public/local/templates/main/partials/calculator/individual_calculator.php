@@ -124,6 +124,6 @@ $macros = new macros($state);
                 <?= v::render('partials/calculator/submit_button') ?>
             </div>
         </div>
-        <?= v::render('partials/calculator/result_block', $resultBlock) ?>
+        <?= v::render('partials/calculator/result_block_individual', $resultBlock) ?>
     </form>
 </section>

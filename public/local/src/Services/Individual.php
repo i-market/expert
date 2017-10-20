@@ -62,7 +62,9 @@ class Individual {
         $summaryValues = $state['result']['duration'] > 0
             ? ['Продолжительность выполнения работ' => Services::formatDurationWorkdays(strval($state['result']['duration']))]
             : [];
-        $resultBlock = Services::resultBlockContext($state, '/api/services/individual/calculator/send_proposal', self::$priceUnit, $summaryValues);
+        $resultBlock = array_merge(Services::resultBlockContext($state, '/api/services/individual/calculator/send_proposal', self::$priceUnit, $summaryValues), [
+            'hasDiscount' => 1 > self::multiplier(count($state['model']['SERVICES']), $state['data_set']['COUNT_MULTIPLIERS'])
+        ]);
         return [
             'apiEndpoint' => '/api/services/individual/calculator/calculate',
             'state' => $state,

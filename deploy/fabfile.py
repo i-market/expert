@@ -323,7 +323,7 @@ def upload_upload():
 
 
 @fab.task
-def deploy(skip_slack=False):
+def deploy(skip_slack=False, skip_upload_dir=False):
     env = environment()
     fab.execute(ensure_not_dirty)
     # TODO run tests before deploying
@@ -339,7 +339,8 @@ def deploy(skip_slack=False):
     if not env['local']:
         for rel_path in ['templates/main/build', 'vendor']:
             fab.execute(upload_dir, '../public/local/' + rel_path, 'local/' + rel_path)
-        fab.execute(upload_upload)
+        if not skip_upload_dir:
+            fab.execute(upload_upload)
         # TODO `git-ftp init` for initial deployment?
         fab.execute(git_ftp, 'push')
         fab.execute(clear_cache)

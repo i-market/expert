@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services;
 use Core\Underscore as _;
 use Core\Util;
+use Core\Strings as str;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
@@ -30,7 +31,8 @@ class Individual {
         return array_reduce($prices, _::operator('+'), 0) * self::multiplier(count($prices), $multipliers);
     }
 
-    static function state($params, $action, $data, $validate = true) {
+    static function state($params, $action, $data, $_opts = []) {
+        $opts = array_merge(['validate' => true, 'result' => true], $_opts);
         $dataSet = $data['MULTIPLE_BUILDINGS'];
         $state = [
             'data_set' => $dataSet,
@@ -38,7 +40,7 @@ class Individual {
             'errors' => [],
             'action' => $action
         ];
-        if (!$validate) {
+        if (!$opts['validate']) {
             return $state;
         }
         $state['errors'] = self::validateParams($params);
@@ -50,10 +52,12 @@ class Individual {
             $state['model'] = $model;
             $maxDuration = max(..._::append(_::pluck($model['SERVICES'], 'DURATION'), 0));
             $prices = array_map('intval', _::pluck($model['SERVICES'], 'PRICE'));
-            $state['result'] = [
-                'total_price' => self::totalPrice($prices, $dataSet['COUNT_MULTIPLIERS']),
-                'duration' => $maxDuration
-            ];
+            if ($opts['result']) {
+                $state['result'] = [
+                    'total_price' => self::totalPrice($prices, $dataSet['COUNT_MULTIPLIERS']),
+                    'duration' => $maxDuration
+                ];
+            }
         }
         return $state;
     }
@@ -68,7 +72,7 @@ class Individual {
         return [
             'apiEndpoint' => '/api/services/individual/calculator/calculate',
             'state' => $state,
-            'options' => self::options($state['data_set']['ENTITIES']),
+            'options' => self::options($state),
             'heading' => 'Стоимость и сроки выполнения отдельных видов работ по экспертизе и обследованию. Стоимость и сроки выполнения экспертизы отдельных материалов, деталей, изделий, узлов, конструкций, элементов конструкций и пр.',
             'resultBlock' => $resultBlock,
             'formatPrice' => function($num) { return Util::formatCurrency($num, ['cents' => false]); }
@@ -97,12 +101,44 @@ class Individual {
         ];
     }
 
-    static function options($roots) {
+    static function options($state) {
+        $order = _::filter(explode(',', _::get($state, 'params.order')), _::complement([str::class, 'isEmpty']));
+        $services = _::keyBy('ID', $state['model']['SERVICES']);
+        // services by selection order
+        $selected = _::map($order, function ($id) use ($services) {
+            return $services[$id];
+        });
+        $mults = $state['data_set']['COUNT_MULTIPLIERS'];
+        $nextPrice = function ($price, $selected) use ($mults) {
+            return (
+                self::totalPrice(_::append($selected, $price), $mults)
+                - self::totalPrice($selected, $mults)
+            );
+        };
+        $selectedNextPrices = _::reduce($selected, function ($acc, $ent, $idx) use ($nextPrice, $selected) {
+            // TODO refactor: inline into `updatePrice`
+            return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::take($selected, $idx), 'PRICE')));
+        }, []);
+        $updatePrice = function ($ent) use ($selected, $nextPrice, $selectedNextPrices) {
+            // TODO extract predicate, see also the template
+            if ($ent['PRICE'] == 1) {
+                return $ent;
+            }
+            return _::update($ent, 'PRICE', function ($price) use ($selected, $ent, $nextPrice, $selectedNextPrices) {
+                if (_::isEmpty($selectedNextPrices)) {
+                    return $price;
+                }
+                return _::get($selectedNextPrices, $ent['ID'], function () use ($ent, $selected, $nextPrice) {
+                    return $nextPrice($ent['PRICE'], _::pluck($selected, 'PRICE'));
+                });
+            });
+        };
+
         $isEntities = function($x) {
             return _::has(_::first($x), 'ID');
         };
-        $wrapEntities = function($entities) {
-            return ['type' => 'entities', 'value' => $entities];
+        $wrapEntities = function($entities) use ($updatePrice) {
+            return ['type' => 'entities', 'value' => array_map($updatePrice, $entities)];
         };
         $f = function($depth, $xs, $k) use (&$f, $isEntities, $wrapEntities) {
             if ($isEntities($xs)) {
@@ -118,6 +154,7 @@ class Individual {
                 return _::flatMap($xs, _::partial($f, $depth + 1));
             }
         };
+        $roots = $state['data_set']['ENTITIES'];
         return _::map($roots, _::partial($f, 0));
     }
 

@@ -423,6 +423,20 @@ window.initRecaptcha = function($scope) {
     var calcSel = '.calculator, .calculator--monitoring, .calculator--inspection';
     $scope.find(calcSel).addBack(calcSel).each(function() {
       var $calc = $(this);
+      (function () {
+        function update(v, f) {
+          return f(_.filter(v.split(','))).join(',');
+        }
+        // unbind intercooler change handler
+        $calc.find('.ordered').unbind('change').on('change', function () {
+          var $checkbox = $(this);
+          var $input = $checkbox.closest('form').find('input[name=order]');
+          $input.val($checkbox.is(':checked')
+            ? update($input.val(), _.partialRight(_.concat, [$checkbox.val()]))
+            : update($input.val(), _.partialRight(_.without, $checkbox.val())));
+          Intercooler.triggerRequest($checkbox);
+        });
+      })();
       $calc.find('.calculator__expandable-title').each(function() {
         // TODO refactor: maintaining state between ajax requests
         var targetSel = $(this).attr('data-target');

@@ -11,6 +11,7 @@ $macros = new macros($state);
           ic-target="closest .calculator"
           ic-replace-target="true"
           novalidate>
+        <input type="hidden" name="order" value="<?= v::get($state, 'params.order') ?>">
         <div class="wrap">
             <div class="wrap_title">
                 <h2>On-line калькулятор</h2>
@@ -64,6 +65,7 @@ $macros = new macros($state);
                         </tr>
                     <? elseif ($x['type'] === 'entities'): ?>
                         <? foreach($x['value'] as $entity): ?>
+                            <? // TODO extract predicate ?>
                             <? if (v::isEmpty($entity['PRICE']) || $entity['PRICE'] == 1): ?>
                                 <tr class="hidden">
                                     <td><?= $entity['NAME'] ?></td>
@@ -95,12 +97,14 @@ $macros = new macros($state);
                                         <div class="wrap_checkbox">
                                             <? $isChecked = in_array($entity['ID'], v::get($state, 'params.SERVICES', [])) ?>
                                             <? $id = 'option_'.$entity['ID'] ?>
-                                            <input name="SERVICES[]"
+                                            <input ic-post-to="<?= $apiEndpoint.'?result=0' ?>"
+                                                   name="SERVICES[]"
                                                    value="<?= $entity['ID'] ?>"
                                                    type="checkbox"
                                                    hidden="hidden"
                                                    <?= $isChecked ? 'checked' : '' ?>
-                                                   id="<?= $id ?>">
+                                                   id="<?= $id ?>"
+                                                   class="ordered">
                                             <label for="<?= $id ?>"></label>
                                         </div>
                                     </td>
@@ -124,6 +128,6 @@ $macros = new macros($state);
                 <?= v::render('partials/calculator/submit_button') ?>
             </div>
         </div>
-        <?= v::render('partials/calculator/result_block_individual', $resultBlock) ?>
+        <?= v::render('partials/calculator/result_block', $resultBlock) ?>
     </form>
 </section>

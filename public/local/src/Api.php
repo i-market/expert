@@ -252,10 +252,13 @@ class Api {
             });
             $router->respond('POST', '/services/individual/calculator/[:action]', function($request, $response) {
                 $type = 'individual';
-                $params = $request->params(['SERVICES', 'EMAIL']);
+                $params = $request->params(['SERVICES', 'EMAIL', 'order', 'validate', 'result']);
                 $params = self::normalizeParams($params);
                 $data = Services::data($type);
-                $state = Individual::state($params, $request->action, $data, _::get($params, 'validate', true));
+                $opts = _::filter(_::pick($params, ['validate', 'result']), function ($x) {
+                    return $x !== null;
+                });
+                $state = Individual::state($params, $request->action, $data, $opts);
                 $context = Individual::calculatorContext($state);
                 if ($request->action === 'send_proposal' && _::isEmpty($context['resultBlock']['errors'])) {
                     $context = self::withRecaptcha(function() use ($context, $state, $params) {

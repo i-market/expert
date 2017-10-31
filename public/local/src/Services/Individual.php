@@ -123,6 +123,9 @@ class Individual {
         }, []);
 
         if (isset($_REQUEST['alt'])) {
+            $_SESSION['alt'] = $_REQUEST['alt'];
+        }
+        if (isset($_SESSION['alt'])) {
             // this version changes already selected prices
             $nextPrice = function ($price, $selected) use ($mults) {
                 return $price * self::multiplier(count($selected) + 1, $mults);

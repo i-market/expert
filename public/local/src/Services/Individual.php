@@ -114,7 +114,7 @@ class Individual {
         if (isset($_REQUEST['alt'])) {
             $_SESSION['alt'] = $_REQUEST['alt'];
         }
-        if (isset($_SESSION['alt'])) {
+        if (_::get($_SESSION, 'alt') === '1') {
             // this version of `nextPrice` doesn't change already selected prices, but can return a negative price
             $nextPrice = function ($price, $selected) use ($mults) {
                 return (

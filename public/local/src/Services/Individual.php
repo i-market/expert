@@ -109,6 +109,8 @@ class Individual {
             return $services[$id];
         });
         $mults = $state['data_set']['COUNT_MULTIPLIERS'];
+
+        // this version of `nextPrice` doesn't change already selected prices, but can return a negative price
         $nextPrice = function ($price, $selected) use ($mults) {
             return (
                 self::totalPrice(_::append($selected, $price), $mults)
@@ -119,6 +121,19 @@ class Individual {
             // TODO refactor: inline into `updatePrice`
             return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::take($selected, $idx), 'PRICE')));
         }, []);
+
+        if (isset($_REQUEST['alt'])) {
+            // this version changes already selected prices
+            $nextPrice = function ($price, $selected) use ($mults) {
+                return $price * self::multiplier(count($selected) + 1, $mults);
+            };
+            $selectedNextPrices = _::reduce($selected, function ($acc, $ent) use ($nextPrice, $selected) {
+                // TODO refactor: inline into `updatePrice`
+                $notCurr = function ($e) use ($ent) { return $e['ID'] !== $ent['ID']; };
+                return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::filter($selected, $notCurr), 'PRICE')));
+            }, []);
+        }
+
         $updatePrice = function ($ent) use ($selected, $nextPrice, $selectedNextPrices) {
             // TODO extract predicate, see also the template
             if ($ent['PRICE'] == 1) {

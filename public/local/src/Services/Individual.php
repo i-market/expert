@@ -110,22 +110,23 @@ class Individual {
         });
         $mults = $state['data_set']['COUNT_MULTIPLIERS'];
 
-        // this version of `nextPrice` doesn't change already selected prices, but can return a negative price
-        $nextPrice = function ($price, $selected) use ($mults) {
-            return (
-                self::totalPrice(_::append($selected, $price), $mults)
-                - self::totalPrice($selected, $mults)
-            );
-        };
-        $selectedNextPrices = _::reduce($selected, function ($acc, $ent, $idx) use ($nextPrice, $selected) {
-            // TODO refactor: inline into `updatePrice`
-            return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::take($selected, $idx), 'PRICE')));
-        }, []);
-
+        // TODO tmp
         if (isset($_REQUEST['alt'])) {
             $_SESSION['alt'] = $_REQUEST['alt'];
         }
         if (isset($_SESSION['alt'])) {
+            // this version of `nextPrice` doesn't change already selected prices, but can return a negative price
+            $nextPrice = function ($price, $selected) use ($mults) {
+                return (
+                    self::totalPrice(_::append($selected, $price), $mults)
+                    - self::totalPrice($selected, $mults)
+                );
+            };
+            $selectedNextPrices = _::reduce($selected, function ($acc, $ent, $idx) use ($nextPrice, $selected) {
+                // TODO refactor: inline into `updatePrice`
+                return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::take($selected, $idx), 'PRICE')));
+            }, []);
+        } else {
             // this version changes already selected prices
             $nextPrice = function ($price, $selected) use ($mults) {
                 return $price * self::multiplier(count($selected) + 1, $mults);

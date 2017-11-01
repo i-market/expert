@@ -125,12 +125,11 @@ class Individual {
         */
 
         $nextPrice = function ($price, $selected) use ($mults) {
-            return $price * self::multiplier(count($selected) + 1, $mults);
+            return $price * self::multiplier(count($selected), $mults);
         };
         $selectedNextPrices = _::reduce($selected, function ($acc, $ent) use ($nextPrice, $selected) {
             // TODO refactor: inline into `updatePrice`
-            $notCurr = function ($e) use ($ent) { return $e['ID'] !== $ent['ID']; };
-            return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck(_::filter($selected, $notCurr), 'PRICE')));
+            return _::set($acc, $ent['ID'], $nextPrice($ent['PRICE'], _::pluck($selected, 'PRICE')));
         }, []);
 
         $updatePrice = function ($ent) use ($selected, $nextPrice, $selectedNextPrices) {

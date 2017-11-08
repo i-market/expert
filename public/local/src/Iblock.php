@@ -5,6 +5,7 @@ namespace App;
 use Bitrix\Iblock\SectionTable;
 use Bitrix\Main\Loader;
 use CIBlockResult;
+use CIBlockSection;
 use Core\Underscore as _;
 
 Loader::includeModule('iblock');
@@ -91,5 +92,11 @@ class Iblock {
             ]);
         }
         return $ret;
+    }
+
+    static function sectionUrl($id) {
+        $resultMaybe = CIBlockSection::GetByID($id)->GetNext();
+        // TODO log when not found
+        return _::get($resultMaybe, 'SECTION_PAGE_URL', '/404.php');
     }
 }

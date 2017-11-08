@@ -44,7 +44,7 @@
             </td>
         </tr>
     </table>
-    <div style="page-break-inside: avoid">
+    <div class="summary">
         <p>
             <strong>Стоимость работ составит: <?= $totalPrice ?></strong><?= v::render('pdf/proposal/partials/price_text') ?>
         </p>

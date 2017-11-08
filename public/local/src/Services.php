@@ -378,7 +378,7 @@ class Services {
         $funcMaybe = isset($tuple[2]) ? $tuple[2] : null;
         $value = _::get($model, $key);
         $html = is_callable($funcMaybe) ? $funcMaybe($value) : $value;
-        return ["<strong>{$label}</strong>", self::orNotSpecified($html)];
+        return [$label, self::orNotSpecified($html)];
     }
 
     static function generateProposalFile($proposalParams, $host = null) {

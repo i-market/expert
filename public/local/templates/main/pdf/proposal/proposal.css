@@ -1,29 +1,42 @@
 body {
     color: #000;
 }
-
 body, h1, h2 {
     font-size: 11pt;
 }
-
 h1 {
     text-align: center;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
 }
-
 .body table td {
-    border: 1px solid black;
+    border: 0.5pt solid black;
     padding: 0 0.2cm;
     vertical-align: top;
 }
-
 .header p {
     margin-bottom: 22pt;
-    font-weight: bold;
     font-style: italic;
     text-align: left;
+}
+.footer {
+    border-top: 1pt solid #63b9e8;
+    padding-top: 1em;
+    font-size: 8pt;
+    text-align: center;
+    color: #666 !important;
+    /* reset defaults */
+    font-weight: normal;
+    font-style: normal;
+}
+.summary {
+    page-break-inside: avoid;
+}
+.summary strong {
+    font-size: 13pt;
+}
+.table--monitoring-details td:nth-child(1) {
+    width: 25%;
 }

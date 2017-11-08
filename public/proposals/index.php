@@ -31,16 +31,12 @@ $pdf = new mPDF(...array_values([
     // margins
     'mgl' => 15,
     'mgr' => 15,
-    // make space for the header and footer elements
-    'mgt' => 16 * 3.5,
-    'mgb' => 16 * 2.5,
+    'mgt' => 16,
+    'mgb' => 16 * 1.8, // make space for footer
     'mgh' => 9,
     'mgf' => 9,
     'orientation' => 'P'
 ]));
-
-// TODO if a cell doesn't fit a page split instead of scaling it down
-// see e.g. oversight
 
 // "Keep-with-table"
 // automatically set $page-break-inside=avoid for any H1-H6 header that immediately precedes a table,
@@ -69,24 +65,22 @@ if ($params['example']) {
             'tables' => [
                 [
                     'heading' => 'Сведения об объекте (объектах) мониторинга',
-                    'rows' => array_map(function($pair) {
-                        return ["<strong>{$pair[0]}</strong>", $pair[1]];
-                    },
-                        [
-                            ['Описание объекта (объектов)', 'ТЦ «Щука»']
-                        ]
-                    )
+                    'rows' => _::map(range(1, 40), function ($n) {
+                        return ['field '.$n, 'value '.$n];
+                    })
                 ]
 
             ]
         ]);
     }
 }
-$html = View::render("pdf/proposal/{$params['type']}", $params);
-$pdf->defaultheaderline = false;
+$ctx = $params;
+$html = join("\n", [
+    View::render('pdf/proposal/partials/header', $ctx),
+    View::render("pdf/proposal/{$params['type']}", $ctx),
+]);
 $pdf->defaultfooterline = false;
-$pdf->SetHeader(View::render('pdf/proposal/partials/header', $params));
-$pdf->SetFooter(View::render('pdf/proposal/partials/footer', $params));
+$pdf->SetFooter(View::render('pdf/proposal/partials/footer', $ctx));
 $pdf->WriteHTML($html, 2);
 $dest = _::get($params, 'output.dest', '');
 // TODO ok tmp dir?

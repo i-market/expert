@@ -107,7 +107,6 @@ class ExaminationParser extends Parser {
         ]
     ];
 
-    // TODO refactor: generalize?
     function parseGoals($rows) {
         // define the row type hierarchy
         $h = h::make();
@@ -119,7 +118,6 @@ class ExaminationParser extends Parser {
                 return $v === 'Нумерация';
             });
         };
-        // should probably return type + structured value
         $rowType = function($row) use ($findNumberingIdx) {
             $isNestingTableHeader = function($row) use ($findNumberingIdx) {
                 return $findNumberingIdx($row) !== null;
@@ -143,7 +141,7 @@ class ExaminationParser extends Parser {
                 return $isTableHeader($row) || str::isEmpty($secondCell);
             };
             $isRootSubsection = function($row) use ($isSubsectionName) {
-                // TODO do we need this type? also 14. prefix dependency
+                // TODO hardcoded prefix
                 return $isSubsectionName($row) && str::startsWith(_::first($row['cells']), '14.');
             };
             if ($isNestingTableHeader($row)) {
@@ -177,14 +175,19 @@ class ExaminationParser extends Parser {
             assert(count($path) >= $depth - 1);
             return _::append(_::take($path, $depth - 1), $subsection);
         };
-        $tableHeader = function($row, $type) use ($h, $findNumberingIdx) {
+        $stickyHeaderRef = []; // TODO refactor hack
+        $tableHeader = function($row, $type) use ($h, $findNumberingIdx, &$stickyHeaderRef) {
             if (h::isa($h, $type, 'nesting_table_header')) {
                 $numberingIdx = $findNumberingIdx($row);
                 // drop 1, take until numbering column
-                return array_slice($row['cells'], 1, $numberingIdx - 1);
+                $ret = array_slice($row['cells'], 1, $numberingIdx - 1);
             } else {
-                return _::drop($this->nonEmptyCells($row['cells']), 1);
+                $ret = _::drop($this->nonEmptyCells($row['cells']), 1);
             }
+            $trimmed = _::takeWhile($ret, _::complement([str::class, 'isEmpty']));
+            $stickyHeaderRef = array_merge($trimmed, _::drop($stickyHeaderRef, count($trimmed)));
+            // header may contain empty strings
+            return $ret;
         };
         $ret = [];
         $state = ['find_subsection'];
@@ -211,8 +214,6 @@ class ExaminationParser extends Parser {
                         if (h::isa($h, $type, 'nesting_table_header')) {
                             $state = ['in_nesting_table', $nextPath, $header, []];
                         } else {
-                            // not used right now, stays in the `in_nesting_table` state
-                            // $state = ['in_table', $nextPath, $header];
                             throw new \Exception('illegal state');
                         }
                     } else {
@@ -237,7 +238,6 @@ class ExaminationParser extends Parser {
                     $dataCells = _::drop($cells, 1);
                     // this will take empty columns for "narrower" nested tables
                     $multCells = _::take($dataCells, count($header));
-                    // TODO feels hacky
                     $isSimpleEntity = count(_::clean($multCells)) === 1;
                     if ($isSimpleEntity) {
                         $value = $this->simpleValue($row);
@@ -255,7 +255,7 @@ class ExaminationParser extends Parser {
                         $value = [
                             'ID' => $row['metadata']['id'],
                             'NAME' => $name,
-                            'VALUE' => array_combine($header, $multipliers),
+                            'VALUE' => array_combine(_::take($stickyHeaderRef, count($multipliers)), $multipliers),
                             // convert row.cell index to entity `VALUE` index
                             'RANGE_BOUNDARY' => nil::map(_::get($metadata, 'RANGE_BOUNDARY'), function($rangeBoundary) {
                                 return $rangeBoundary - 1;
@@ -264,8 +264,8 @@ class ExaminationParser extends Parser {
                         ];
                     }
 
+                    // hack
                     if (str::startsWith(_::last($path), '14.7. Рецензирование')) {
-                        // TODO refactor hack: move fixed prices out of `multipliers`
                         $value['IS_FIXED_PRICE'] = true;
                     }
 

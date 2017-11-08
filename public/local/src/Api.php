@@ -113,6 +113,9 @@ class Api {
     }
 
     static function withRecaptcha(callable $continue) {
+        if (App::getInstance()->env() === Env::DEV) {
+            return $continue();
+        }
         try {
             $recaptchaResponse = _::get($_REQUEST, 'g-recaptcha-response');
             $secretKey = _::get(Configuration::getValue('app'), 'recaptcha.secret_key');

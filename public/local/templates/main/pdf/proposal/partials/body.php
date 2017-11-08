@@ -3,7 +3,7 @@
 <h1><?= $heading ?></h1>
 <? foreach ($tables as $table): ?>
     <h2><?= $table['heading'].':' ?></h2>
-    <table>
+    <table class="table--params">
         <? if (!v::isEmpty(v::get($table, 'header'))): ?>
             <thead>
             <tr>

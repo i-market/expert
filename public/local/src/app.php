@@ -81,7 +81,9 @@ class App extends \Core\App {
 
     function layoutContext() {
         global $APPLICATION;
-        $sentryConfig = _::get(Configuration::getValue('app'), 'sentry');
+        $sentryCfg = _::get(Configuration::getValue('app'), 'sentry', [
+            'enabled' => false
+        ]);
         $isHomepage = $APPLICATION->GetCurPage() === '/';
         return [
             'showTopBannersFn' => function() use (&$APPLICATION, $isHomepage) {
@@ -96,9 +98,9 @@ class App extends \Core\App {
             },
             'adminEmailMaybe' => $this->adminEmailMaybe(),
             'sentry' => [
-                'enabled' => $sentryConfig['enabled'],
+                'enabled' => _::get($sentryCfg, 'enabled'),
                 'env' => self::env(),
-                'publicDsn' => $sentryConfig['public_dsn']
+                'publicDsn' => _::get($sentryCfg, 'public_dsn')
             ],
             'copyrightYear' => date('Y')
         ];

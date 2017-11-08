@@ -50,6 +50,7 @@ class EventHandlers {
                 throw new Exception('parsing error');
             }
             $cache = Cache::createInstance();
+            $cache->clean('service-data:'.$type, App::CACHE_DIR);
             if ($cache->startDataCache(Services::$cacheTtl, 'service-data:'.$type, App::CACHE_DIR)) {
                 $cache->endDataCache($data);
             }

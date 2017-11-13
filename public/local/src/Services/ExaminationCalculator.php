@@ -71,17 +71,26 @@ class ExaminationCalculator extends Calculator {
             return _::has(_::first($x), 'ID');
         };
         $tables = _::flattenDeep($dataSet['MULTIPLIERS']['GOALS'], $isTable);
+
+
+        // клиент решил отказаться от вложенных таблиц (дополнительного условия расчета), см. ТЗ:
+        // https://docs.google.com/a/i-market.ru/document/d/1Nm3c06df2B4ZQIgSNBrZsOh38UtV2Z-dC7vlutAtSak/edit?disco=AAAABa-89-4
+        $tableNestingEnabled = false;
+
+
         list($nestingTables, $simpleTables) = _::groupBy($tables, function($entities) {
             return !_::isEmpty(_::get(_::first($entities), 'NUMBERING', [])) ? 0 : 1;
         });
         $byLevel = $this->groupWithNumbering(_::flatMap($nestingTables, _::identity()), $numberingFn, _::identity());
-        $nestingViews = _::flatMap($byLevel, function($views, $level) {
-            return _::map($views, function($view) use ($level) {
-                $entities = _::map($view, function($entity) use ($level) {
+        $nestingViews = _::flatMap($byLevel, function($views, $level) use ($tableNestingEnabled) {
+            return _::map($views, function($view) use ($level, $tableNestingEnabled) {
+                $entities = _::map($view, function($entity) use ($level, $tableNestingEnabled) {
                     return $level > 0 && _::get($entity, 'RANGE_BOUNDARY') !== null
-                        ? _::update($entity, 'VALUE', function($value) use ($entity) {
+                        ? _::update($entity, 'VALUE', function($value) use ($entity, $tableNestingEnabled) {
                             // nested tables: take columns until "range boundary"
-                            return _::take($value, $entity['RANGE_BOUNDARY'] + 1);
+                            return $tableNestingEnabled
+                                ? _::take($value, $entity['RANGE_BOUNDARY'] + 1)
+                                : $value;
                         })
                         : $entity;
                 });

@@ -326,6 +326,16 @@ abstract class Parser {
         }
     }
 
+    static function parseRange($str) {
+        $matchesRef = [];
+        if (preg_match('/(\d+)[-—\s]+(\d+)/', $str, $matchesRef)) {
+            list($_, $min, $max) = $matchesRef;
+            return [$min, $max];
+        } else {
+            return null;
+        }
+    }
+
     static function parseNumericPredicate($str) {
         if (is_numeric($str)) {
             return function ($x) use ($str) {
@@ -342,12 +352,12 @@ abstract class Parser {
                 };
             } else {
                 // table headers
-                return preg_match('/(\d+)[-—\s]+(\d+)/', $str, $matchesRef)
-                    ? function ($x) use ($matchesRef) {
-                        list($_, $min, $max) = $matchesRef;
+                return nil::map(self::parseRange($str), function ($pair) {
+                    list($min, $max) = $pair;
+                    return function ($x) use ($min, $max) {
                         return is_numeric($x) && $min <= $x && $x <= $max;
-                    }
-                    : null;
+                    };
+                });
             }
         }
     }

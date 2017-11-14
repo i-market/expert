@@ -125,9 +125,18 @@ class ExaminationCalculator extends Calculator {
                 $value = $view['ENTITIES'][$id]['VALUE'];
                 if (is_array($value)) {
                     // test in reverse order, otherwise you won't go past the "range boundary"
-                    $multiplierMaybe = _::find(array_reverse($value, true), function($_, $predStr) use ($inView) {
+                    $idx = 0;
+                    $multiplierMaybe = _::find(array_reverse($value, true), function($_, $predStr) use ($inView, &$idx) {
                         $pred = Parser::parseNumericPredicate($predStr);
                         assert($pred !== null);
+                        // hack: pick the rightmost column if out of bounds
+                        $max = _::get(Parser::parseRange($predStr), '1', function () use ($predStr) {
+                            return is_numeric($predStr) ? $predStr : null;
+                        });
+                        if ($idx === 0 && $max !== null && count($inView) > $max) {
+                            return true;
+                        }
+                        $idx += 1;
                         return $pred(count($inView));
                     });
                     if ($multiplierMaybe !== null) {
@@ -161,6 +170,9 @@ class ExaminationCalculator extends Calculator {
                     return count($v['MULTIPLIERS']) + $v['LEVEL'];
                 });
                 $remainingIds = array_diff($ids, array_keys($v['MULTIPLIERS']));
+                if (!is_array($v['MULTIPLIERS'])) {
+                    trigger_error('not an array: '.var_export($v['MULTIPLIERS'], true), E_USER_WARNING);
+                }
                 return t\bounce($loop, $remainingIds, $multipliers + $v['MULTIPLIERS']);
             }
         };

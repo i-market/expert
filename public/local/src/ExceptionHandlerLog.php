@@ -22,7 +22,7 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
                 ]);
             }
             $this->client->captureException($exception, [
-                'logType' => self::logTypeToString($logType)
+                'logType' => $logType
             ]);
         }
     }

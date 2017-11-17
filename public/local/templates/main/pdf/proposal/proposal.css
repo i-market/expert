@@ -6,6 +6,7 @@ body, h1, h2 {
 }
 h1, h2 {
     font-weight: bold;
+    page-break-after: avoid; /* not sure if it helps */
 }
 h1 {
     text-align: center;

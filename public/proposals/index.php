@@ -54,24 +54,42 @@ if (!$validator->validate($params)) {
     die('invalid params');
 }
 if ($params['example']) {
-    if ($params['type'] === 'monitoring') {
-        $params = array_merge($params, [
-            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение мониторинга',
-            'outgoingId' => '0611-1/16',
-            'date' => '16 октября 2016 г.',
-            'endingDate' => '26 октября 2017 г.',
-            'totalPrice' => '150 000 руб/мес.',
-            'duration' => '18 месяцев',
-            'tables' => [
-                [
-                    'heading' => 'Сведения об объекте (объектах) мониторинга',
-                    'rows' => _::map(range(1, 40), function ($n) {
-                        return ['field '.$n, 'value '.$n];
-                    })
-                ]
-
+    $params = array_merge($params, [
+        'outgoingId' => '0611-1/16',
+        'date' => '16 октября 2016 г.',
+        'endingDate' => '26 октября 2017 г.',
+        'totalPrice' => '150 000 руб/мес.',
+        'duration' => '18 месяцев',
+        'time' => '18 месяцев',
+        'tables' => [
+            [
+                'heading' => 'Сведения об объекте (объектах)',
+                'rows' => _::map(range(1, 20), function ($n) {
+                    return ['field '.$n, 'value '.$n];
+                })
             ]
-        ]);
+
+        ]
+    ]);
+    switch ($params['type']) {
+        case 'monitoring':
+            $params = array_merge($params, [
+                'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение мониторинга',
+            ]);
+            break;
+        case 'examination':
+            $params = array_merge($params, [
+                'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение экспертизы',
+                'partial' => 'pdf/proposal/partials/examination/14.1',
+                'tables' => [
+                    [
+                        'heading' => 'Сведения об объекте (объектах)',
+                        'rows' => [['field', str_repeat('value ', 2000)]]
+                    ]
+
+                ]
+            ]);
+            break;
     }
 }
 $ctx = $params;

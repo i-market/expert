@@ -131,6 +131,7 @@ class Examination {
             'endingDate' => Services::formatFullDate($endingDate),
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'time' => $state['model']['TIME'],
+            'goals' => Services::listHtml(_::pluck($state['model']['GOALS'], 'NAME')),
             'tables' => self::proposalTables($state['model']),
             'partial' => nil::map(_::get($state, 'model.GOALS_GROUP'), function ($group) {
                 return "pdf/proposal/partials/examination/{$group}";
@@ -257,12 +258,6 @@ class Examination {
                     ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
                     ['Наличие документов', 'DOCUMENTS', $listFn]
                 ])
-            ],
-            [
-                'heading' => 'Цели и задачи экспертизы',
-                'rows' => [
-                    [$listFn($model['GOALS'])]
-                ]
             ]
         ];
     }

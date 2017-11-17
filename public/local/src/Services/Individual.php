@@ -88,7 +88,7 @@ class Individual {
         $endingDate = $d->add(new \DateInterval('P3M'));
         return [
             'type' => 'individual',
-            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на выполнение отдельных видов работ',
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на выполнение работ',
             'outgoingId' => $outgoingId,
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),

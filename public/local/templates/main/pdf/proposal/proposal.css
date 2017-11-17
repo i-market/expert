@@ -43,6 +43,6 @@ table {
 .summary strong {
     font-size: 12pt;
 }
-.table--monitoring-details td:nth-child(1) {
+.table--details td:nth-child(1) {
     width: 25%;
 }

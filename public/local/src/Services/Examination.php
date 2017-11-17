@@ -7,6 +7,7 @@ use App\Components;
 use App\Services;
 use Core\Underscore as _;
 use Core\Util;
+use Core\Nullable as nil;
 use Respect\Validation\Exceptions\NestedValidationException;
 use Respect\Validation\Validator as v;
 
@@ -42,6 +43,17 @@ class Examination {
                 $range = Parser::parseRangeText($rangeText, ['min' => 0, 'max' => PHP_INT_MAX]);
                 return Util::inRange($model['TOTAL_AREA'], $range['min'], $range['max']);
             });
+
+            // hacky
+            $idx = $params['GOALS_FILTER'] - 1;
+            $goalsGroup = array_keys($dataSet['MULTIPLIERS']['GOALS'])[$idx];
+            $matchesRef = [];
+            if (preg_match('/^(\.?\d+)+/', $goalsGroup, $matchesRef)) {
+                list($num) = $matchesRef;
+                $model['GOALS_GROUP'] = $num;
+            } else {
+                trigger_error("can't find group id for: '{$goalsGroup}'", E_USER_WARNING);
+            }
 
             // TODO refactor hack: move fixed prices out of `multipliers`, see parser
             $fixedPriceEntities = array_filter($model['GOALS'], function($entity) {
@@ -120,6 +132,9 @@ class Examination {
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'time' => $state['model']['TIME'],
             'tables' => self::proposalTables($state['model']),
+            'partial' => nil::map(_::get($state, 'model.GOALS_GROUP'), function ($group) {
+                return "pdf/proposal/partials/examination/{$group}";
+            }),
             'output' => array_merge([
                 'dest' => 'F'
             ], _::get($opts, 'output' ,[]))

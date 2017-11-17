@@ -85,7 +85,7 @@ class Inspection {
         return [
             'type' => 'inspection',
             // TODO move it to the template?
-            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение обследования',
+            'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на выполнение обследования',
             'outgoingId' => $outgoingId,
             'date' => Services::formatFullDate($creationDate),
             'endingDate' => Services::formatFullDate($endingDate),
@@ -146,15 +146,15 @@ class Inspection {
                 'heading' => 'Сведения об объекте (объектах) обследования',
                 'rows' => array_map($formatRow, [
                     ['Описание объекта (объектов)', 'DESCRIPTION'],
-                    ['Количество зданий, сооружений, строений, помещений', 'SITE_COUNT'],
+                    ['Количество объектов', 'SITE_COUNT'],
                     ['Местонахождение', 'LOCATION', $nameFn],
                     ['Адрес (адреса)', 'ADDRESS'],
                     ['Назначение', 'USED_FOR', $nameFn],
-                    ['Общая площадь', 'TOTAL_AREA'],
-                    ['Строительный объем', 'VOLUME'],
+                    ['Общая площадь объекта (объектов), кв.м.', 'TOTAL_AREA'],
+                    ['Строительный объем объекта (объектов), куб.м.', 'VOLUME'],
                     ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
                     ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
-                    ['Количество подземных этажей', 'UNDERGROUND_FLOORS'],
+                    ['Максимальное количество подземных этажей у одного или нескольких объектов', 'UNDERGROUND_FLOORS'],
                     ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
                     ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
                     ['Наличие документов', 'DOCUMENTS', $listFn]

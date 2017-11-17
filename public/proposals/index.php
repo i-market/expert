@@ -41,7 +41,7 @@ $pdf = new mPDF(...array_values([
 // "Keep-with-table"
 // automatically set $page-break-inside=avoid for any H1-H6 header that immediately precedes a table,
 // thus keeping the heading together with the table.
-$pdf->use_kwt = true;
+$pdf->use_kwt = false; // buggy: for some headings rests their styles
 
 $stylesPath = View::template('pdf/proposal/proposal.css');
 $styles = file_get_contents(Util::joinPath([$_SERVER['DOCUMENT_ROOT'], $stylesPath]));

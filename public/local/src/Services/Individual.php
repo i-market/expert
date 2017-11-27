@@ -49,6 +49,13 @@ class Individual {
                 return Services::findEntity2($field, $val, $dataSet['ENTITIES']);
             };
             $model = Services::dereferenceParams($params, $dataSet, $findEntity);
+            $updatePrice = _::partialRight([self::class, 'applyDiscount'], $model['SERVICES'], $state['data_set']['COUNT_MULTIPLIERS']);
+            $model = _::update($model, 'SERVICES', function ($services) use ($updatePrice) {
+                return _::map($services, function ($entity) use ($updatePrice) {
+                    // update prices right away and refactor?
+                    return _::set($entity, 'PRICE_WITH_DISCOUNT', $updatePrice($entity)['PRICE']);
+                });
+            });
             $state['model'] = $model;
             $maxDuration = max(..._::append(_::pluck($model['SERVICES'], 'DURATION'), 0));
             $prices = array_map('intval', _::pluck($model['SERVICES'], 'PRICE'));
@@ -101,15 +108,7 @@ class Individual {
         ];
     }
 
-    static function options($state) {
-        $order = _::filter(explode(',', _::get($state, 'params.order')), _::complement([str::class, 'isEmpty']));
-        $services = _::keyBy('ID', $state['model']['SERVICES']);
-        // services by selection order
-        $selected = _::map($order, function ($id) use ($services) {
-            return $services[$id];
-        });
-        $mults = $state['data_set']['COUNT_MULTIPLIERS'];
-
+    static function applyDiscount($entity, $selected, $mults) {
         // this version of `nextPrice` doesn't change already selected prices, but may return a negative one
         /*
         $nextPrice = function ($price, $selected) use ($mults) {
@@ -124,6 +123,7 @@ class Individual {
         }, []);
         */
 
+        // TODO refactor: the algorithm is way simpler than it seems
         $nextPrice = function ($price, $selected) use ($mults) {
             return $price * self::multiplier(count($selected), $mults);
         };
@@ -146,6 +146,19 @@ class Individual {
                 });
             });
         };
+
+        return $updatePrice($entity);
+    }
+
+    static function options($state) {
+        $order = _::filter(explode(',', _::get($state, 'params.order')), _::complement([str::class, 'isEmpty']));
+        $services = _::keyBy('ID', $state['model']['SERVICES']);
+        // services by selection order
+        $selected = _::map($order, function ($id) use ($services) {
+            return $services[$id];
+        });
+        $mults = $state['data_set']['COUNT_MULTIPLIERS'];
+        $updatePrice = _::partialRight([self::class, 'applyDiscount'], $selected, $mults);
 
         $isEntities = function($x) {
             return _::has(_::first($x), 'ID');
@@ -188,7 +201,7 @@ class Individual {
                 'heading' => 'Состав работ',
                 'header' => ['Вид работ', 'Цель работ', 'Единица измерения', 'Стоимость, руб.'],
                 'rows' => _::map($model['SERVICES'], function($entity) {
-                    return _::map(['NAME', 'GOAL', 'UNIT', 'PRICE'], function($k) use ($entity) {
+                    return _::map(['NAME', 'GOAL', 'UNIT', 'PRICE_WITH_DISCOUNT'], function($k) use ($entity) {
                         return Services::orNotSpecified($entity[$k]);
                     });
                 })

@@ -87,7 +87,8 @@ $macros = new macros($state);
                                     <td><?= $entity['GOAL'] ?></td>
                                     <td><?= $entity['UNIT'] ?></td>
                                     <td>
-                                        <? if (!v::isEmpty($entity['OLD_PRICE'])): ?>
+                                        <? $oldPricesEnabled = false ?>
+                                        <? if ($oldPricesEnabled && !v::isEmpty($entity['OLD_PRICE'])): ?>
                                             <p class="through"><?= $formatPrice($entity['OLD_PRICE']) ?></p>
                                         <? endif ?>
                                         <p><?= $formatPrice($entity['PRICE']) ?></p>
@@ -102,7 +103,7 @@ $macros = new macros($state);
                                                    value="<?= $entity['ID'] ?>"
                                                    type="checkbox"
                                                    hidden="hidden"
-                                                   <?= $isChecked ? 'checked' : '' ?>
+                                                <?= $isChecked ? 'checked' : '' ?>
                                                    id="<?= $id ?>"
                                                    class="ordered">
                                             <label for="<?= $id ?>"></label>

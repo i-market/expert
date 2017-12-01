@@ -314,12 +314,14 @@ abstract class Parser {
     }
 
     static function parseBoolean($str) {
-        // TODO keywords class property
+        $isOneOf = function ($x, $xs) {
+            return in_array(str::lower($x), array_map([str::class, 'lower'], $xs));
+        };
         $truthy = ['Имеется', 'ЕСТЬ', 'Для суда', 'Требуется'];
         $falsy = ['Не имеется', 'НЕТ', 'Не для суда', 'Не требуется'];
-        if (in_array($str, $truthy)) {
+        if ($isOneOf($str, $truthy)) {
             return true;
-        } elseif (in_array($str, $falsy)) {
+        } elseif ($isOneOf($str, $falsy)) {
             return false;
         } else {
             return null;

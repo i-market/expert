@@ -5,266 +5,374 @@ $APPLICATION->SetTitle("Мониторинг технического состо
 use App\Iblock;
 ?><p align="center">
 </p>
-<p></p><p style="text-align: center;"><span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Что такое «мониторинг»? </span></b></span><span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;"> </span></b></span><span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">&nbsp;</span><span style="color: #0054a5;"> &nbsp;</span></b></span></p><p><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">В соответствии </span><span style="color: #000000; font-size: 12pt;">с ГОСТ 31937-2011 «Здания и сооружения. Правила обследования и мониторинга технического состояния»</span><span style="color: #000000; font-size: 12pt;">:</span><span style="color: #000000; font-size: 12pt;">&nbsp;</span></span></p><p><span style="color: #000000;"><span style="color: #0054a5;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style=""><span style="color: #0054a5; font-size: 13pt;">Общий мониторинг технического состояния зданий (сооружений)</span></b> <span style="color: #000000; font-size: 12pt;">- это система наблюдения и контроля, проводимая по определенной программе, утверждаемой заказчиком, для выявления объектов, на которых произошли значительные изменения напряженно-деформированного состояния несущих конструкций или крена и для которых необходимо обследование их технического состояния (изменения напряженно-деформированного состояния характеризуются изменением имеющихся и возникновением новых деформаций или определяются путем инструментальных измерений). </span></span><br>
- <span style="font-size: 12pt; color: #000000;"> </span><br><span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния зданий (сооружений), попадающих в зону влияния строек и природно-техногенных воздействий</span></b> - система наблюдения и контроля, проводимая по определенной программе на объектах, попадающих в зону влияния строек и природно-техногенных воздействий, для контроля их технического состояния и своевременного принятия мер по устранению возникающих негативных факторов, ведущих к ухудшению этого состояния. </span><br>
- <span style="font-size: 12pt; color: #000000;"> </span><br><span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния зданий (сооружений), находящихся в ограниченно работоспособном или аварийном состоянии</span></b> - система наблюдения и контроля, проводимая по определенной программе, для отслеживания степени и скорости изменения технического состояния объекта и принятия в случае необходимости экстренных мер по предотвращению его обрушения или опрокидывания, действующая до момента приведения объекта в работоспособное техническое состояние.</span><br>
- <span style="font-size: 12pt; color: #000000;"> </span><span style="font-size: 12pt; color: #000000;"> </span><br><span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния уникальных зданий (сооружений)</span></b> - система наблюдения и контроля, проводимая по определенной программе для обеспечения безопасного функционирования уникальных зданий или сооружений за счет своевременного обнаружения на ранней стадии негативного изменения напряженно-деформированного состояния конструкций и грунтов оснований или крена, которые могут повлечь за собой переход объектов в ограниченно работоспособное или в аварийное состояние. </span><br>
- <span style="font-size: 12pt; color: #000000;"> </span><br><span style="color: #000000;">&nbsp; &nbsp;&nbsp; &nbsp;<b style=""><span style="color: #0054a5; font-size: 13pt;">Система мониторинга технического состояния несущих конструкций</span></b><span style="font-size: 12pt;"> </span><span style="font-size: 12pt; color: #000000;">- совокупность технических и программных средств, позволяющая осуществлять сбор и обработку информации о различных параметрах строительных конструкций (геодезические, динамические, деформационные и др.) в целях оценки технического состояния зданий и сооружений.&nbsp;</span></span></p><p style="text-align: center;"><span style="color: #000000;"> </span><br>
- <span style="font-size: 12pt; color: #000000;"> </span><br><span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Какие нормативно-правовые документы регламентируют работы по ведению мониторинга&nbsp;</span></b></span></p><p style="text-align: center;"></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Основными нормативными и правовыми документами регламентирующими работы по проведению мониторинга являются: </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">1. </span><span style="color: #000000; font-size: 12pt;">ГОСТ Р 56198-2014 «Мониторинг технического состояния объектов культурного наследия. Недвижимые памятники. Общие требования»; </span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">2. </span><span style="color: #000000; font-size: 12pt;">ГОСТ Р 53778-2010 «Здания и сооружения. Правила обследования и мониторинга технического состояния»;</span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">3. </span><span style="color: #000000; font-size: 12pt;">ГОСТ 32019-2012 «Мониторинг технического состояния уникальных зданий и сооружений. Правила проектирования и установки стационарных систем (станций) мониторинга»; </span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">4. </span><span style="color: #000000; font-size: 12pt;">ГОСТ 31937- 2011 «Здания и сооружения. Правила обследования и мониторинга технического состояния»; </span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">5. </span><span style="color: #000000; font-size: 12pt;">ПРАВИТЕЬЛСТВО МОСКВЫ. МОСКОМАРХИТЕКТУРА. Рекомендации по обследованию и мониторингу технического состояния эксплуатируемых зданий, расположенных вблизи нового строительства или реконструкции. </span></span><br><span style="color: #000000; font-size: 12pt;">
- </span><span style="color: #000000; font-size: 12pt;"> </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Основными нормативными и правовыми документами регламентирующими, в каких случаях требуется проведение мониторинга являются: </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">1. Градостроительный кодекс РФ от 29 декабря 2004 г. № 190-ФЗФ, </span><span style="color: #000000; font-size: 12pt;">статья 47; </span></span><br><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. Федеральный закон от 30 декабря 2009 г. N 384-ФЗ «Технический регламент о безопасности зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">статья 15; </span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">3. Постановление Правительства РФ от 16 февраля 2008 г. № 87 «О составе разделов проектной документации и требованиях к их содержанию», </span><span style="color: #000000; font-size: 12pt;">п. 10 п.п. б; п. 11; </span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">4. ВСН 61-89 (р) «Реконструкция и капитальный ремонт жилых домов. Нормы проектирования.», </span><span style="color: #000000; font-size: 12pt;">п.3, п.п. 3.1.; п.4, п.п. 4.1.1.; </span></span><br><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5. МДС 13-14.2000 «Положение проведении планово-предупредительного ремонта производственных зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">п. 6.9.</span><span style="color: #000000; font-size: 12pt;"> (действует только по г.Москва).</span></span><span style="font-size: 12pt; color: #000000;"><span style="color: #000000;"> </span></span></p><p style="text-align: center;"></p><p style="text-align: center;"><span style="font-size: 12pt; color: #000000;"><br><span style="color: #0072bc;">
- </span></span><span style="font-size: 12pt; color: #0072bc;"> </span></p><p style="text-align: center;"><br><span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Какие нормативно-правовые документы регулируют деятельность организаций выполняющих мониторинг</span></b></span></p><p style="text-align: center;"></p><p></p><p></p><p></p><p style="text-align: left;"></p><p style="text-align: center;"></p><p style="text-align: center;"></p><p style="text-align: center;"></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">Основн</span><span style="color: #000000; font-size: 12pt;">ыми нормативно-правовыми документами регулирующими деятельность организаций выполняющих мониторинг являются: </span></span><br><span style="color: #000000;"><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">1. Приказ Министерства регионального развития РФ от 30 декабря 2009 г. N 624, </span></span><span style="color: #000000; font-size: 12pt;">раздел 2, п. 12; </span></span><br><span style="color: #000000; font-size: 12pt;">
- </span><span style="color: #000000; font-size: 12pt;">
-	&nbsp; </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">
-	&nbsp;2. Градостроительный кодекс РФ от 29 декабря 2004 г. № 190-ФЗФ,</span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">статья 47, п.2; </span></span><br><span style="color: #000000; font-size: 12pt;">
- </span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3. СП 13-102-2003 «Правила обследования несущих строительных конструкций зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">п. 4, п.п. 4.1.;</span></span><br><span style="color: #000000; font-size: 12pt;">
- </span><span style="color: #000000; font-size: 12pt;">&nbsp; </span><span style="color: #000000;"><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp;4. ГОСТ 31937-2011 «Здания и сооружения. Правила обследования и мониторинга технического состоя</span><span style="color: #000000; font-size: 12pt;">ния»,</span></span><span style="color: #000000; font-size: 12pt;"> п. 4, п.п. 4.1.</span></span></p><p style="text-align: center;"><span style="font-size: 12pt; color: #000000;"><span style="color: #0000ff;"><u> </u></span></span></p><p></p><p></p><p></p><p style="text-align: center;"></p><p></p><p style="text-align: center;"></p><p style="text-align: center;"><br>
- <span style="font-size: 12pt; color: #000000;"> </span><br><span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">В каких случаях Вам необходим мониторинг </span></b></span><br>
- <span style="font-size: 12pt; color: #000000;">
-	</span></p><p style="text-align: left;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Мониторинг проводится в следующих случаях: </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">1. При реконструкции или капитальном ремонте, с целью сбора исходных данных для проектирования зданий и сооружений; </span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;2. При необходимости оценки возможности дальнейшей безаварийной эксплуатации зданий и сооружений, определения необходимости восстановления, усиления, и пр.; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">3. В случаях наличия значительного износа и, связанных с ним, повреждений, прогибов и прочих дефектов и недостатков зданий, сооружений; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">4. В случаях расположения зданий и сооружений в зоне влияния строек и природно-техногенных воздействий, с целью установления возможности дальнейшей безопасной эксплуатации; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">5. Для определения фактического состояния зданий и сооружений уже официально отнесенных к ограниченно работоспособному или аварийному состоянию; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">6. Для осуществления контроля за состоянием конструкций, в том числе высотных и большепролетных зданий и сооружений, с целью предотвращения катастроф и обрушений; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">7. При изменении технологического назначения зданий и сооружений с целью установления допустимости эксплуатации в изменившихся условиях; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">8. При обнаружении, в процессе технического обслуживания зданий и сооружений, значительных дефектов, повреждений и деформаций несвязанных с физическим износом; </span><br><span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">9. С целью оценки степени воздействия пожаров, стихийных бедствий и аварий на эксплуатационные характеристики зданий и сооружений; </span><span style="font-size: 12pt; color: #000000;"> </span><br>
- <span style="color: #000000;">
-	<span style="color: #000000; font-size: 12pt;">&nbsp; </span></span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="text-align: center; color: #000000; font-size: 12pt;">10. При выявлении деформаций грунтовых оснований зданий, сооружений.</span></p><p style="text-align: left;"><span style="font-size: 12pt; text-align: center;"><br></span></p><p style="text-align: center;"></p><p style="text-align: center;"></p><p style="text-align: center;"><b><span style="font-size: 24pt; color: #0054a5;">Задачи мониторинга</span></b></p><p></p><p></p><p></p><p></p><p></p><p></p><div><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; В зависимости от поставленной цели, в задачи мониторинга может входит: </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. Выявление наличия и развития недостатков, дефектов и повреждений в конструкциях зданий и сооружений с течением времени; </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. Контроль за развитием недостатков, дефектов и повреждений строительных конструкций зданий и сооружений в течении времени; &nbsp;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3. Установление влияния внешних и внутренних факторов и воздействий на появление и развитие недостатков, дефектов и повреждений в конструкциях зданий и сооружений; </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;4. Установление влияния и воздействия выявленных недостатков, дефектов и повреждений на эксплуатационные характеристики зданий и сооружений в течении времени; </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5. Контроль изменений физико-механических характеристик конструкций и материалов (прочность, твердость, плотность, влажность, водопроницаемость и пр.) в течении времени; </span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;6. Контроль за изменением технического состояния, развитием дефектов, повреждений и недостатков в зависимости от изменения фактических нагрузок и воздействий воспринимаемых строительными конструкциями; &nbsp; &nbsp;&nbsp;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;7. Выдача рекомендаций по устранению выявленных дефектов, повреждений и недостатков, а также по дальнейшей эксплуатации зданий и сооружений.</span><br>
+<p>
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Что такое «мониторинг»? </span></b></span><span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;"> </span></b></span><span style="font-size: 15pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">&nbsp;</span><span style="color: #0054a5;"> &nbsp;</span></b></span>
+</p>
+<p>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">В соответствии </span><span style="color: #000000; font-size: 12pt;">с ГОСТ 31937-2011 «Здания и сооружения. Правила обследования и мониторинга технического состояния»</span><span style="color: #000000; font-size: 12pt;">:</span><span style="color: #000000; font-size: 12pt;">&nbsp;</span></span>
+</p>
+<p>
+ <span style="color: #000000;"><span style="color: #0054a5;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b><span style="color: #0054a5; font-size: 13pt;">Общий мониторинг технического состояния зданий (сооружений)</span></b> <span style="color: #000000; font-size: 12pt;">- это система наблюдения и контроля, проводимая по определенной программе, утверждаемой заказчиком, для выявления объектов, на которых произошли значительные изменения напряженно-деформированного состояния несущих конструкций или крена, и для которых необходимо обследование их технического состояния (изменения напряженно-деформированного состояния характеризуются изменением имеющихся и возникновением новых деформаций или определяются путем инструментальных измерений). </span></span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния зданий (сооружений), попадающих в зону влияния строек и природно-техногенных воздействий</span></b> - система наблюдения и контроля, проводимая по определенной программе на объектах, попадающих в зону влияния строек и природно-техногенных воздействий, для контроля их технического состояния и своевременного принятия мер по устранению возникающих негативных факторов, ведущих к ухудшению этого состояния. </span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния зданий (сооружений), находящихся в ограниченно работоспособном или аварийном состоянии</span></b> - система наблюдения и контроля, проводимая по определенной программе, для отслеживания степени и скорости изменения технического состояния объекта и принятия в случае необходимости экстренных мер по предотвращению его обрушения или опрокидывания, действующая до момента приведения объекта в работоспособное техническое состояние.</span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"><b>&nbsp; &nbsp; &nbsp;&nbsp;<span style="color: #0054a5; font-size: 13pt;">Мониторинг технического состояния уникальных зданий (сооружений)</span></b> - система наблюдения и контроля, проводимая по определенной программе для обеспечения безопасного функционирования уникальных зданий или сооружений за счет своевременного обнаружения на ранней стадии негативного изменения напряженно-деформированного состояния конструкций и грунтов оснований или крена, которые могут повлечь за собой переход объектов в ограниченно работоспособное или в аварийное состояние. </span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;&nbsp; &nbsp;<b><span style="color: #0054a5; font-size: 13pt;">Система мониторинга технического состояния несущих конструкций</span></b><span style="font-size: 12pt;"> </span><span style="font-size: 12pt; color: #000000;">- совокупность технических и программных средств, позволяющая осуществлять сбор и обработку информации о различных параметрах строительных конструкций (геодезические, динамические, деформационные и др.) в целях оценки технического состояния зданий и сооружений.&nbsp;</span></span>
+</p>
+<p style="text-align: center;">
+ <span style="color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Какие нормативно-правовые документы регламентируют работы по ведению мониторинга&nbsp;</span></b></span>
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: left;">
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Основными нормативными и правовыми документами регламентирующими работы по проведению мониторинга являются: </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">1. </span><span style="color: #000000; font-size: 12pt;">ГОСТ Р 56198-2014 «Мониторинг технического состояния объектов культурного наследия. Недвижимые памятники. Общие требования»; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">2. </span><span style="color: #000000; font-size: 12pt;">ГОСТ Р 53778-2010 «Здания и сооружения. Правила обследования и мониторинга технического состояния»;</span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">3. </span><span style="color: #000000; font-size: 12pt;">ГОСТ 32019-2012 «Мониторинг технического состояния уникальных зданий и сооружений. Правила проектирования и установки стационарных систем (станций) мониторинга»; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">4. </span><span style="color: #000000; font-size: 12pt;">ГОСТ 31937- 2011 «Здания и сооружения. Правила обследования и мониторинга технического состояния»; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">5. </span><span style="color: #000000; font-size: 12pt;">ПРАВИТЕЬЛСТВО МОСКВЫ. МОСКОМАРХИТЕКТУРА. Рекомендации по обследованию и мониторингу технического состояния эксплуатируемых зданий, расположенных вблизи нового строительства или реконструкции. </span></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Основными нормативными и правовыми документами регламентирующими, в каких случаях требуется проведение мониторинга являются: </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">1. Градостроительный кодекс РФ от 29 декабря 2004 г. № 190-ФЗФ, </span><span style="color: #000000; font-size: 12pt;">статья 47; </span></span><br>
+ <span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. Федеральный закон от 30 декабря 2009 г. N 384-ФЗ «Технический регламент о безопасности зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">статья 15; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">3. Постановление Правительства РФ от 16 февраля 2008 г. № 87 «О составе разделов проектной документации и требованиях к их содержанию», </span><span style="color: #000000; font-size: 12pt;">п. 10 п.п. б; п. 11; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">4. ВСН 61-89 (р) «Реконструкция и капитальный ремонт жилых домов. Нормы проектирования.», </span><span style="color: #000000; font-size: 12pt;">п.3, п.п. 3.1.; п.4, п.п. 4.1.1.; </span></span><br>
+ <span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5. МДС 13-14.2000 «Положение проведении планово-предупредительного ремонта производственных зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">п. 6.9.</span><span style="color: #000000; font-size: 12pt;"> (действует только по г.Москва).</span></span><span style="font-size: 12pt; color: #000000;"><span style="color: #000000;"> </span></span>
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 12pt; color: #000000;"><br>
+ <span style="color: #0072bc;"> </span></span><span style="font-size: 12pt; color: #0072bc;"> </span>
+</p>
+<p style="text-align: center;">
  <br>
-	 </div><p style="text-align: center;"><span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Этапы проведения мониторинга</span></b></span></p><p style="text-align: left;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Мониторинг строительных конструкций, зданий и сооружений проводится, как правило, в несколько связанных между собой этапов:</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- подготовительные работы;
-</span><span style="font-size: 12pt; color: #000000;">
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- визуальное и инструментальное обследование перед началом мониторинга;
-</span><span style="font-size: 12pt; color: #000000;">
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- монтажные работы;
-</span><span style="font-size: 12pt; color: #000000;">
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- мониторинг.
-</span><br><span style="font-size: 12pt; color: #000000;">
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="font-size: 12pt; color: #000000;">Последовательность действий и состав работ на каждом этапе включают:
-</span><br><span style="font-size: 12pt;">
-</span><br><span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style="font-size: 12pt;"><span style="color: #0054a5; font-size: 13pt;">1. Подготовительные работы:</span><span style="color: #0054a5;">&nbsp;</span><br></b><span style=""><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- ознакомление с объектом мониторинга, его объемно-планировочным и конструктивными решениями, материалами инженерно-геологических изысканий и пр.:&nbsp;</span><br></span><span style=""><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- подбор и анализ проектно-технической документации;&nbsp;</span><br></span><span style="color: #000000;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- составление программы работ (при необходимости) на основе полученного от заказчика технического задания. Техническое задание разрабатывается заказчиком или проектной организацией и, возможно, с участием исполнителя обследования.&nbsp; </span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;</span></span></p><p style="text-align: left;"><span style="font-size: 12pt;">
-</span><br><span style="color: #0054a5;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style=""><span style="color: #0054a5; font-size: 13pt;">2. Визуальное и инструментальное обследование перед началом мониторинга:
-</span></b><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- инструментальное определение контрольных параметров, выявление недостатков, &nbsp;дефектов и повреждений;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактических прочностных характеристик материалов основных несущих конструкций и их элементов;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- измерение параметров эксплуатационной среды, присущей технологическому&nbsp;</span><span style="color: #000000; font-size: 12pt;">процессу в здании и сооружении;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактических эксплуатационных нагрузок и воздействий, воспринимаемых обследуемыми конструкциями с учетом влияния деформаций грунтового основания;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактической расчетной схемы здания и его отдельных конструкций;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение расчетных усилий в несущих конструкциях, воспринимающих эксплуатационные нагрузки;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- расчет несущей способности конструкций по результатам обследования;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- камеральная обработка и анализ результатов обследования и поверочных расчетов;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- анализ причин появления дефектов, повреждений и недостатков;
-</span><br><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Некоторые из перечисленных работ могут исключаться или добавляться в программу мониторинга в зависимости от специфики объекта мониторинга, его состояния и задач, определенных техническим заданием.
-</span><br><span style="font-size: 12pt;">
-</span><br><span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style=""><span style="color: #0054a5; font-size: 13pt;">3. Монтажные работы:</span></b><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;Установка контрольно-измерительного оборудования для ведения мониторинга на выбранных участках.
-</span><br><span style="font-size: 12pt;">
-</span><br><span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style=""><span style="color: #0054a5; font-size: 13pt;">4. Мониторинг:
-</span></b><br><span style="font-size: 12pt;">
-	 <span style="color: #000000;">&nbsp;&nbsp;</span></span><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;"> Систематический к</span><span style="font-size: 12pt; color: #000000;">онтроль состояния строительных конструкций, а также замеры и снятие показаний с установленного контрольно-измерительного оборудования:
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - контроль изменений геометрических параметров здания (зданий) или сооружения (сооружений), конструкций, элементов и узлов;
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - визуальный и инструментальный контроль параметров выявленных дефектов и повреждений;
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - инструментальный контроль характеристик материалов основных несущих конструкций и их элементов;
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - контроль изменения параметров эксплуатационной среды, присущей технологическому процессу в здании и сооружении (при необходимости);
-</span><span style="font-size: 12pt; color: #000000;">
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp; &nbsp;- анализ динамики изменения технического состояния конструкций.
-</span><br><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - составление промежуточных документов&nbsp; с указанием результатов полученных в ходе проведения мониторинга;
-</span><br><span style="font-size: 12pt; color: #000000;">
-</span><span style="font-size: 12pt; color: #000000;">
-</span><span style="font-size: 12pt; color: #000000;">
-	 &nbsp;&nbsp; - составление итогового документа о результатах проведенного мониторинга;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style=""><span style="color: #000000; font-size: 12pt;">- разработка рекомендаций по устранению выявленных дефектов, повреждений и недостатков выявленных в результате проведенного мониторинга (при необходимости).</span>
-</span></p><p style="text-align: center;"><br><span style="font-size: 12pt;">
-</span><br><span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Сроки проведения мониторинга&nbsp;</span></b></span></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style=""><span style="color: #000000; font-size: 12pt;">В зависимости от поставленных задач, специфики объекта, объема работ, а также места расположения объекта мониторинг, как правило, длиться от 3-х до 24-х месяцев.&nbsp;</span><br></span><span style=""><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; </span><span style="color: #000000; font-size: 12pt;">Точно установить продолжительность мониторинга можно только после получения исходных данных.&nbsp;</span></span></p><p style="text-align: left;"><span style=""><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; </span><span style="color: #000000; font-size: 12pt;">Узнать сроки выполнения работ можно следующими способами:
-</span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- в режиме online в разделе </span><span style="font-size: 12pt;"><a href="/what-we-do/monitoring/calculator/"><u><span style="color: #0000ff;"><b><span style="color: #0054a5; font-size: 13pt;">«Online определение стоимости и сроков проведения мониторинга»</span></b></span></u></a><span style="color: #0000ff;">;
-</span></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- сделать запрос на выполнение обследования в разделе </span><a href="/what-we-do/#modal=request-monitoring"><span style="font-size: 12pt;"><span style="color: #0000ff;"><u><b><span style="color: #0054a5; font-size: 13pt;">«Заявка на проведение мониторинга»</span></b></u>;
-</span></span></a><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- связавшись с нашими специалистами по телефонам: </span><span style="font-size: 12pt;"><b><span style="color: #0054a5; font-size: 13pt;">+7 (495) 641-70-69</span></b>;
-</span><span style="font-size: 12pt;"><b><span style="color: #0054a5; font-size: 13pt;">+7 (499) 340-34-71</span></b>;
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- сделать запрос по эл.почте: </span><span style="font-size: 12pt;"><a href="mailto:6417069@bk.ru"><b><span style="color: #0054a5; font-size: 13pt;">6417069@bk.ru</span></b></a></span><span style=""><span style="font-size: 12pt;">, </span><span style="color: #000000; font-size: 12pt;">другой адрес</span><span style="font-size: 12pt;">.</span></span><span style="font-size: 12pt;"><span style="color: #0000ff;">
-</span></span></p><p style="text-align: center;"><span style="font-size: 12pt;"><br></span><span style="font-size: 12pt;">
-</span><br><span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Что Вы получите в результате проведенного мониторинга
-</span></b></span><br><span style="font-size: 12pt;">
-	 </span></p><p style="text-align: left;"><span style=""><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;"> &nbsp;В результате проведенного мониторинга составляются промежуточные ОТЧЕТЫ и разрабатывается окончательное ЗАКЛЮЧЕНИЕ&nbsp; выполненный по форме установленной ГОСТ 31937-2011 </span><span style="color: #000000; font-size: 12pt;">Приложения Б, В.</span><span style="color: #000000; font-size: 12pt;">
-</span></span><br><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style=""><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">Подробно ознакомиться с вариантами выполнения отчетов и заключений можно в разделе </span><a href="<?= Iblock::sectionUrl(450) ?>"><b><span style="color: #0054a5;"><u><span style="color: #0054a5; font-size: 13pt;">«Примеры выполненных работ. </span></u></span></b></a></span><span style="color: #000000;"><b><span style="color: #0054a5;"><u><span style="color: #0054a5; font-size: 13pt;">Примеры отчетов и заключений по результатам выполненного мониторинга технического состояния зданий и сооружений»</span></u></span></b></span><span style="color: #000000;">.</span></span></p><p style="text-align: center;"><span style="font-size: 12pt;">
-</span><br><span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Для чего Вам необходимы результаты проведенного мониторинга
-</span></b></span><br></p><p style="text-align: left;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Результаты проведенного мониторинга необходимы:
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- для предоставления исходных данных проектировщикам при реконструкции, капитальном ремонте, изменении функционального назначения здания или сооружения, техническом перевооружении;
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- для установления и документального подтверждения изменения технического состояния здания или сооружения с течением времени, с целью определения возможности дальнейшей безаварийной эксплуатации, а также планирования мероприятий по предотвращению аварийных ситуаций.</span></p><p style="text-align: left;"><span style="font-size: 12pt;"><br></span></p><p style="text-align: center;"><span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Срок действия результатов проведенного мониторинга</span></b><span style="font-size: 24pt; color: #0054a5;">
-</span></span><br></p><p style="text-align: left;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Срок действия результатов проведенного мониторинга зависит от целей его проведения, а именно:
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- если мониторинг выполнен с целью сбора исходных данных для проектирования;
-</span><br><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- если мониторинг выполнен с целью установления состояния конструкций зданий и сооружений.&nbsp;</span></p><p style="text-align: left;"><span style="color: #0054a5;"><span style="font-size: 13pt;">&nbsp; </span><span style="color: #0072bc; font-size: 13pt;">&nbsp; &nbsp;&nbsp;</span></span><b style=""><span style="color: #0054a5; font-size: 13pt;">Срок действия результатов полученных с целью сбора исходных данных для проектирования
-</span></b><br><span style="">
-	 <span style="color: #000000; font-size: 12pt;">&nbsp;</span></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp; Если мониторинг проведен с целью сбора исходных данных для проектирования (при реконструкции, капитальном ремонте, изменении технологического назначения здания&nbsp;</span><span style=""><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">и пр.), то полученные результаты являются частью проектной документации (поскольку относятся к инженерным изысканиям). Следовательно, срок действия результатов проведенного мониторинга устанавливается нормативными документами относящимися к проектной документации.&nbsp;</span><br></span></span><span style=""><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; К нормативным документам устанавливающим срок действия проектной документации относятся:&nbsp;</span><br></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- </span><span style="color: #000000; font-size: 12pt;">ВСН 58-88(р) «Положение об организации и проведении реконструкции, ремонта и технического обслуживания зданий, объектов коммунального и социально-культурного назначения», </span><span style=""><span style="color: #000000; font-size: 12pt;">п.5.10.;</span><br></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- МГСН 301.01-96 «Положение по организации капитального ремонта жилых зданий в г.Москве», </span><span style="color: #000000; font-size: 12pt;">п.4.3.</span><span style="color: #000000; font-size: 12pt;"> (действует только по г.Москва).</span></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style=""><span style="color: #000000; font-size: 12pt;">В соответствии с ВСН 58-88(р) </span><span style="color: #000000; font-size: 12pt;">п.5.10</span><span style="color: #000000; font-size: 12pt;">:</span><span style="color: #000000; font-size: 12pt;"> </span><i><span style="color: #000000; font-size: 12pt;">«Интервал времени между утверждением проектно-сметной документации и началом ремонтно-строительных работ </span><b><span style="color: #000000; font-size: 12pt;">н</span></b><b><span style="color: #000000; font-size: 12pt;">е должен превышать 2 лет</span></b><span style="color: #000000; font-size: 12pt;">. Устаревшие проекты должны перерабатываться проектными организациями по заданиям заказчиков с целью доведения их технического уровня до современных требований и переутверждаться в порядке, установленном для утверждения вновь разработанных проектов.».
-</span></i></span><br><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Из выше сказанного следует что, в случае если утвержденная (получившая положительное заключение экспертизы) проектно-сметная документация в течение 2 лет не была использована по назначению, ее необходимо заново согласовывать в установленном порядке. При этом необходимо учесть изменения состояния здания или сооружения касающиеся, также, инженерных изысканий (в том числе результатов обследования) и проектных решений которые могли произойти за 2 года. В случае отсутствия изменений состояния здания или сооружения, проект (в том числе результатов обследования) без существенных правок выпускается под новой датой.
-</span><br><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style=""><span style="color: #000000; font-size: 12pt;">В соответствии с МГСН 301.01-96</span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">п.4.3:</span><span style="color: #000000; font-size: 12pt;"> </span><i><span style="color: #000000; font-size: 12pt;">«Вместе с заданием на проектирование комплексного капитального ремонта с перепланировкой (встройкой, пристройкой, надстройкой, устройством мансардных этажей) заказчик выдает проектной организации: - инвентаризационные поэтажные планы (в кальке) с указанием площадей помещений и объема здания по данным бюро технической инвентаризации (БТИ), проведенной </span><b><span style="color: #000000; font-size: 12pt;">не позднее 3-х лет до начала проектирования;»</span></b><span style="color: #000000; font-size: 12pt;">.
-</span></i></span><br><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Из выше сказанного следует что, если планы БТИ выполнены позднее 3-х лет до начала проектирования, то необходимо заново проводить обмерочные работы. (следует также учесть что, МГСН 301.01-96 действует только по г.Москва).&nbsp;</span></p><p style="text-align: left;"><span style="font-size: 12pt;">
-</span><br><span style="color: #0054a5;"><span style="font-size: 13pt;">&nbsp; </span><span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp;</span><span style="font-size: 13pt; color: #0054a5;">&nbsp;</span></span><b style=""><span style="color: #0054a5; font-size: 13pt;">С</span></b><b style=""><span style="color: #0054a5; font-size: 13pt;">рок действия результатов полученных для установления фактического состояния здания или сооружения
-</span></b><br><span style=""><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Основным нормативным документом, регламентирующим работы по обследованию и мониторингу, а также срок действия результатов обследования или мониторинга зданий или сооружений, является ГОСТ 31937-2011 </span><span style="color: #000000; font-size: 12pt;">п.4.3-4.4,</span><span style="color: #000000; font-size: 12pt;"> в соответствии с которым:&nbsp;</span></span></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><i style="font-size: 12pt;"><span style="color: #000000; font-size: 12pt;">«4.3 </span><b><span style="color: #000000; font-size: 12pt;">Первое обследование технического состояния зданий и сооружений проводится не позднее чем через два года после их ввода в эксплуатацию.</span></b><span style="color: #000000; font-size: 12pt;"> В дальнейшем обследование технического состояния зданий и сооружений проводится </span><b><span style="color: #000000; font-size: 12pt;">не&nbsp;реже одного раза в 10 лет и не реже одного раза в пять лет для зданий и сооружений или их отдельных элементов, работающих в неблагоприятных условиях</span></b><span style="color: #000000; font-size: 12pt;"> (агрессивные среды, вибрации, повышенная влажность, сейсмичность района 7 баллов и более и др.). Для уникальных зданий и сооружений устанавливается постоянный режим мониторинга.</span></i><br><span style="color: #000000; font-size: 12pt;">
-</span><span style="color: #000000; font-size: 12pt;">
-</span><span style=""><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;</span><i><span style="color: #000000; font-size: 12pt;"> 4.4 Обследование и мониторинг технического состояния зданий и сооружений проводят также:
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по истечении нормативных сроков эксплуатации зданий и сооружений;
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - при обнаружении значительных дефектов, повреждений и деформаций в процессе технического обслуживания, осуществляемого собственником здания (сооружения);
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по результатам последствий пожаров, стихийных бедствий, аварий, связанных с разрушением здания (сооружения);
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по инициативе собственника объекта;
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - при изменении технологического назначения здания (сооружения);
-</span></i></span><span style=""><i><span style="color: #000000; font-size: 12pt;">
-</span></i></span><br><span style=""><i><span style="color: #000000; font-size: 12pt;">
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по предписанию органов, уполномоченных на ведение государственного строительного надзора.»
-</span></i></span><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">
-	&nbsp;
-</span><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style=""><span style="color: #000000; font-size: 12pt;">Здания и сооружения эксплуатирующиеся более 2-х лет подлежат обязательному обследованию или мониторингу через 10 лет (через 5 лет для зданий и сооружений работающих в неблагоприятных условиях). Также, возможно проведение обследования или мониторинг раньше установленных сроков в случаях перечисленных выше в </span><span style="color: #000000; font-size: 12pt;">п.4.4</span><span style="color: #000000; font-size: 12pt;">. ГОСТ 31937-2011.</span></span></p><p style="text-align: left;"><span style="font-size: 12pt;"><br></span></p><p></p><p></p><p></p><p></p><p></p><span style="color: #000000; font-size: 12pt;"><b><span style="font-size: 15pt;"><p style="text-align: center;"><span style="font-size: 24pt; color: #0054a5;">В каких случаях Вам лучше провести обследование конструкций, помещений, зданий,
-сооружений, инженерных сетей и оборудования</span></p></span></b></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; При
-проведении обследования конструкций, зданий, сооружений, инженерных сетей и
-оборудования оценивается возможность дальнейшей безаварийной эксплуатации
-зданий, сооружений, отдельных элементов и инженерных сетей, устанавливается
-техническое состояние и несущая способность ключевых несущих конструкций.
-Производится сбор исходных данных для технических специалистов, с
-целью принятия, на основании этих данных, решения о необходимости проведения
-ремонта, выполнения реконструкции или сноса. <br></span><span style="color: #000000; font-size: 12pt;">
-
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Обследование
-проводится единовременно. Выводы, сделанные по результатам выполненного обследования,
-учитывают данные полученные на даты выполнения полевых работ.</span><span style="color: #000000; font-size: 12pt;">
-
-<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Обследование
-помещений, зданий, сооружений, инженерных сетей и оборудования рекомендуется
-выполнять в следующих случаях:</span><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. При
-реконструкции или капитальном ремонте, с целью сбора исходных данных для
-проектирования зданий, сооружений, инженерных сетей и оборудования;</span><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. При
-необходимости оценки возможности дальнейшей безаварийной эксплуатации зданий,
-сооружений, инженерных сетей и оборудования, определения необходимости восстановления,
-усиления, и пр.;</span><span style="color: #000000; font-size: 12pt;">
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3. В случаях
-наличия значительного износа и, связанных с ним, повреждений, прогибов и прочих
-дефектов и недостатков зданий, сооружений, инженерных сетей и оборудования;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;4. В случаях расположения зданий, сооружений, инженерных
-сетей и оборудования в зоне влияния строек и природно-техногенных воздействий, с
-целью установления возможности дальнейшей безопасной эксплуатации;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;5. Для осуществления контроля за состоянием
-конструкций, в том числе высотных и большепролетных зданий и сооружений, с
-целью предотвращения катастроф и обрушений;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;6. В случае истечения нормативных сроков
-эксплуатации зданий, сооружений, инженерных сетей и оборудования с целью
-определения возможности дальнейшей эксплуатации;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;7. При изменении технологического назначения
-зданий, сооружений, инженерных сетей и оборудования, с целью установления
-допустимости эксплуатации в изменившихся условиях;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;8. При отсутствии проектно-технической и
-исполнительной документации на здания, сооружения, инженерные сети и
-оборудование;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;9. В случае
-возобновления прерванного строительства при выполнении консервации, при
-отсутствии консервации или по истечении трех лет после прекращения
-строительства зданий, сооружений, инженерных сетей и оборудования;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;10. При
-выявлении деформаций грунтовых оснований зданий, сооружений <br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Подробно ознакомиться
-с полным комплексом работ выполняемых в состав</span><span style="color: #000000; font-size: 12pt;">е обследования можно в разделе <span style="color: #0000ff;"><a href="/what-we-do/inspection/"><u><span style="color: #0072bc;"><b><span style="font-size: 13pt; color: #0054a5;">«Обследование конструкций, помещений, зданий,
-сооружений, инженерных сетей и оборудования»</span></b></span></u></a>. <br></span></span><span style="color: #000000; font-size: 12pt;"><br></span><br><span style="color: #000000;"><p style="text-align: center;"><b><span style="color: #0054a5; font-size: 24pt;">В каких случаях Вам лучше провести строительно-техническую экспертизу
-конструкций зданий, сооружений, помещений, инженерных сетей и оборудования.
-Судебную экспертизу.</span></b></p><p style="text-align: left;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; В отличие
-мониторинга, при проведении строительно-технической экспертизы состояние зданий
-и сооружений, дефекты, повреждения и недостатки рассматриваются, прежде всего,
-с позиции нарушения требований действующих нормативно-правовых документов.
-Экспертиза проводится единовременно. Выводы, сделанные по результатам проведенной
-экспертизы, учитывают данные полученные на даты выполнения полевых работ.</span></p></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;&nbsp;&nbsp; При
-проведении экспертизы выявленный дефект или недостаток считается таковым и
-описывается только в том случае если нарушает требования строительных норм или
-законодательных актов. <br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;&nbsp;&nbsp; Строительно-техническую экспертизу рекомендуется выполнять в следующих
-случаях:</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. Установление технического состояния здания или
-сооружения с целью получения средств на ремонтно-восстановительные мероприятия
-(в т.ч. для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. Установление
-причин возникновения повреждений, дефектов и недостатков с целью взыскать
-средства с лиц виновных в их возникновении (в т.ч. для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">3. Признание
-здания или сооружения не пригодным к эксплуатации и представляющим опасность
-для жизни и здоровья людей (в т.ч. для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">4. С цель
-получения обоснования необходимости сноса здания или сооружения (в т.ч. для
-суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5. При вводе
-здания или сооружения в эксплуатацию через суд;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;6.
-Установление технического состояния здания или сооружения с целью взыскать
-средства с лиц виновных в ухудшении эксплуатационных характеристик здания или
-сооружения (в т.ч. для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;7.
-Установление качества выполненных работ (в т.ч. для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;8.
-Установление объема качественно (не качественно) выполненных работ (в т.ч. для
-суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;9.
-Установление стоимости фактически выполненных (не выполненных) работ (в т.ч.
-для суда);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;10.
-Установление стоимости качественно (не качественно) выполненных работ (в т.ч.
-для суда.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;Подробно
-ознакомиться с полным комплексом работ выполняемых в составе
-строительно-технической экспертизы можно в разделе <a href="/what-we-do/examination/"><u><span style="color: #0072bc;"><b><span style="font-size: 13pt; color: #0054a5;">«Строительно-техническая
-экспертиза конструкций, зданий, сооружений, помещений, инженерных сетей и
-оборудования»</span></b></span></u></a>.<br></span><span style="color: #000000; font-size: 12pt;"><br></span><p style="text-align: center;"><br><span style="color: #000000; font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">В каких случаях Вам лучше Выполнить отдельные виды работ по экспертизе и
-обследованию, или провести экспертизу отдельных материалов, деталей, изделий,
-конструкций, элементов конструкций и пр.</span></b></span></p><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Выполнение
-отдельных видов работ по экспертизе и обследованию производятся в случаях,
-когда необходимо зафиксировать отдельные данные и установить отдельные
-параметры строительных конструкций зданий и сооружений, инженерных сетей и
-оборудования. <br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; В результате
-проведенных работ фиксируются фактические данные и устанавливаются фактические
-параметры строительных конструкций зданий и сооружений, инженерных сетей и
-оборудования, а также определяется соответствие зафиксированных данных и
-установленных параметров требованиям договорной,&nbsp;</span><span style="color: #000000; font-size: 12pt;">проектной, исполнительной, нормативной документации и
-пр.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; В формате
-данных работ заказчик самостоятельно устанавливает объем и их состав исходя из
-своих потребностей. При этом, стоимость зависит только от перечня выполняемых
-работ без учета размеров здания или сооружения, размеров и типа обследуемых
-конструкций, количества инженерных сетей и оборудования.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Обследование
-или экспертиза проводится единовременно. Выводы, сделанные по результатам
-выполненного обследования или проведенной экспертизы, учитывают данные
-полученные на даты выполнения полевых работ.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Отдельные
-виды работ по обследованию и экспертизе следует выполнять в следующих случаях:</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. При
-необходимости установить степень уплотнения естественных грунтов основания, а
-также насыпных грунтов;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. При
-необходимости установить прочность бетона, определить его класс и марку, определить
-прочность кирпича, раствора и пр.;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3.&nbsp;При
-необходимости установления марки стали;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;4. При
-необходимости определения качества выполнения сварных швов;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5.&nbsp;При
-необходимости установления усилия затяжки гаек болтовых соединений;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;6.&nbsp;При
-необходимости установления величины термического сопротивления ограждающих
-конструкций (стен, кровли и пр.);</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;7.&nbsp;При
-необходимости установления соответствия уровня шума нормативным параметрам;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;8.&nbsp;При
-необходимости определения величины влажности материалов;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;9.&nbsp;При
-необходимости выявить участки ограждающих конструкций, через которые происходят
-теплопотери;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;10. При
-необходимости определить и зафиксировать температуру теплоносителя в системе
-отопления или температуру воды в системе водоснабжения.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Экспертиза и обследование отдельных материалов,
-деталей, изделий, узлов, конструкций, элементов конструкций и пр. производится
-в случаях, когда необходимо установить их техническое состояния, качество
-изготовления (выявить брак или подделку), качество монтажа и причины разрушения
-(повреждения). При этом, для выполнения экспертизы или обследования не
-требуется учитывать влияние размеров, объемно-планировочных решений,
-конструктивных и технических особенностей здания или сооружения, конструктивной
-схемы и особенности инженерных сетей и оборудования здания или сооружения.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; При выполнении экспертизы и обследования в
-данном формате объем работ устанавливается заказчиком, а стоимость работ
-зависит только от количества обследуемых объектов (как правило количество
-штук), без учета размеров здания или сооружения, объемно-планировочных и
-конструктивных особенностей здания или сооружения, количества и технических
-особенностей инженерных сетей и (или) оборудования.<br></span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Экспертиза и обследование отдельных
-материалов, деталей, изделий, узлов, конструкций, элементов конструкций и пр.
-производится в следующих случаях:</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. При
-необходимости установить техническое состояние или качество выполнения
-отдельного оборудования, отдельной конструкции, материала, изделия, детали и
-пр.;</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. При
-необходимости установить причины повреждения, разрушения и пр. отдельной
-детали, изделия и пр.;<br></span>&nbsp; &nbsp;3<span style="color: #000000; font-size: 12pt;">.&nbsp;При
-необходимости установить и зафиксировать брак или подделку изделия, детали,
-материала и пр.</span><span style="color: #000000; font-size: 12pt;">
-
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="color: #000000; font-size: 12pt;">
-
-</span><br><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Подробно ознакомиться
-с полным комплексом работ производимых в составе выполнения отдельных видов
-работ по экспертизе и обследованию можно в разделе<span style="color: #0000ff;"> </span><a href="/what-we-do/individual/"><u><span style="color: #0000ff;"><b><span style="color: #0054a5; font-size: 13pt;">«Выполнение
-отдельных видов работ по экспертизе и обследованию. Экспертиза отдельных
-материалов, деталей, изделий, конструкций, элементов конструкций и пр.»</span></b></span></u></a><span style="color: #0000ff;">.</span></span><p></p><p>
+ <span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">Какие нормативно-правовые документы регулируют деятельность организаций выполняющих мониторинг</span></b></span>
+</p>
+<p style="text-align: center;">
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p style="text-align: left;">
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: left;">
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">Основн</span><span style="color: #000000; font-size: 12pt;">ыми нормативно-правовыми документами регулирующими деятельность организаций выполняющих мониторинг являются: </span></span><br>
+ <span style="color: #000000;"><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">1. Приказ Министерства регионального развития РФ от 30 декабря 2009 г. N 624, </span></span><span style="color: #000000; font-size: 12pt;">раздел 2, п. 12; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">
+	&nbsp; </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">
+	&nbsp;2. Градостроительный кодекс РФ от 29 декабря 2004 г. № 190-ФЗФ,</span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">статья 47, п.2; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3. СП 13-102-2003 «Правила обследования несущих строительных конструкций зданий и сооружений», </span><span style="color: #000000; font-size: 12pt;">п. 4, п.п. 4.1.;</span></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">&nbsp; </span><span style="color: #000000;"><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">&nbsp;4. ГОСТ 31937-2011 «Здания и сооружения. Правила обследования и мониторинга технического состоя</span><span style="color: #000000; font-size: 12pt;">ния»,</span></span><span style="color: #000000; font-size: 12pt;"> п. 4, п.п. 4.1.</span></span>
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 12pt; color: #000000;"><span style="color: #0000ff;"><u> </u></span></span>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p style="text-align: center;">
+</p>
+<p>
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+ <br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;"><b><span style="font-size: 24pt; color: #0054a5;">В каких случаях Вам необходим мониторинг </span></b></span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Мониторинг проводится в следующих случаях: </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">1. При реконструкции или капитальном ремонте, с целью сбора исходных данных для проектирования зданий и сооружений; </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;2. При необходимости оценки возможности дальнейшей безаварийной эксплуатации зданий и сооружений, определения необходимости восстановления, усиления, и пр.; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">3. В случаях наличия значительного износа и, связанных с ним, повреждений, прогибов и прочих дефектов и недостатков зданий, сооружений; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">4. В случаях расположения зданий и сооружений в зоне влияния строек и природно-техногенных воздействий, с целью установления возможности дальнейшей безопасной эксплуатации; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">5. Для определения фактического состояния зданий и сооружений уже официально отнесенных к ограниченно работоспособному или аварийному состоянию; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">6. Для осуществления контроля за состоянием конструкций, в том числе высотных и большепролетных зданий и сооружений, с целью предотвращения катастроф и обрушений; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">7. При изменении технологического назначения зданий и сооружений с целью установления допустимости эксплуатации в изменившихся условиях; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">8. При обнаружении, в процессе технического обслуживания зданий и сооружений, значительных дефектов, повреждений и деформаций несвязанных с физическим износом; </span><br>
+ <span style="color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">9. С целью оценки степени воздействия пожаров, стихийных бедствий и аварий на эксплуатационные характеристики зданий и сооружений; </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="color: #000000;"> <span style="color: #000000; font-size: 12pt;">&nbsp; </span></span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">&nbsp;</span><span style="text-align: center; color: #000000; font-size: 12pt;">10. При выявлении деформаций грунтовых оснований зданий, сооружений;<br>
+ </span><span style="text-align: center;"><span style="font-size: 12pt;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;и пр.</span></span>
+</p>
+<p>
+</p>
+<p style="text-align: left;">
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+ <b><span style="font-size: 24pt; color: #0054a5;">Задачи мониторинга</span></b>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<p>
+</p>
+<div>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; В зависимости от поставленной цели, в задачи мониторинга может входит: </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;1. Выявление наличия и развития недостатков, дефектов и повреждений в конструкциях зданий и сооружений с течением времени; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;2. Контроль за развитием недостатков, дефектов и повреждений строительных конструкций зданий и сооружений в течении времени; &nbsp;</span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;3. Установление влияния внешних и внутренних факторов и воздействий на появление и развитие недостатков, дефектов и повреждений в конструкциях зданий и сооружений; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;4. Установление влияния и воздействия выявленных недостатков, дефектов и повреждений на эксплуатационные характеристики зданий и сооружений в течении времени; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;5. Контроль изменений физико-механических характеристик конструкций и материалов (прочность, твердость, плотность, влажность, водопроницаемость и пр.) в течении времени; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;6. Контроль за изменением технического состояния, развитием дефектов, повреждений и недостатков в зависимости от изменения фактических нагрузок и воздействий воспринимаемых строительными конструкциями; &nbsp; &nbsp;&nbsp;</span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;7. Выдача рекомендаций по устранению выявленных дефектов, повреждений и недостатков, а также по дальнейшей эксплуатации зданий и сооружений;<br>
+ </span><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; &nbsp;и пр.</span><br>
+ <br>
+</div>
+<p style="text-align: center;">
+ <span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Этапы проведения мониторинга</span></b></span>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Мониторинг строительных конструкций, зданий и сооружений проводится, как правило, в несколько связанных между собой этапов:</span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- подготовительные работы; </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- визуальное и инструментальное обследование перед началом мониторинга; </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- монтажные работы; </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- мониторинг. </span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="font-size: 12pt; color: #000000;">Последовательность действий и состав работ на каждом этапе включает: </span><br>
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b style="font-size: 12pt;"><span style="color: #0054a5; font-size: 13pt;">1. Подготовительные работы:</span><span style="color: #0054a5;">&nbsp;</span><br>
+ </b><span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- ознакомление с объектом мониторинга, его объемно-планировочным и конструктивными решениями, материалами инженерно-геологических изысканий и пр.:&nbsp;</span><br>
+ </span><span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- подбор и анализ проектно-технической документации;&nbsp;</span><br>
+ </span><span style="color: #000000;"><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;- составление программы работ (при необходимости) на основе полученного от заказчика технического задания. Техническое задание разрабатывается заказчиком или проектной организацией и, возможно, с участием исполнителя обследования.&nbsp; </span><span style="color: #000000; font-size: 12pt;">&nbsp;&nbsp;</span></span>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="color: #0054a5;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b><span style="color: #0054a5; font-size: 13pt;">2. Визуальное и инструментальное обследование перед началом мониторинга: </span></b><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- инструментальное определение контрольных параметров, выявление недостатков, &nbsp;дефектов и повреждений; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактических прочностных характеристик материалов основных несущих конструкций и их элементов; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- измерение параметров эксплуатационной среды, присущей технологическому&nbsp;</span><span style="color: #000000; font-size: 12pt;">процессу в здании и сооружении; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактических эксплуатационных нагрузок и воздействий, воспринимаемых обследуемыми конструкциями с учетом влияния деформаций грунтового основания; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение фактической расчетной схемы здания и его отдельных конструкций; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- определение расчетных усилий в несущих конструкциях, воспринимающих эксплуатационные нагрузки; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- расчет несущей способности конструкций по результатам обследования; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- камеральная обработка и анализ результатов обследования и поверочных расчетов; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- анализ причин появления дефектов, повреждений и недостатков; </span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Некоторые из перечисленных работ могут исключаться или добавляться в программу мониторинга в зависимости от специфики объекта мониторинга, его состояния и задач, определенных техническим заданием. </span><br>
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b><span style="color: #0054a5; font-size: 13pt;">3. Монтажные работы:</span></b><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;Установка контрольно-измерительного оборудования для ведения мониторинга на выбранных участках. </span><br>
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><b><span style="color: #0054a5; font-size: 13pt;">4. Мониторинг: </span></b><br>
+ <span style="font-size: 12pt;"> <span style="color: #000000;">&nbsp;&nbsp;</span></span><span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;"> Систематический к</span><span style="font-size: 12pt; color: #000000;">онтроль состояния строительных конструкций, а также замеры и снятие показаний с установленного контрольно-измерительного оборудования: </span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - контроль изменений геометрических параметров здания (зданий) или сооружения (сооружений), конструкций, элементов и узлов; </span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - визуальный и инструментальный контроль параметров выявленных дефектов и повреждений; </span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - инструментальный контроль характеристик материалов основных несущих конструкций и их элементов; </span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - контроль изменения параметров эксплуатационной среды, присущей технологическому процессу в здании и сооружении (при необходимости); </span><span style="font-size: 12pt; color: #000000;"> </span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp; &nbsp;- анализ динамики изменения технического состояния конструкций</span><span style="font-size: 13pt; color: #000000;">;</span><br>
+ <span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - составление промежуточных документов&nbsp; с указанием результатов полученных в ходе проведения мониторинга; </span><br>
+ <span style="font-size: 12pt; color: #000000;"> </span><span style="font-size: 12pt; color: #000000;"> </span><span style="font-size: 12pt; color: #000000;">
+	&nbsp;&nbsp; - составление итогового документа о результатах проведенного мониторинга; </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span><span style="color: #000000; font-size: 12pt;">- разработка рекомендаций по устранению выявленных дефектов, повреждений и недостатков выявленных в результате проведенного мониторинга (при необходимости).</span> </span>
+</p>
+<p style="text-align: center;">
+ <br>
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Сроки проведения мониторинга&nbsp;</span></b></span>
+</p>
+<p style="text-align: left;">
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span><span style="color: #000000; font-size: 12pt;">В зависимости от поставленных задач, специфики объекта, объема работ, а также места расположения объекта, мониторинг, как правило, длиться от 3-х до 24-х месяцев.&nbsp;</span><br>
+ </span><span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; </span><span style="color: #000000; font-size: 12pt;">Точно установить продолжительность мониторинга можно только после получения исходных данных.&nbsp;</span></span>
+</p>
+<p style="text-align: left;">
+ <span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; </span><span style="color: #000000; font-size: 12pt;">Узнать сроки выполнения работ можно следующими способами: </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- в режиме online в разделе </span><span style="font-size: 12pt;"><a href="/what-we-do/monitoring/calculator/"><u><span style="color: #0000ff;"><b><span style="color: #0054a5; font-size: 13pt;">«Online определение стоимости и сроков проведения мониторинга»</span></b></span></u></a><span style="color: #0000ff;">; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- сделать запрос на выполнение обследования в разделе </span><a href="/what-we-do/#modal=request-monitoring"><span style="font-size: 12pt;"><span style="color: #0000ff;"><u><b><span style="color: #0054a5; font-size: 13pt;">«Заявка на проведение мониторинга»</span></b></u>; </span></span></a><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- связавшись с нашими специалистами по телефонам:<span style="color: #000000;"> </span></span><span style="font-size: 12pt;"><b><span style="color: #000000; font-size: 13pt;">+7 (495) 641-70-69</span></b><span style="color: #000000;">; </span></span><span style="font-size: 12pt;"><b><span style="color: #000000; font-size: 13pt;">+7 (499) 340-34-73</span></b><span style="color: #000000;">; </span></span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- сделать запрос по эл.почте: </span><span style="font-size: 12pt;"><a href="mailto:6417069@bk.ru"><b><span style="color: #0054a5; font-size: 13pt;"><u>6417069@bk.ru</u></span></b></a></span><span><span style="font-size: 12pt;">, </span><span style="color: #000000; font-size: 12pt;">другой адрес</span><span style="font-size: 12pt;">.</span></span><span style="font-size: 12pt;"><span style="color: #0000ff;"> </span></span>
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 12pt;"><br>
+ </span><span style="font-size: 12pt;"> </span><br>
+ <span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Что Вы получите в результате проведенного мониторинга </span></b></span><br>
+ <span style="font-size: 12pt;"> </span>
+</p>
+<p style="text-align: left;">
+ <span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;"> &nbsp;В процессе ведения мониторинга составляются промежуточные ОТЧЕТЫ. По завершению мониторинга разрабатывается итоговое ЗАКЛЮЧЕНИЕ,&nbsp; выполненное&nbsp;по форме установленной ГОСТ 31937-2011 </span><span style="color: #000000; font-size: 12pt;">Приложения Б, В.</span><span style="color: #000000; font-size: 12pt;"> </span></span><br>
+ <br>
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Для чего Вам необходимы результаты проведенного мониторинга </span></b></span><br>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Результаты проведенного мониторинга необходимы: </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- для предоставления исходных данных проектировщикам при реконструкции, капитальном ремонте, изменении функционального назначения здания или сооружения, техническом перевооружении; </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- для установления и документального подтверждения изменения технического состояния здания или сооружения с течением времени, с целью определения возможности дальнейшей безаварийной эксплуатации, а также планирования мероприятий по предотвращению аварийных ситуаций.</span>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt;"><br>
+ </span>
+</p>
+<p style="text-align: center;">
+ <span style="font-size: 12pt;"><b><span style="font-size: 24pt; color: #0054a5;">Срок действия результатов проведенного мониторинга</span></b><span style="font-size: 24pt; color: #0054a5;"> </span></span><br>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp; &nbsp; Срок действия результатов проведенного мониторинга зависит от целей его проведения, а именно: </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- если мониторинг выполнен с целью сбора исходных данных для проектирования; </span><br>
+ <span style="font-size: 12pt; color: #000000;">&nbsp; &nbsp;</span><span style="font-size: 12pt; color: #000000;">- если мониторинг выполнен с целью установления состояния конструкций зданий и сооружений.&nbsp;</span>
+</p>
+<p style="text-align: left;">
+ <span style="color: #0054a5;"><span style="font-size: 13pt;">&nbsp; </span><span style="color: #0072bc; font-size: 13pt;">&nbsp; &nbsp;&nbsp;</span></span><b><span style="color: #0054a5; font-size: 13pt;">Срок действия результатов полученных с целью сбора исходных данных для проектирования </span></b><br>
+ <span> <span style="color: #000000; font-size: 12pt;">&nbsp;</span></span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><span style="color: #000000; font-size: 12pt;">&nbsp; Если мониторинг проведен с целью сбора исходных данных для проектирования (при реконструкции, капитальном ремонте, изменении технологического назначения здания&nbsp;</span><span style="color: #000000;"><span style="color: #000000; font-size: 12pt;">и пр.), то полученные результаты являются частью проектной документации (поскольку относятся к инженерным изысканиям). Следовательно, срок действия результатов проведенного мониторинга устанавливается нормативными документами относящимися к проектной документации.&nbsp;</span><br>
+ </span><span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; К нормативным документам устанавливающим срок действия проектной документации относятся:&nbsp;</span><br>
+ </span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- </span><span style="color: #000000; font-size: 12pt;">ВСН 58-88(р) «Положение об организации и проведении реконструкции, ремонта и технического обслуживания зданий, объектов коммунального и социально-культурного назначения», </span><span><span style="color: #000000; font-size: 12pt;">п.5.10.;</span><br>
+ </span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;- МГСН 301.01-96 «Положение по организации капитального ремонта жилых зданий в г.Москве», </span><span style="color: #000000; font-size: 12pt;">п.4.3.</span><span style="color: #000000; font-size: 12pt;"> (действует только по г.Москва).</span>
+</p>
+<p style="text-align: left;">
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span><span style="color: #000000; font-size: 12pt;">В соответствии с ВСН 58-88(р) </span><span style="color: #000000; font-size: 12pt;">п.5.10</span><span style="color: #000000; font-size: 12pt;">:</span><span style="color: #000000; font-size: 12pt;"> </span><i><span style="color: #000000; font-size: 12pt;">«Интервал времени между утверждением проектно-сметной документации и началом ремонтно-строительных работ </span><b><span style="color: #000000; font-size: 12pt;">н</span></b><b><span style="color: #000000; font-size: 12pt;">е должен превышать 2 лет</span></b><span style="color: #000000; font-size: 12pt;">. Устаревшие проекты должны перерабатываться проектными организациями по заданиям заказчиков с целью доведения их технического уровня до современных требований и переутверждаться в порядке, установленном для утверждения вновь разработанных проектов.». </span></i></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Из выше сказанного следует, что&nbsp;в случае, если утвержденная (получившая положительное заключение экспертизы) проектно-сметная документация в течение 2 лет не была использована по назначению, ее необходимо заново согласовывать в установленном порядке. При этом необходимо учесть изменения состояния здания или сооружения, которые могли произойти за 2 года, и внести соответствующие правки в проектную документацию в том числе касающиеся инженерных изысканий. В случае отсутствия изменений состояния здания или сооружения, проект (в том числе результатов обследования) без существенных правок выпускается под новой датой. </span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span><span style="color: #000000; font-size: 12pt;">В соответствии с МГСН 301.01-96</span><span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;">п.4.3:</span><span style="color: #000000; font-size: 12pt;"> </span><i><span style="color: #000000; font-size: 12pt;">«Вместе с заданием на проектирование комплексного капитального ремонта с перепланировкой (встройкой, пристройкой, надстройкой, устройством мансардных этажей) заказчик выдает проектной организации инвентаризационные поэтажные планы (в кальке) с указанием площадей помещений и объема здания по данным бюро технической инвентаризации (БТИ), проведенной </span><b><span style="color: #000000; font-size: 12pt;">не позднее 3-х лет до начала проектирования;»</span></b><span style="color: #000000; font-size: 12pt;">. </span></i></span><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #000000; font-size: 12pt;">Из выше сказанного следует, что&nbsp;если планы БТИ выполнены позднее 3-х лет от начала выполнения проектных работ, то необходимо заново проводить обмерочные работы. (МГСН 301.01-96 действует только по г. Москва).&nbsp;</span>
+</p>
+<p style="text-align: left;">
+ <span style="font-size: 12pt;"> </span><br>
+ <span style="color: #0054a5;"><span style="font-size: 13pt;">&nbsp; </span><span style="color: #0054a5; font-size: 13pt;">&nbsp; &nbsp;</span><span style="font-size: 13pt; color: #0054a5;">&nbsp;</span></span><b><span style="color: #0054a5; font-size: 13pt;">С</span></b><b><span style="color: #0054a5; font-size: 13pt;">рок действия результатов полученных для установления фактического состояния здания или сооружения </span></b><br>
+ <span><span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp; Основным нормативным документом, регламентирующим работы по обследованию и мониторингу, а также срок действия результатов обследования или мониторинга зданий или сооружений, является ГОСТ 31937-2011 </span><span style="color: #000000; font-size: 12pt;">п.4.3-4.4,</span><span style="color: #000000; font-size: 12pt;"> в соответствии с которым:&nbsp;</span></span>
+</p>
+<p style="text-align: left;">
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp;</span><i style="font-size: 12pt;"><span style="color: #000000; font-size: 12pt;">«4.3 </span><b><span style="color: #000000; font-size: 12pt;">Первое обследование технического состояния зданий и сооружений проводится не позднее чем через два года после их ввода в эксплуатацию.</span></b><span style="color: #000000; font-size: 12pt;"> В дальнейшем обследование технического состояния зданий и сооружений проводится </span><b><span style="color: #000000; font-size: 12pt;">не&nbsp;реже одного раза в 10 лет и не реже одного раза в пять лет для зданий и сооружений или их отдельных элементов, работающих в неблагоприятных условиях</span></b><span style="color: #000000; font-size: 12pt;"> (агрессивные среды, вибрации, повышенная влажность, сейсмичность района 7 баллов и более и др.). Для уникальных зданий и сооружений устанавливается постоянный режим мониторинга.</span></i><br>
+ <span style="color: #000000; font-size: 12pt;"> </span><span style="color: #000000; font-size: 12pt;"> </span><span><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;</span><i><span style="color: #000000; font-size: 12pt;"> 4.4 Обследование и мониторинг технического состояния зданий и сооружений проводят также: </span></i></span><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по истечении нормативных сроков эксплуатации зданий и сооружений; </span></i><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - при обнаружении значительных дефектов, повреждений и деформаций в процессе технического обслуживания, осуществляемого собственником здания (сооружения); </span></i><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по результатам последствий пожаров, стихийных бедствий, аварий, связанных с разрушением здания (сооружения); </span></i><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по инициативе собственника объекта; </span></i><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - при изменении технологического назначения здания (сооружения); </span></i><i><span style="color: #000000; font-size: 12pt;"> </span></i><br>
+ <i><span style="color: #000000; font-size: 12pt;">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - по предписанию органов, уполномоченных на ведение государственного строительного надзора.» </span></i><span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">
+	&nbsp; </span><span style="color: #000000; font-size: 12pt;"> </span><br>
+ <span style="color: #000000; font-size: 12pt;">&nbsp; &nbsp; &nbsp;&nbsp;</span><span><span style="color: #000000; font-size: 12pt;">Здания и сооружения эксплуатирующиеся более 2-х лет подлежат обязательному обследованию или мониторингу через 10 лет (через 5 лет для зданий и сооружений работающих в неблагоприятных условиях). Также, возможно проведение обследования или мониторинга раньше установленных сроков в случаях перечисленных выше в </span><span style="color: #000000; font-size: 12pt;">п.4.4</span><span style="color: #000000;"><span style="font-size: 12pt;">.<span style="color: #000000;"> <span style="font-size: 13pt; color: #000000;">ГОСТ 31937-2011.</span></span><br>
+ <br>
+ </span><br>
+ </span></span>
+</p>
+<p style="text-align: left;">
+</p>
+<p>
+ <i><span style="color: #0054a5;"><a href="/about/"><b><span style="font-size: 15pt; color: #0054a5;">ТЕХНИЧЕСКАЯ СТРОИТЕЛЬНАЯ ЭКСПЕРТИЗА</span></b></a></span></i><br>
+ <br>
+</p>
+<p>
+ <i><span style="color: #0054a5;"><a href="/what-we-do/monitoring/calculator/"><span style="font-size: 15pt; color: #0054a5;"><u><b>Узнать стоимость и сроки online</b></u></span></a></span></i><span style="font-size: 14pt;"><i>,&nbsp;а также по тел.: +7(495) 641-70-69;&nbsp;+7(499) 340-34-73; e-mail:&nbsp;</i></span><a href="mailto:6417069@bk.ru"><i><span style="color: #0000ff;"><u><span style="color: #0054a5;"><b><span style="font-size: 14pt; color: #0054a5;">6417069@bk.ru</span></b></span></u></span></i></a><br>
+ <br>
+ <br>
+</p>
+<p>
+ <br>
+</p>
+<p style="text-align: center;">
+ <i><span style="color: #0054a5;"><span style="font-size: 14pt; color: #0054a5;">Читайте также:</span></span></i><br>
+</p>
+<p style="text-align: center;">
+</p>
+<p style="text-align: center;">
+ <a href="/what-we-do/inspection/"><b><i><span style="color: #0054a5; font-size: 13pt;">Обследование конструкций, помещений, зданий, сооружений, инженерных сетей и оборудования.</span></i></b></a><br>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <a href="/what-we-do/examination/"><span style="color: #0054a5; font-size: 13pt;"><b><i>Строительно-техническая экспертиза конструкций, помещений, зданий, сооружений, помещений, инженерных сетей и оборудования. Судебная экспертиза.</i></b></span></a><br>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <a href="/what-we-do/individual/"><b><i><span style="color: #0054a5; font-size: 13pt;">Исследование конструкций и материалов. Экспертиза&nbsp;деталей, изделий, узлов,&nbsp;элементов&nbsp;и пр.</span></i></b></a><br>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+</p>
+ <span style="font-size: 13pt;"> </span><i><b><span style="color: #0054a5; font-size: 13pt;"> </span></b></i><span style="font-size: 13pt;"> </span>
+<p style="text-align: center;">
+ <i><span style="color: #0054a5;"><a href="/what-we-do/design/"><span style="font-size: 13pt; color: #0054a5;"><b>Разработка проектных решений</b></span></a></span></i><br>
+</p>
+<p>
+ <a href="http://expert-staging.i-market.ru/info-block/opinions/interesno/?bitrix_include_areas=Y#"></a>
+</p>
+<p>
+</p>
+<p>
 </p>
 <p align="center">
 </p>

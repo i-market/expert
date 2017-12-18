@@ -162,6 +162,8 @@ class App extends \Core\App {
                 return View::asset($path);
             }, [
                 'js/vendor/jquery.fancybox.min.js',
+                'js/vendor/jquery.easing-1.3.pack.js',
+                'js/vendor/jquery.mousewheel-3.0.4.pack.js',
                 'js/vendor/slick.js',
                 'js/vendor/tooltipster.bundle.min.js',
                 'js/vendor/core.js',

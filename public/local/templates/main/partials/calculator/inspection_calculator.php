@@ -69,6 +69,7 @@ $macros = new macros($state);
                             'min' => 0
                         ])
                     ]) ?>
+
                     <?= v::render('partials/calculator/fields/underground_floors', get_defined_vars()) ?>
                     <? $macros->showSelect('INSPECTION_GOAL', $options['INSPECTION_GOAL'], 'Цели обследования', ['required' => true]) ?>
                     <? $macros->showSelect('TRANSPORT_ACCESSIBILITY', $options['TRANSPORT_ACCESSIBILITY'], 'Транспортная доступность', ['required' => true]) ?>

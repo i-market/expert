@@ -3,10 +3,12 @@
 use App\View as v;
 
 // TODO refactor DRY. see bitrix:catalog `info_block_gallery` template.
+$limit = intVal($arParams["LIMIT"]) > 0 ? intVal($arParams["LIMIT"]) : 24;
 ?>
 <div class="grid">
-    <? foreach ($arResult['SECTIONS'] as $section): ?>
-        <? $pic = !v::isEmpty($section['PICTURE']) ? $section['PICTURE'] : $section['DETAIL_PICTURE'] ?>
+    <? foreach ($arResult['SECTIONS'] as $key=>$section):
+		if($key > ($limit - 1)) break;
+        $pic = !v::isEmpty($section['PICTURE']) ? $section['PICTURE'] : $section['DETAIL_PICTURE'] ?>
         <a class="item col col_4"
            href="<?= $section['SECTION_PAGE_URL'] ?>"
            id="<?= v::addEditingActions($section, $this) ?>">

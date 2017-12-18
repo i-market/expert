@@ -185,14 +185,16 @@ if (App::useBitrixAsset()) {
         )
     ); ?>
     <? $APPLICATION->IncludeComponent(
-        "bitrix:breadcrumb",
-        "top",
-        array(
-            "PATH" => "",
-            "SITE_ID" => App::SITE_ID,
-            "START_FROM" => "0"
-        )
-    ); ?>
+	"bitrix:breadcrumb", 
+	"top", 
+	array(
+		"PATH" => "",
+		"SITE_ID" => "s1",
+		"START_FROM" => "0",
+		"COMPONENT_TEMPLATE" => "top"
+	),
+	false
+); ?>
     <? $APPLICATION->AddBufferContent(function() use (&$APPLICATION, $showTopBannersFn) {
         ob_start();
         if ($showTopBannersFn()) {

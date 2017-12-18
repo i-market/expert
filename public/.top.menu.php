@@ -15,7 +15,7 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Наша деятельность", 
+		"Стоимость и сроки On-line", 
 		"/what-we-do/", 
 		Array(), 
 		Array(), 
@@ -37,7 +37,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Техническая база", 
-		"/equipment/",
+		"/equipment/", 
 		Array(), 
 		Array(), 
 		"" 

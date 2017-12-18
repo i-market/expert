@@ -1,6 +1,6 @@
 <?
-$sSectionName="Наша деятельность";
+$sSectionName = "Стоимость и сроки on-line";
 $arDirProperties = Array(
-    'banners_section_code' => 'what-we-do'
+   "BANNERS_SECTION_CODE" => "what-we-do"
 );
 ?>

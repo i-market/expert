@@ -6,6 +6,7 @@ use App\View as v;
     <? foreach ($arResult['ITEMS'] as $item): ?>
         <a href="<?= $item['DETAIL_PAGE_URL'] ?>" class="col col_3 item" id="<?= v::addEditingActions($item, $this) ?>">
             <div class="img" style="background: url('<?= $item['PREVIEW_PICTURE']['SRC'] ?>')no-repeat center center / cover"></div>
+            <div class="opinion-title"><?= $item['NAME'] ?></div>
             <div class="text"><?= $item['PREVIEW_TEXT'] ?></div>
         </a>
     <? endforeach ?>

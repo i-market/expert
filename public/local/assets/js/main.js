@@ -945,7 +945,7 @@ window.initRecaptcha = function($scope) {
         $goalsBlock.find('[data-goals-filter=6]').find('.group_goals_6:first-child').find('.wrap_checkbox').each(function(){
           $(this).addClass('disabled');
           $(this).find('input[type=checkbox]').attr('disabled', '').prop('checked', false);
-        });
+  });
 
         $goalsBlock.find('[data-goals-filter=6]').find('.wrap_checkbox:nth-child(10)').removeClass('disabled').find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
       }*/

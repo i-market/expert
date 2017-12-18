@@ -74,7 +74,7 @@ class InspectionParser extends Parser {
             ],
             [
                 'key' => 'TRANSPORT_ACCESSIBILITY',
-                'prefix' => 'Транспортная доуступность',
+                'prefix' => 'Транспортная доступность',
             ],
             [
                 'key' => 'DOCUMENTS',

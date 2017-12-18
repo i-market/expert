@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .color_blue {
     color: #005cb8
 }
@@ -928,12 +929,7 @@ input[type="number"] {
 }
 
 .big_btn:hover .text {
-    background: #005cb8;
-    color: #fff;
-}
-
-.big_btn .text span {
-    color: #fff;
+    background: #005cb8
 }
 
 .big_btn .text {
@@ -3289,8 +3285,7 @@ h4 {
     box-shadow: 4px 4px 0 0 #f0f0f0
 }
 
-.infoblock_news .item .text,
-.infoblock_news .item .text p {
+.infoblock_news .item .text, .infoblock_news .item .text p {
     font-size: 14px;
     line-height: 18px;
     -webkit-transition: .3s;
@@ -4938,40 +4933,51 @@ input[type="radio"]:checked + .radio_label:before {
 }
 
 .info-images-cont {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
-    margin: 20px 0;
+    margin: 20px 0
 }
 
 .info-img-cont {
-    padding: 10px;
+    padding: 10px
 }
 
 @media (min-width: 962px) {
     .info-img-cont {
-        width: 33.333%;
+        width: 33.333%
     }
+
     a.info-img-img {
-        height: 283px;
+        height: 283px
     }
 }
 
 @media (min-width: 768px) and (max-width: 961px) {
     .info-img-cont {
-        width: 50%;
+        width: 50%
     }
+
     a.info-img-img {
-        height: 250px;
+        height: 250px
     }
 }
 
 @media (max-width: 767px) {
     .info-img-cont {
-        width: 100%;
+        width: 100%
     }
+
     a.info-img-img {
-        height: 200px;
+        height: 200px
     }
 }
 
@@ -4981,8 +4987,9 @@ a.info-img-img {
     overflow: hidden;
     text-align: center;
     border: 3px solid #000;
-    box-shadow: 3px 3px 5px 0px rgba(153,153,153,1);
-    position: relative;
+    -webkit-box-shadow: 3px 3px 5px 0 #999;
+    box-shadow: 3px 3px 5px 0 #999;
+    position: relative
 }
 
 a.info-img-img::before {
@@ -4997,7 +5004,7 @@ a.info-img-img::before {
     -webkit-transition: .3s;
     transition: .3s;
     opacity: 0;
-    z-index: 1;
+    z-index: 1
 }
 
 a.info-img-img::after {
@@ -5014,40 +5021,39 @@ a.info-img-img::after {
     -webkit-transition: .3s;
     transition: .3s;
     opacity: 0;
-    z-index: 2;
+    z-index: 2
 }
 
-a.info-img-img:hover::before,
-a.info-img-img:hover::after {
-    opacity: 1;
+a.info-img-img:hover::before, a.info-img-img:hover::after {
+    opacity: 1
 }
 
 .info-img-img img {
-    /*max-width: calc(100% - 10px);
-    max-height: calc(100% - 10px);*/
     height: 100%;
     width: 100%;
     object-fit: cover;
-    object-position: center;
-
+    object-position: center
 }
+
 .info-img-title {
-    color: #000000;
+    color: #000;
     font-size: 14px;
     font-style: italic;
     font-weight: 600;
     text-align: center;
-    padding-top: 8px;
+    padding-top: 8px
 }
 
 .quote-block {
     border: 1px solid #dbdbdb;
     padding-left: 40px;
     position: relative;
+    -webkit-border-radius: 3px;
     border-radius: 3px;
     background: #deecfa;
-    margin: 20px 0;
+    margin: 20px 0
 }
+
 .quote-block::before {
     content: '';
     width: 23px;
@@ -5055,78 +5061,76 @@ a.info-img-img:hover::after {
     position: absolute;
     left: 5px;
     top: 50%;
-    -moz-transform: translate(0, -50%);
-    /* Для Firefox */
     -ms-transform: translate(0, -50%);
-    /* Для IE */
     -webkit-transform: translate(0, -50%);
-    /* Для Safari, Chrome, iOS */
-    -o-transform: translate(0, -50%);
-    /* Для Opera */
     transform: translate(0, -50%);
-    background: url('/images/star.png') no-repeat;
+    background: url("/images/star.png") no-repeat;
     background-size: 100% 100%;
-    background-position: center;
-}
-.quote-txt-cont {
-    padding: 10px 10px 10px 0;
-}
-.quote-txt-cont span {
-    font-size: 16px;
+    background-position: center
 }
 
-.opinion-detail-page div[class*="detail-section"],
-.opinion-detail-page div[class*="detail-section"] p
-{
-    font-size: 17px;
-    line-height: 1.35;
+.quote-txt-cont {
+    padding: 10px 10px 10px 0
 }
-span.quote-txt-quote,
-span.quote-txt-quote *,
-span.quote-txt-quote p {
+
+.quote-txt-cont span {
+    font-size: 16px
+}
+
+.opinion-detail-page div[class*="detail-section"], .opinion-detail-page div[class*="detail-section"] p {
+    font-size: 17px;
+    line-height: 1.35
+}
+
+span.quote-txt-quote, span.quote-txt-quote *, span.quote-txt-quote p {
     color: #0054a5;
     font-weight: 600;
     font-style: italic;
     margin-bottom: 0;
-    line-height: 1.35;
+    line-height: 1.35
 }
+
 span.quote-txt-quote a:hover {
-    color: #e63917;
+    color: #e63917
 }
+
 .read-more-cont {
-    margin-top: 20px;
+    margin-top: 20px
 }
+
 .read-more-title {
     color: #0072bc;
     font-size: 25px;
     font-weight: 600;
     font-style: italic;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 15px
 }
+
 .read-more-links {
-    text-align: center;
+    text-align: center
 }
-.read-more-links *,
-.read-more-links a,
-.read-more-links p {
+
+.read-more-links *, .read-more-links a, .read-more-links p {
     color: #0072bc;
     font-size: 16px;
     font-weight: 600;
     font-style: italic;
-    line-height: 1.5;
+    line-height: 1.5
 }
+
 .read-more-links p {
     margin-bottom: 10px;
-    text-align: center;
+    text-align: center
 }
+
 .read-more-links a:hover {
-    color: #e63917;
+    color: #e63917
 }
 
 .opinion-title {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 20px;
-    text-align: center;
+    text-align: center
 }

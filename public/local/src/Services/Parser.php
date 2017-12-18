@@ -164,7 +164,7 @@ abstract class Parser {
                     // TODO handle the unexpected
                 }
                 // peek the next row
-                if (isset($rows[$idx + 1]) && !$this->parseBoolean(_::first($rows[$idx + 1]))) {
+                if (isset($rows[$idx + 1]) && !$this->parseBoolean(_::first($rows[$idx + 1]['cells']))) {
                     $state = ['find_document'];
                 }
             }
@@ -309,7 +309,6 @@ abstract class Parser {
                 $ret[$worksheetSpec['key']] = $f($worksheet);
             }
         }
-        // TODO validate return VALUE
         return $ret;
     }
 

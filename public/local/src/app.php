@@ -36,6 +36,7 @@ class App extends \Core\App {
     }
 
     function isDebugEnabled() {
+        if (php_sapi_name() === 'cli') return false; // TODO hack
         return _::get(Configuration::getValue('app'), 'debug', false);
     }
 

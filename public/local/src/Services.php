@@ -35,6 +35,7 @@ class Services {
         return Util::joinPath([$tmpPath, "{$type}.json"]);
     }
 
+    /** @deprecated */
     static function save($type, $data) {
         return file_put_contents(self::dataFilePath($type), json_encode($data));
     }

@@ -24,6 +24,7 @@ if (class_exists('Bitrix\Main\Loader')) {
 class App extends \Core\App {
     const SITE_ID = 's1';
     const CACHE_DIR = 'app';
+
     /**
      * @var Engine
      */
@@ -32,26 +33,10 @@ class App extends \Core\App {
 
     function init() {
         EventHandlers::attach();
-        $this->container['monitoring_parser'] = function($c) {
-            return new MonitoringParser();
-        };
-        $this->container['monitoring_repo'] = function($c) {
-            return new MonitoringRepo();
-        };
-        $this->container['monitoring'] = function($c) {
-            return new Monitoring($c['monitoring_repo']);
-        };
     }
 
     function isDebugEnabled() {
         return _::get(Configuration::getValue('app'), 'debug', false);
-    }
-
-    /**
-     * @return Monitoring
-     */
-    function getMonitoring() {
-        return $this->container['monitoring'];
     }
 
     static function templates() {

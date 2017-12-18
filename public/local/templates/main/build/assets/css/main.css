@@ -940,7 +940,6 @@ input[type="number"] {
     font-size: 14px;
     height: 48px;
     line-height: 44px;
-    color: #FFF;
     padding: 0 15px;
     text-align: center;
     background: #4a97e5;
@@ -952,6 +951,10 @@ input[type="number"] {
     line-height: 1.2;
     display: inline-block;
     vertical-align: middle
+}
+
+.big_btn .text, .big_btn .text span {
+    color: #FFF
 }
 
 .big_btn .img {

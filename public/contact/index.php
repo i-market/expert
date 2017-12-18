@@ -15,42 +15,24 @@ $APPLICATION->SetPageProperty('layout', 'bare');
     <div class="wrap wrap--small">
         <div class="contacts_info">
             <div class="top">
-                <h4>адрес</h4>
-                <div>
-                    <p class="text">Станция метро "Перово", последний вагон из центра (10 мин. пешком)</p>
-                </div>
-                <div>
-                    <p class="text ico">111141 г. Москва, 3-й проезд Перова Поля, дом 8, строение 11, офис 402</p>
-                </div>
+                <? $APPLICATION->IncludeComponent(
+                    "bitrix:main.include",
+                    "",
+                    Array(
+                        "AREA_FILE_SHOW" => "file",
+                        "PATH" => v::includedArea('contact/top.php')
+                    )
+                ); ?>
             </div>
             <div class="bottom">
-                <div class="item">
-                    <h4>Телефоны</h4>
-                    <div>
-                        <p class="text ico">+7 (495) 641-70-69</p>
-                    </div>
-                    <div>
-                        <p class="text ico">+7 (499) 340-34-73</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <h4>Электронный адрес</h4>
-                    <div>
-                        <p class="text ico">E-mail: 6417069@bk.ru</p>
-                    </div>
-                    <div>
-                        <p class="text ico">E-mail: 6417069@bk.ru</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <h4>Режим работы</h4>
-                    <div>
-                        <p class="text">Пн-Пт 10.00-19.00</p>
-                    </div>
-                    <div>
-                        <p class="text">Сб-Вс Выходные дни</p>
-                    </div>
-                </div>
+                <? $APPLICATION->IncludeComponent(
+                    "bitrix:main.include",
+                    "",
+                    Array(
+                        "AREA_FILE_SHOW" => "file",
+                        "PATH" => v::includedArea('contact/bottom.php')
+                    )
+                ); ?>
             </div>
         </div>
     </div>

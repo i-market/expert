@@ -71,7 +71,7 @@ class MonitoringParser extends Parser {
             ],
             [
                 'key' => 'DURATION',
-                'prefix' => 'Продолжетельность мониторинга (мес.)',
+                'prefix' => 'Продолжительность мониторинга (мес.)',
             ],
             [
                 'key' => 'DISTANCE_BETWEEN_SITES',
@@ -79,7 +79,7 @@ class MonitoringParser extends Parser {
             ],
             [
                 'key' => 'TRANSPORT_ACCESSIBILITY',
-                'prefix' => 'Транспортная доуступность',
+                'prefix' => 'Транспортная доступность',
             ],
             [
                 'key' => 'DOCUMENTS',

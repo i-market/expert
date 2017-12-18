@@ -423,7 +423,6 @@ window.initRecaptcha = function($scope) {
     var calcSel = '.calculator, .calculator--monitoring, .calculator--inspection';
     $scope.find(calcSel).addBack(calcSel).each(function() {
       var $calc = $(this);
-
       (function () {
         function update(v, f) {
           return f(_.filter(v.split(','))).join(',');
@@ -480,12 +479,9 @@ window.initRecaptcha = function($scope) {
       $calc.find('.goals-filter').each(function() {
         var $select = $(this);
         var prevValue = $select.val();
-        var $siteCategory = $calc.find('select[name="SITE_CATEGORY"]');
-        
         $select.on('change', function() {
           var active = $(this).val();
-			
-      	  if (prevValue !== active) {
+          if (prevValue !== active) {
             $calc.find('[data-goals-filter]').each(function() {
               $(this).toggle($(this).attr('data-goals-filter') === active);
               $(this).find('input[type=checkbox]').prop('checked', false);
@@ -493,11 +489,8 @@ window.initRecaptcha = function($scope) {
             // mutate
             prevValue = active;
           }
-          
         });
       });
-   
-      
       $calc.find('.structures-to-inspect').each(function() {
         var constraint = merge([
           equals({
@@ -554,7 +547,6 @@ window.initRecaptcha = function($scope) {
         update();
       });
       var $examination = $calc.filter('.calculator--examination');
-
       $examination.find('.goals').each(function() {
         var $inputs = $(this).find('input[type=checkbox]');
         function update() {
@@ -819,10 +811,10 @@ window.initRecaptcha = function($scope) {
     });
 
     function adaptiveOpinionImgHeight(){
-        var opinionImgWidth = $(".info-img-img").width(),
-            opinionImgHeight = opinionImgWidth * 283 / 370;
-        //присваиваем высоту слайдеру и слайдам
-        $(".info-img-img").css("height", opinionImgHeight);
+      var opinionImgWidth = $(".info-img-img").width(),
+        opinionImgHeight = opinionImgWidth * 283 / 370;
+      //присваиваем высоту слайдеру и слайдам
+      $(".info-img-img").css("height", opinionImgHeight);
     }
 
 
@@ -908,104 +900,104 @@ window.initRecaptcha = function($scope) {
         }
       ]
     });
-    
+
     /*New script: start*/
-  	var $calcExamForm = $('.calculator_certain_types').filter('.calculator--examination').find('form'),
-  		$calcExamCategory = $calcExamForm.find('select[name="SITE_CATEGORY"]'),
-  		$calcExamGoalsFilter = $calcExamForm.find('select[name="GOALS_FILTER"]'),
-  		$goalsBlock = $calcExamForm.find('.goals');
-  	
-  	/*
-  	1-ая правка.
-  	Если в пункте  «Категория объектов экспертизы*» выбран пункт  «4.2. Проектная, рабочая, 
-	договорная документация», в разделе «Цели и задачи экспертизы*» выбран пункт  14.5.  
-	Определение (оценка) величины причиненного ущерба  
-	Должно быть:  – доступен для выбора только пункт: 14.5.5. 
-	
-	2-я правка
-  	а если в разделе «Цели и задачи экспертизы*» 
-	выбран пункт  14.6. Определение объема и стоимости
-	доступными для выбора должны быть пункты 14.6.10,
-	 и в выборочной документации Проектные работы – проектная документация
-	Проектные работ – рабочая документация
-	*/
-  	$calcExamGoalsFilter.on('change', function(){
-  		var $this = $(this);
-  		
-  		$goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox').each(function(){
-			$(this).removeClass('disabled');
-			$(this).find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
-		});
-		/*$goalsBlock.find('[data-goals-filter=6]').find('.wrap_checkbox').each(function(){
-			$(this).removeClass('disabled');
-			$(this).find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
-		});*/
-  		
-  		if( ($this.val() == 5) && ($calcExamCategory.val() == 2) ){
-			$goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox').each(function(){
-				$(this).addClass('disabled');
-				$(this).find('input[type=checkbox]').attr('disabled', '').prop('checked', false);
-			});
-			
-			$goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox:nth-child(5)').removeClass('disabled').find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
-		}
-		/*else if( ($this.val() == 6) && ($calcExamCategory.val() == 2) ){
-			$goalsBlock.find('[data-goals-filter=6]').find('.group_goals_6:first-child').find('.wrap_checkbox').each(function(){
-				$(this).addClass('disabled');
-				$(this).find('input[type=checkbox]').attr('disabled', '').prop('checked', false);
-			});
-			
-			$goalsBlock.find('[data-goals-filter=6]').find('.wrap_checkbox:nth-child(10)').removeClass('disabled').find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
-		}*/
-		
-		return false;
-  	});
-  	$calcExamCategory.on('change', function(){
-  		$calcExamGoalsFilter.trigger('change');
-  	});
-  	$goalsBlock.find('[data-goals-filter=5]').on('click', '.wrap_checkbox:nth-child(5)', function(e){
-  		if( ($calcExamGoalsFilter.val() == 5) && ($calcExamCategory.val() == 2) ){
-	  		e.preventDefault();
-	  		
-	  		var $this = $(this),
-  				$checkBox = $this.find('input');
+    var $calcExamForm = $('.calculator_certain_types').filter('.calculator--examination').find('form'),
+      $calcExamCategory = $calcExamForm.find('select[name="SITE_CATEGORY"]'),
+      $calcExamGoalsFilter = $calcExamForm.find('select[name="GOALS_FILTER"]'),
+      $goalsBlock = $calcExamForm.find('.goals');
 
-  			if($checkBox.is(':checked')){
-  				$checkBox.prop('checked', false);
-  			}else{
-  				$checkBox.prop('checked', true);
-  			}
-	  	}
-  	});
-  	/*$goalsBlock.find('[data-goals-filter=6]').on('click', '.wrap_checkbox:nth-child(10)', function(e){
-  		if( ($calcExamGoalsFilter.val() == 6) && ($calcExamCategory.val() == 2) ){
-	  		e.preventDefault();
-	  		
-	  		var $this = $(this),
-  				$checkBox = $this.find('input');
+    /*
+    1-ая правка.
+    Если в пункте  «Категория объектов экспертизы*» выбран пункт  «4.2. Проектная, рабочая,
+  договорная документация», в разделе «Цели и задачи экспертизы*» выбран пункт  14.5.
+  Определение (оценка) величины причиненного ущерба
+  Должно быть:  – доступен для выбора только пункт: 14.5.5.
 
-  			if($checkBox.is(':checked')){
-  				$checkBox.prop('checked', false);
-  			}else{
-  				$checkBox.prop('checked', true);
-  			}
-	  	}
-  	});*/
-  	/*Правка: end*/
+  2-я правка
+    а если в разделе «Цели и задачи экспертизы*»
+  выбран пункт  14.6. Определение объема и стоимости
+  доступными для выбора должны быть пункты 14.6.10,
+   и в выборочной документации Проектные работы – проектная документация
+  Проектные работ – рабочая документация
+  */
+    $calcExamGoalsFilter.on('change', function(){
+      var $this = $(this);
 
-  	
-  	/*New script: end*/
+      $goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox').each(function(){
+        $(this).removeClass('disabled');
+        $(this).find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
+      });
+      /*$goalsBlock.find('[data-goals-filter=6]').find('.wrap_checkbox').each(function(){
+        $(this).removeClass('disabled');
+        $(this).find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
+      });*/
+
+      if( ($this.val() == 5) && ($calcExamCategory.val() == 2) ){
+        $goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox').each(function(){
+          $(this).addClass('disabled');
+          $(this).find('input[type=checkbox]').attr('disabled', '').prop('checked', false);
+        });
+
+        $goalsBlock.find('[data-goals-filter=5]').find('.wrap_checkbox:nth-child(5)').removeClass('disabled').find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
+      }
+      /*else if( ($this.val() == 6) && ($calcExamCategory.val() == 2) ){
+        $goalsBlock.find('[data-goals-filter=6]').find('.group_goals_6:first-child').find('.wrap_checkbox').each(function(){
+          $(this).addClass('disabled');
+          $(this).find('input[type=checkbox]').attr('disabled', '').prop('checked', false);
+  });
+
+        $goalsBlock.find('[data-goals-filter=6]').find('.wrap_checkbox:nth-child(10)').removeClass('disabled').find('input[type=checkbox]').removeAttr('disabled').prop('checked', false);
+      }*/
+
+      return false;
+    });
+    $calcExamCategory.on('change', function(){
+      $calcExamGoalsFilter.trigger('change');
+    });
+    $goalsBlock.find('[data-goals-filter=5]').on('click', '.wrap_checkbox:nth-child(5)', function(e){
+      if( ($calcExamGoalsFilter.val() == 5) && ($calcExamCategory.val() == 2) ){
+        e.preventDefault();
+
+        var $this = $(this),
+          $checkBox = $this.find('input');
+
+        if($checkBox.is(':checked')){
+          $checkBox.prop('checked', false);
+        }else{
+          $checkBox.prop('checked', true);
+        }
+      }
+    });
+    /*$goalsBlock.find('[data-goals-filter=6]').on('click', '.wrap_checkbox:nth-child(10)', function(e){
+      if( ($calcExamGoalsFilter.val() == 6) && ($calcExamCategory.val() == 2) ){
+        e.preventDefault();
+
+        var $this = $(this),
+          $checkBox = $this.find('input');
+
+        if($checkBox.is(':checked')){
+          $checkBox.prop('checked', false);
+        }else{
+          $checkBox.prop('checked', true);
+        }
+      }
+    });*/
+    /*Правка: end*/
+
+
+    /*New script: end*/
     /*При изменении размеров экрана*/
-  	$(window).resize(function (e) {
-        adaptiveOpinionImgHeight();
+    $(window).resize(function (e) {
+      adaptiveOpinionImgHeight();
     });
     /*при загрузке страницы*/
-  	$(function () {
-        adaptiveOpinionImgHeight();
+    $(function () {
+      adaptiveOpinionImgHeight();
     });
-  	
+
   });
- 
+
 })();
 
 

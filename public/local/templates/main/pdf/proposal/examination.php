@@ -2,8 +2,10 @@
 
 <div class="body">
     <?= v::render('pdf/proposal/partials/body', get_defined_vars()) ?>
-    <h2>Цели и задачи экспертизы:</h2>
-    <?= $goals ?>
+    <? if (!v::isEmpty($goals)): ?>
+        <h2>Цели и задачи экспертизы:</h2>
+        <?= $goals ?>
+    <? endif ?>
     <? if (isset($partial)): ?>
         <?= v::render($partial, get_defined_vars()) ?>
     <? endif ?>

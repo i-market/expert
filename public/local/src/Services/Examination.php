@@ -123,6 +123,10 @@ class Examination {
             : new \DateTime();
         $d = clone $creationDate;
         $endingDate = $d->add(new \DateInterval('P3M'));
+        // TODO refactor. see `self::proposalTables`
+        $goals = $state['model']['GOALS_GROUP'] === '14.7'
+            ? ''
+            : Services::listHtml(_::pluck($state['model']['GOALS'], 'NAME'));
         return [
             'type' => 'examination',
             'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение экспертизы',
@@ -131,7 +135,7 @@ class Examination {
             'endingDate' => Services::formatFullDate($endingDate),
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'time' => $state['model']['TIME'],
-            'goals' => Services::listHtml(_::pluck($state['model']['GOALS'], 'NAME')),
+            'goals' => $goals,
             'tables' => self::proposalTables($state['model']),
             'partial' => nil::map(_::get($state, 'model.GOALS_GROUP'), function ($group) {
                 return "pdf/proposal/partials/examination/{$group}";
@@ -238,22 +242,39 @@ class Examination {
         $listFn = function($entities) use ($nameFn) {
             return Services::listHtml(array_map($nameFn, $entities));
         };
-        return [
+        if ($model['GOALS_GROUP'] === '14.7') {
+            return [
+                [
+                    'heading' => 'Сведения об объекте (объектах)',
+                    'rows' => array_map($formatRow, [
+                        ['Наименование', 'DESCRIPTION'],
+                    ])
+                ],
+                [
+                    'heading' => 'Предмет и цели экспертизы',
+                    'rows' => array_merge(array_map($formatRow, [
+                        ['Предмет экспертизы', 'SITE_CATEGORY', $nameFn],
+                    ]), [
+                        ['Цели', join("\n", _::pluck($model['GOALS'], 'NAME'))]
+                    ])
+                ]
+            ];
+        } else return [
             [
                 'heading' => 'Сведения об объекте (объектах) экспертизы',
                 'rows' => array_map($formatRow, [
                     ['Описание объекта (объектов)', 'DESCRIPTION'],
                     ['Количество объектов', 'SITE_COUNT'],
-                    ['Категория предметов экспертизы', 'SITE_CATEGORY', $nameFn],
-                    ['Необходимость выезда на объект(ы)', 'NEEDS_VISIT', $nameFn],
+                    ['Категория объекта (объектов)', 'SITE_CATEGORY', $nameFn],
+                    ['Необходимость выезда на объект (объекты)', 'NEEDS_VISIT', $nameFn],
                     ['Местонахождение', 'LOCATION', $nameFn],
                     ['Адрес (адреса)', 'ADDRESS'],
                     ['Назначение объекта (объектов)', 'USED_FOR', $nameFn],
-                    ['Общая площадь объекта (объектов)', 'TOTAL_AREA'],
-                    ['Общий строительный объем объекта (объектов)', 'VOLUME'],
+                    ['Общая площадь объекта (объектов), кв.м.', 'TOTAL_AREA'],
+                    ['Общий строительный объем объекта (объектов) куб.м.', 'VOLUME'],
                     ['Количество надземных этажей', 'FLOORS', _::partial('join', ', ')],
                     ['Наличие технического подполья, подвала, подземных этажей у одного или нескольких объектов', 'HAS_UNDERGROUND_FLOORS', $nameFn],
-                    ['Количество подземных этажей', 'UNDERGROUND_FLOORS'],
+                    ['Количество подземных этажей у одного или нескольких объектов', 'UNDERGROUND_FLOORS'],
                     ['Удаленность объектов друг от друга', 'DISTANCE_BETWEEN_SITES', $nameFn],
                     ['Транспортная доступность', 'TRANSPORT_ACCESSIBILITY', $nameFn],
                     ['Наличие документов', 'DOCUMENTS', $listFn]

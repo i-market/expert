@@ -72,6 +72,18 @@ if ($params['example']) {
         ]
     ]);
     switch ($params['type']) {
+        case 'individual':
+            $params = array_merge($params, [
+                'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ ...',
+                'tables' => [
+                    [
+                        'heading' => 'Состав работ',
+                        'header' => ['Вид работ', 'Цель работ', 'Единица измерения', 'Стоимость, руб.'],
+                        'rows' => [['Вид работ', 'Цель работ', 'Единица измерения', 'Стоимость, руб.']]
+                    ]
+                ]
+            ]);
+            break;
         case 'monitoring':
             $params = array_merge($params, [
                 'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение мониторинга',

@@ -15,10 +15,16 @@ table {
     width: 100%;
     border-collapse: collapse;
 }
-.body table td {
+.body table td,
+.body table th {
     border: 0.5pt solid black;
     padding: 0 0.2cm;
+}
+.body table td {
     vertical-align: top;
+}
+.body table th {
+    vertical-align: bottom;
 }
 .body table {
     font-size: 8pt;

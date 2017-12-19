@@ -70,49 +70,4 @@ class MonitoringRequest {
             ]
         ]);
     }
-
-    // TODO legacy code
-//    static function send($model) {
-//        $formatEntityList = function($entities) {
-//            return Services::formatList(_::pluck($entities, 'NAME'));
-//        };
-//        $modelFields = _::flatten(_::update($model, 'DOCUMENTS', $formatEntityList), '_');
-//        $fields = Services::markEmptyStrings(array_merge($modelFields, [
-//            // TODO service requests email_to
-//            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
-//            'FILE_LINKS' => '',
-//        ]));
-//        $serviceCode = 'monitoring';
-//        $elementName = $model['CONTACT']['PERSON'];
-//        $eventName = self::newRequestEventName($serviceCode);
-//        $eventMessageTemplate = self::findEventMessageTemplate($eventName);
-//        assert($eventMessageTemplate !== null);
-//        $message = _::reduce($fields, function($result, $value, $key) {
-//            return str_replace('#'.$key.'#', $value, $result);
-//        }, $eventMessageTemplate['MESSAGE']);
-//        $files = self::uploadedFileArrays($params['fileIds']);
-//        if (App::getInstance()->env() !== Env::DEV) {
-//            $elementId = self::saveServiceRequest($serviceCode, $elementName, $message, $params, [
-//                'FILES' => $files
-//            ]);
-//            $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
-//            $savedFiles = array_map(function($fileId) {
-//                return CFile::GetFileArray($fileId);
-//            }, $element['PROPERTIES']['FILES']['VALUE']);
-//        } else {
-//            $savedFiles = [];
-//        }
-//        $fileLinks = array_map(function($file) {
-//            // TODO ! full url
-//            $url = $file['SRC'];
-//            return "{$file['ORIGINAL_NAME']} — {$url}";
-//        }, $savedFiles);
-//        $fieldsWithFileLinks = array_merge($fields, [
-//            'FILE_LINKS' => !_::isEmpty($fileLinks)
-//                ? join("\n", array_merge(['Прикрепленные файлы:'], $fileLinks))
-//                : ''
-//        ]);
-//        App::getInstance()->sendMail($eventName, $fieldsWithFileLinks, App::SITE_ID);
-//        $state['screen'] = 'success';
-//    }
 }

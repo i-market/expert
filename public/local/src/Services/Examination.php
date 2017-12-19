@@ -136,7 +136,7 @@ class Examination {
             'totalPrice' => Services::formatTotalPrice($state['result']['total_price'], self::$priceUnit),
             'time' => $state['model']['TIME'],
             'goals' => $goals,
-            'tables' => self::proposalTables($state['model']),
+            'tables' => self::proposalTables($state),
             'partial' => nil::map(_::get($state, 'model.GOALS_GROUP'), function ($group) {
                 return "pdf/proposal/partials/examination/{$group}";
             }),
@@ -236,26 +236,36 @@ class Examination {
         return $errors;
     }
 
-    static function proposalTables($model) {
+    static function proposalTables($state) {
+        $model = $state['model'];
         $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
         $nameFn = _::partialRight([_::class, 'get'], 'NAME');
         $listFn = function($entities) use ($nameFn) {
             return Services::listHtml(array_map($nameFn, $entities));
         };
         if ($model['GOALS_GROUP'] === '14.7') {
+            // hacky
+            $opts = self::options($state['data_set']['MULTIPLIERS']);
+            $val = $state['params']['GOALS_FILTER'];
+            $goals = _::find($opts['GOALS_FILTER'], function ($opt) use ($val) {
+                return $opt['value'] === $val;
+            });
+            if ($goals === null) {
+                trigger_error("can't find a goals_filter value", E_USER_WARNING);
+            }
             return [
                 [
                     'heading' => 'Сведения об объекте (объектах)',
-                    'rows' => array_map($formatRow, [
-                        ['Наименование', 'DESCRIPTION'],
-                    ])
+                    'rows' => [
+                        ['Наименование', join("\n", _::pluck($model['GOALS'], 'NAME'))],
+                    ]
                 ],
                 [
                     'heading' => 'Предмет и цели экспертизы',
                     'rows' => array_merge(array_map($formatRow, [
                         ['Предмет экспертизы', 'SITE_CATEGORY', $nameFn],
                     ]), [
-                        ['Цели', join("\n", _::pluck($model['GOALS'], 'NAME'))]
+                        ['Цели', $goals['text']]
                     ])
                 ]
             ];

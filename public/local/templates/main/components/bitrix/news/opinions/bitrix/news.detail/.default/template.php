@@ -9,7 +9,7 @@ $APPLICATION -> SetPageProperty('section_class', 'opinion-detail');
 ?>
 
 <div class="opinion-detail-page">
-    <? for ($indexBlock = 0; $indexBlock < 20; $indexBlock++) : ?>
+    <? for ($indexBlock = 0; $indexBlock < 40; $indexBlock++) : ?>
 
         <? if (!empty($arResult['DISPLAY_PROPERTIES']['TEXT_BLOCK_' . $indexBlock]['~VALUE']['TEXT'])
             || $indexBlock == 0) : ?>

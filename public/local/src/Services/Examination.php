@@ -126,7 +126,8 @@ class Examination {
         // TODO refactor. see `self::proposalTables`
         $goals = $state['model']['GOALS_GROUP'] === '14.7'
             ? ''
-            : Services::listHtml(_::pluck($state['model']['GOALS'], 'NAME'));
+            : Services::listHtml(array_map([Services::class, 'transformName'],
+                _::pluck($state['model']['GOALS'], 'NAME')));
         return [
             'type' => 'examination',
             'heading' => 'КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ<br> на проведение экспертизы',
@@ -187,9 +188,7 @@ class Examination {
             }
         });
         $goalsFilter = _::map(array_keys($opts['GOALS']), function($_name, $idx) {
-            $name = App::getInstance()->isDebugEnabled() ?
-                $_name
-                : Parser::stripNumbering($_name);
+            $name = Services::transformName($_name);
             return ['value' => strval($idx + 1), 'text' => $name];
         });
         return array_merge($opts, [
@@ -239,7 +238,9 @@ class Examination {
     static function proposalTables($state) {
         $model = $state['model'];
         $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
-        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $nameFn = function ($entity) {
+            return Services::transformName($entity['NAME']);
+        };
         $listFn = function($entities) use ($nameFn) {
             return Services::listHtml(array_map($nameFn, $entities));
         };
@@ -257,7 +258,7 @@ class Examination {
                 [
                     'heading' => 'Сведения об объекте (объектах)',
                     'rows' => [
-                        ['Наименование', join("\n", _::pluck($model['GOALS'], 'NAME'))],
+                        ['Наименование', join("\n", _::map($model['GOALS'], $nameFn))],
                     ]
                 ],
                 [

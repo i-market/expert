@@ -234,11 +234,15 @@ class Services {
         return strval($number).' '.$units;
     }
 
+    static function transformName($name) {
+        return App::getInstance()->isDebugEnabled()
+            ? $name
+            : Parser::stripNumbering($name);
+    }
+
     static function entities2options($x) {
         if (isset($x['ID'])) {
-            $name = App::getInstance()->isDebugEnabled()
-                ? $x['NAME']
-                : Parser::stripNumbering($x['NAME']);
+            $name = self::transformName($x['NAME']);
             return ['value' => $x['ID'], 'text' => str::capitalize($name, false)];
         } elseif (is_array($x)) {
             return array_map([self::class, 'entities2options'], $x);

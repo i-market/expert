@@ -6,11 +6,9 @@ roles:
   dev:
     local: true
     app_env: dev
-    app_debug: true
     hosts: [local]
     sentry:
       enabled: false
   stage:
     app_env: prod
-    app_debug: true
     hosts: [imarket]

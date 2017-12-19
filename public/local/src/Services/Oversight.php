@@ -137,7 +137,9 @@ class Oversight {
 
     static function proposalTables($model) {
         $formatRow = _::partialRight([Services::class, 'formatRow'], $model);
-        $nameFn = _::partialRight([_::class, 'get'], 'NAME');
+        $nameFn = function ($entity) {
+            return Services::transformName($entity['NAME']);
+        };
         $listFn = function($entities) use ($nameFn) {
             return Services::listHtml(array_map($nameFn, $entities));
         };

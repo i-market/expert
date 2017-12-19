@@ -23,4 +23,4 @@ $sections = array_map(function($section) use ($transformFile) {
     return _::set($section, 'FILE', $transformFile($file));
 }, Iblock::collect($result));
 $groups = Iblock::groupBySection($items, $arResult['ID'], $sections);
-$arResult['SECTIONS'] = _::sort($groups, 'SORT');
+$arResult['SECTIONS'] = _::sort($groups, function ($x) { return $x['SORT']; });

@@ -87,21 +87,26 @@ if (App::useBitrixAsset()) {
                     <div class="blue_btn re_call" data-modal="re_call">Заказать <span class="hidden">обратный</span> звонок</div>
                     <a href="<?= v::path('what-we-do') ?>" class="blue_btn calculate_cost">Рассчитать стоимость</a>
                 </div>
-                <? // TODO contact details ?>
                 <div class="info">
                     <div class="info_top">
-                        <p><a href="tel:+7(499) 340-34-73">+7(495) 641-70-69</a></p>
-                        <p><a href="tel:+7(499) 340-34-73">+7(499) 340-34-73</a></p>
+                        <? $APPLICATION->IncludeComponent(
+                            "bitrix:main.include",
+                            "",
+                            Array(
+                                "AREA_FILE_SHOW" => "file",
+                                "PATH" => v::includedArea('layout/header_phones.php')
+                            )
+                        ); ?>
                     </div>
                     <div class="info_bottom">
-                        <p>
-                            <span>E-mail:</span>
-                            <a href="mailto:6417069@bk.ru">6417069@bk.ru</a>
-                        </p>
-                        <p>
-                            <span>E-mail:</span>
-                            <a href="mailto:6417069@bk.ru">6417069@bk.ru</a>
-                        </p>
+                        <? $APPLICATION->IncludeComponent(
+                            "bitrix:main.include",
+                            "",
+                            Array(
+                                "AREA_FILE_SHOW" => "file",
+                                "PATH" => v::includedArea('layout/header_emails.php')
+                            )
+                        ); ?>
                     </div>
                 </div>
             </div>

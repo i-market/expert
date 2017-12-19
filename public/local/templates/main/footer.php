@@ -108,7 +108,6 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
             </a>
             <a class="advertisers_hidden" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
             <div class="adress">
-                <? // TODO <p> tag messes up editing ?>
                 <p>
                     <? $APPLICATION->IncludeComponent(
                         "bitrix:main.include",
@@ -120,12 +119,15 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
                     ); ?>
                 </p>
             </div>
-            <? // TODO contact details ?>
             <div class="info">
-                <p><a href="tel:+7 (495) 641-70-69">+7 (495) 641-70-69</a></p>
-                <p><a href="tel:+7 (499) 340-34-73">+7 (499) 340-34-73</a></p>
-                <p><span>E-mail:</span><a href="mailto:6417069@bk.ru">6417069@bk.ru</a></p>
-                <p><span>E-mail:</span><a href="mailto:6417069@bk.ru">6417069@bk.ru</a></p>
+                <? $APPLICATION->IncludeComponent(
+                    "bitrix:main.include",
+                    "",
+                    Array(
+                        "AREA_FILE_SHOW" => "file",
+                        "PATH" => v::includedArea('layout/footer_contact.php')
+                    )
+                ); ?>
             </div>
             <div class="btns">
                 <div class="blue_btn re_call" data-modal="re_call">Заказать <span class="hidden">обратный</span> звонок</div>
@@ -133,8 +135,14 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
             </div>
         </div>
         <div class="bottom">
-            <? // TODO includize copyright? ?>
-            <span><?= '© 2015–'.$copyrightYear ?></span> <span>ООО «Техническая строительная экспертиза»</span> <a href="https://i-market.ru/" target="_blank" class="create">Создание и продвижение сайта I-Market</a>
+            <? $APPLICATION->IncludeComponent(
+                "bitrix:main.include",
+                "",
+                Array(
+                    "AREA_FILE_SHOW" => "file",
+                    "PATH" => v::includedArea('layout/copyright.php')
+                )
+            ); ?> <a href="https://i-market.ru/" target="_blank" class="create">Создание и продвижение сайта I-Market</a>
             <a class="advertisers" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
         </div>
     </div>

@@ -86,8 +86,7 @@ class App extends \Core\App {
                 'enabled' => _::get($sentryCfg, 'enabled'),
                 'env' => self::env(),
                 'publicDsn' => _::get($sentryCfg, 'public_dsn')
-            ],
-            'copyrightYear' => date('Y')
+            ]
         ];
     }
 

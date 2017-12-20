@@ -299,6 +299,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
+                            // TODO rename this and more below to EMAIL_TO
                             'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);

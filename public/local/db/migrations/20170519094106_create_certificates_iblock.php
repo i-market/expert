@@ -43,7 +43,7 @@ class CreateCertificatesIblock extends AbstractMigration {
             $result = $ibp->Add([
                 'NAME' => 'Файл',
                 'ACTIVE' => 'Y',
-                'IS_REQUIRED' => 'Y',
+                'IS_REQUIRED' => 'N',
                 'SORT' => '100',
                 'CODE' => 'FILE',
                 'PROPERTY_TYPE' => 'F',

@@ -16,7 +16,7 @@ use Core\Strings as str;
             </div>
             <div class="grid <?= count($section['ITEMS']) < 3 ? 'grid--center' : '' ?>">
                 <? foreach ($section['ITEMS'] as $item): ?>
-                    <? $file = $item['FILE'] ?>
+                    <? $file = v::get($item, 'FILE') ?>
                     <div class="item col col_3" id="<?= v::addEditingActions($item, $this) ?>">
                         <? // TODO add fancybox gallery id? ?>
                         <a class="gallery" href="<?= $item['PREVIEW_PICTURE']['SRC'] ?>" target="_blank">
@@ -26,7 +26,7 @@ use Core\Strings as str;
                             <span class="text"><?= $item['NAME'] ?></span>
                         </a>
 
-                        <? if (v::isEmpty($section['FILE'])): ?>
+                        <? if (v::isEmpty($section['FILE']) && $file): ?>
                             <? $extension = v::upper($file['EXTENSION']) ?>
                             <? $downloadText = "Скачать ${extension}" ?>
                             <? // TODO resize ?>

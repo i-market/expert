@@ -19,8 +19,12 @@ $items = array_map(function($item) use ($transformFile) {
 $result = CIBlockSection::GetList([], ['IBLOCK_ID' => $arResult['ID']], false,
     ['IBLOCK_ID', 'ID', 'NAME', 'CODE', 'SORT', 'DESCRIPTION', 'UF_FILE', 'UF_FILE_NAME']);
 $sections = array_map(function($section) use ($transformFile) {
-    $file = CFile::GetFileArray($section['UF_FILE']);
-    return _::set($section, 'FILE', $transformFile($file));
+    if ($section['UF_FILE']) {
+        $file = CFile::GetFileArray($section['UF_FILE']);
+        return _::set($section, 'FILE', $transformFile($file));
+    } else {
+        return $section;
+    }
 }, Iblock::collect($result));
 $groups = Iblock::groupBySection($items, $arResult['ID'], $sections);
 $arResult['SECTIONS'] = _::sort($groups, function ($x) { return $x['SORT']; });

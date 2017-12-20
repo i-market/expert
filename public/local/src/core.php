@@ -423,6 +423,7 @@ class App {
     }
 
     function adminEmailMaybe() {
+        // TODO warn if empty
         return Option::get('main', 'email_from', null);
     }
 

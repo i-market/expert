@@ -299,7 +299,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_MONITORING, $eventFields, App::SITE_ID);
@@ -331,7 +331,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_INSPECTION, $eventFields, App::SITE_ID);
@@ -363,7 +363,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_EXAMINATION, $eventFields, App::SITE_ID);
@@ -395,7 +395,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_INDIVIDUAL, $eventFields, App::SITE_ID);
@@ -430,7 +430,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'ITEMS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_DESIGN, $eventFields, App::SITE_ID);
@@ -462,7 +462,7 @@ class Api {
                         $element = _::first(Iblock::collectElements(CIBlockElement::GetByID($elementId)));
                         $formattedFields = Services::markEmptyStrings(_::update($fieldsBase, 'DOCUMENTS', [Services::class, 'formatList']));
                         $eventFields = array_merge($formattedFields, [
-                            'EMAIL_TO' => App::getInstance()->adminEmailMaybe(),
+                            'EMAIL' => App::getInstance()->adminEmailMaybe(),
                             'FILE_LINKS' => Services::fileLinksSection($element['PROPERTIES']['FILES']['VALUE']),
                         ]);
                         App::getInstance()->sendMail(Events::NEW_SERVICE_REQUEST_OVERSIGHT, $eventFields, App::SITE_ID);

@@ -143,7 +143,14 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
                     "PATH" => v::includedArea('layout/copyright.php')
                 )
             ); ?> <a href="https://i-market.ru/" target="_blank" class="create">Создание и продвижение сайта I-Market</a>
-            <a class="advertisers" href="<?= v::path('for-advertisers') ?>">Рекламодателям</a>
+            <? $APPLICATION->IncludeComponent(
+                "bitrix:main.include",
+                "",
+                Array(
+                    "AREA_FILE_SHOW" => "file",
+                    "PATH" => v::includedArea('layout/footer_links.php')
+                )
+            ); ?>
         </div>
     </div>
 </footer>

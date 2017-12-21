@@ -21,13 +21,13 @@ $aMenuLinks = Array(
 		Array(), 
 		"" 
 	),
-	Array(
-		"Примеры работ", 
-		"/our-work/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
+//	Array(
+//		"Примеры работ",
+//		"/our-work/",
+//		Array(),
+//		Array(),
+//		""
+//	),
 	Array(
 		"Аттестаты и допуски СРО", 
 		"/certificates/", 

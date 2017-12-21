@@ -119,7 +119,7 @@ class Services {
     static function services() {
         $el = new CIBlockElement();
         $iblockId = IblockTools::find(Iblock::SERVICES_TYPE, Iblock::SERVICES)->id();
-        $elements = Iblock::collectElements($el->GetList(['SORT' => 'ASC'], ['IBLOCK_ID' => $iblockId]));
+        $elements = Iblock::collectElements($el->GetList(['SORT' => 'ASC'], ['IBLOCK_ID' => $iblockId, 'ACTIVE' => 'Y']));
         $pathRoot = 'what-we-do';
         return _::keyBy('code', array_map(function($element) use ($pathRoot) {
             $code = $element['CODE'];

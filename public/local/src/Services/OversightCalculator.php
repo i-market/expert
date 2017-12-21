@@ -9,7 +9,7 @@ use Core\Underscore as _;
 
 class OversightCalculator extends Calculator {
     function pricePerSquareMeter($sqMeters) {
-        $x = max($sqMeters, 900);
+        $x = $sqMeters;
         if ($x < 500 && $x > 0) {
             return 120;
         } elseif (u::inRange($x, 500, 20000)) {

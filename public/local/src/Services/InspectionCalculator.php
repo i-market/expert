@@ -9,7 +9,7 @@ use Core\Underscore as _;
 
 class InspectionCalculator extends Calculator {
     function pricePerSquareMeter($sqMeters) {
-        $x = max($sqMeters, 900);
+        $x = $sqMeters;
         // https://www.wolframalpha.com/input/?i=Plot%5BPiecewise%5B%7B%7B-52.33ln(x)+%2B+561.69,+500+%3C%3D+x+%3C%3D+15000%7D,%7B11766x%5E-0.548,+15000+%3C%3D+x+%3C%3D+30000%7D,%7B59249x%5E-0.703,+30000+%3C%3D+x+%3C%3D+120000%7D,%7B-5.227ln(x)+%2B+77.029,+120000+%3C%3D+x+%3C%3D+200000%7D%7D%5D,+%7Bx,+500,+200000%7D%5D
         if ($x < 500 && $x > 0) {
             return 240;

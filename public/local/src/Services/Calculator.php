@@ -7,7 +7,6 @@ use Core\Nullable as nil;
 use Core\Strings as str;
 
 abstract class Calculator {
-    // TODO debugging data
     /** put debugging data here */
     static $debug = [];
 

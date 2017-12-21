@@ -10,7 +10,7 @@ use Exception;
 
 class ExaminationCalculator extends Calculator {
     function pricePerSquareMeter($sqMeters) {
-        $x = $sqMeters;
+        $x = max($sqMeters, 900);
         if ($x < 500 && $x > 0) {
             return 80;
         } elseif (u::inRange($x, 500, 10000)) {

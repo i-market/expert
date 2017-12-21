@@ -7,13 +7,15 @@ use Core\Nullable as nil;
 use Core\Strings as str;
 
 abstract class Calculator {
-    // TODO debugging data
+    static $minTotalArea = 900;
+
     /** put debugging data here */
     static $debug = [];
 
     abstract function pricePerSquareMeter($sqMeters);
 
-    function totalPrice($totalArea, $multipliers) {
+    function totalPrice($_totalArea, $multipliers) {
+        $totalArea = max($_totalArea, self::$minTotalArea);
         $scale = 2; // копейки
         $multiplier = array_reduce(array_values($multipliers), _::operator('*'), 1);
         $price = round($this->pricePerSquareMeter($totalArea), $scale);

@@ -15,7 +15,14 @@
                             <p><?= $label.':' ?> <span><?= v::lower($value) ?></span></p>
                         <? endforeach ?>
                     </div>
-                    <h4>Получите коммерческое предложение на почту</h4>
+                    <? $APPLICATION->IncludeComponent(
+                        "bitrix:main.include",
+                        "",
+                        Array(
+                            "AREA_FILE_SHOW" => "file",
+                            "PATH" => v::includedArea('what-we-do/calculators/result_block_text.php')
+                        )
+                    ); ?>
                     <div class="commercial_proposal error">
                         <input type="text" name="EMAIL" value="<?= $params['EMAIL'] ?>" placeholder="Введите ваш E-mail">
                         <label>

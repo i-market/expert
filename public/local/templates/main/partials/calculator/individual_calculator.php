@@ -20,7 +20,14 @@ $macros = new macros($state);
         <div class="calculator_certain_types_top">
             <div class="wrap">
                 <div class="top">
-                    <p><?= $heading ?></p>
+                    <? $APPLICATION->IncludeComponent(
+                        "bitrix:main.include",
+                        "",
+                        Array(
+                            "AREA_FILE_SHOW" => "file",
+                            "PATH" => v::includedArea('what-we-do/calculators/individual_heading.php')
+                        )
+                    ); ?>
                 </div>
                 <div class="middle">
                     <? $APPLICATION->IncludeComponent(
@@ -36,9 +43,14 @@ $macros = new macros($state);
                     ); ?>
                 </div>
                 <div class="bottom">
-                    <? // TODO includize ?>
-                    <h4>Стоимость и сроки выполнения отдельных видов работ по экспертизе и обследованию.</h4>
-                    <p class="red">Выберете один или несколько видов работ</p>
+                    <? $APPLICATION->IncludeComponent(
+                        "bitrix:main.include",
+                        "",
+                        Array(
+                            "AREA_FILE_SHOW" => "file",
+                            "PATH" => v::includedArea('what-we-do/calculators/individual_bottom.php')
+                        )
+                    ); ?>
                 </div>
             </div>
         </div>

@@ -36,16 +36,18 @@ use App\Templates\CalculatorMacros as macros;
     </div>
     <input name="<?= $name ?>" value="<?= $value ?>" type="<?= $opts['type'] ? $opts['type'] : 'text' ?>"<?= isset($opts['input_attrs']) ? ' '.$opts['input_attrs'] : '' ?>>
     <div class="error-message"><?= $error ?></div>
-    <div class="bottom">
-        <div class="text text--hint">
-            <? $APPLICATION->IncludeComponent(
-                "bitrix:main.include",
-                "",
-                Array(
-                    "AREA_FILE_SHOW" => "file",
-                    "PATH" => v::includedArea('what-we-do/calculators/underground_floors_hint.php')
-                )
-            ); ?>
+    <? if (v::get($state, 'params.SITE_COUNT', 0) > 1): ?>
+        <div class="bottom">
+            <div class="text text--hint">
+                <? $APPLICATION->IncludeComponent(
+                    "bitrix:main.include",
+                    "",
+                    Array(
+                        "AREA_FILE_SHOW" => "file",
+                        "PATH" => v::includedArea('what-we-do/calculators/underground_floors_hint.php')
+                    )
+                ); ?>
+            </div>
         </div>
-    </div>
+    <? endif ?>
 </div>

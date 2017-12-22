@@ -11,12 +11,14 @@ if (!is_object($cp)) {
     die();
 }
 
+$arResult['BLOCK_COUNT'] = 40;
+
 /*получаем данные о изображениях*/
 /*собираем IDs изображений*/
 $imgIdindex = 0;
 $resArImgIds = Array();
 
-for ($imgIndex = 0; $imgIndex < 20; $imgIndex++) {
+for ($imgIndex = 0; $imgIndex < $arResult['BLOCK_COUNT']; $imgIndex++) {
 
     if (!empty($arResult['DISPLAY_PROPERTIES']['IMG_BLOCK_' . $imgIndex]['VALUE'])) {
 

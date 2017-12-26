@@ -3,7 +3,7 @@
 <section class="editable-section main-content<?= $sectionClass ? ' '.$sectionClass : '' ?>">
     <div class="wrap">
         <div class="wrap_title">
-            <h2><?= $APPLICATION->GetTitle(false) ?></h2>
+            <h1 class="h2"><?= $APPLICATION->GetTitle(false) ?></h1>
         </div>
         <?= $content ?>
     </div>

@@ -10,7 +10,7 @@ $APPLICATION->SetPageProperty('layout', 'bare');
 
 <section class="text_section">
     <div class="wrap">
-        <h2><? $APPLICATION->ShowTitle(false) ?></h2>
+        <h1 class="h2"><? $APPLICATION->ShowTitle(false) ?></h1>
         <? $APPLICATION->IncludeComponent(
             "bitrix:main.include",
             "",

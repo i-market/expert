@@ -14,7 +14,7 @@ $macros = new macros($state);
           novalidate>
         <div class="wrap">
             <div class="wrap_title">
-                <h2>On-line калькулятор</h2>
+                <h1 class="h2">On-line калькулятор</h1>
             </div>
         </div>
         <div class="calculator_certain_types_top">

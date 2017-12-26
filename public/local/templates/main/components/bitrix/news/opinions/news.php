@@ -3,7 +3,7 @@
 <section class="infoblock_news">
     <div class="wrap">
         <div class="wrap_title">
-            <h2><? $APPLICATION->ShowTitle(false) ?></h2>
+            <h1 class="h2"><? $APPLICATION->ShowTitle(false) ?></h1>
         </div>
         <?$APPLICATION->IncludeComponent(
             "bitrix:news.list",

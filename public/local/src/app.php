@@ -128,9 +128,7 @@ class App extends \Core\App {
             [
                 'https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800&amp;subset=cyrillic-ext'
             ],
-            array_map(function($path) {
-                return View::asset($path);
-            }, [
+            array_map([View::class, 'asset'], [
                 'css/lib/normalize.min.css',
                 'css/lib/jquery.fancybox.min.css',
                 'css/lib/slick.css',
@@ -143,9 +141,7 @@ class App extends \Core\App {
             [
                 '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js',
             ],
-            array_map(function($path) {
-                return View::asset($path);
-            }, [
+            array_map([View::class, 'asset'], [
                 'js/vendor/jquery.fancybox.min.js',
                 'js/vendor/jquery.easing-1.3.pack.js',
                 'js/vendor/jquery.mousewheel-3.0.4.pack.js',
@@ -167,8 +163,11 @@ class App extends \Core\App {
                 'js/main.js',
             ]),
             [
-                // make sure recaptcha loads after onload callback is defined
-                'https://www.google.com/recaptcha/api.js?onload=initRecaptcha&render=explicit'
+                [
+                    'path' => 'https://www.google.com/recaptcha/api.js?onload=initRecaptcha&render=explicit',
+                    // make sure recaptcha loads after onload callback is defined
+                    'additional' => true
+                ]
             ]
         );
         return [

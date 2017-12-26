@@ -164,10 +164,10 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
         </form>
     </div>
 </div>
-<? if ($sentry['enabled']): ?>
-    <?= v::render('partials/sentry_js', $sentry) ?>
-<? endif ?>
 <? if (!App::useBitrixAsset()): ?>
+    <? if ($sentry['enabled']): ?>
+        <?= v::render('partials/sentry_js', $sentry) ?>
+    <? endif ?>
     <? foreach (App::assets()['scripts'] as $path): ?>
         <script type="text/javascript" src="<?= $path ?>"></script>
     <? endforeach ?>

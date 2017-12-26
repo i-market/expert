@@ -823,11 +823,13 @@ window.initRecaptcha = function($scope) {
       Mockup.openModal($('#' + modalId));
     }
 
-    $('.opinion-galery').fancybox({});
+    function initFancybox() {
+      $('.opinion-galery').fancybox({});
 
-    $('.gallery').fancybox({
-      scrolling: 'yes'
-    });
+      $('.gallery').fancybox({
+        scrolling: 'yes'
+      });
+    }
 
     function adaptiveOpinionImgHeight(){
       var opinionImgWidth = $(".info-img-img").width(),
@@ -919,6 +921,9 @@ window.initRecaptcha = function($scope) {
         }
       ]
     });
+
+    // make sure fancybox is initialized after slick
+    initFancybox();
 
     /*При изменении размеров экрана*/
     $(window).resize(function (e) {

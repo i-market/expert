@@ -12,3 +12,6 @@ roles:
   stage:
     app_env: prod
     hosts: [imarket]
+  prod:
+    app_env: prod
+    hosts: [sweb]

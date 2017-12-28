@@ -6,6 +6,9 @@ ErrorDocument 404 /404.php
   #php_value display_errors 1
   php_value mbstring.internal_encoding UTF-8
   php_value mbstring.func_overload 2
+  # sweb
+  php_value max_input_vars 10000
+  php_value pcre.recursion_limit 1000
 </IfModule>
 
 <IfModule mod_rewrite.c>

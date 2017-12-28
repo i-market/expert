@@ -10,6 +10,16 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
   Options +FollowSymLinks
   RewriteEngine On
+
+  RewriteCond %{HTTPS} =on
+  RewriteRule ^ - [env=proto:https]
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ - [env=proto:http]
+
+  # rewrite www.example.com → example.com
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ %{ENV:PROTO}://%1%{REQUEST_URI} [R=301,L]
+
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteCond %{REQUEST_FILENAME} !-d

@@ -33,6 +33,16 @@ if (App::useBitrixAsset()) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="format-detection" content="telephone=no" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <? $APPLICATION->IncludeComponent(
+        "bitrix:main.include",
+        "",
+        Array(
+            "AREA_FILE_SHOW" => "file",
+            "PATH" => v::includedArea('layout/in_head_tag.php')
+        ),
+        null,
+        array("HIDE_ICONS" => "Y")
+    ); ?>
     <title><? $APPLICATION->ShowTitle() ?></title>
     <? if (!App::useBitrixAsset()): ?>
         <? foreach ($assets['styles'] as $path): ?>

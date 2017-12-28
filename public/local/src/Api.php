@@ -113,6 +113,10 @@ class Api {
     }
 
     static function withRecaptcha(callable $continue) {
+        $logFailure = function () {
+            // TODO capture with raven
+            return trigger_error('recaptcha failure', E_USER_WARNING);
+        };
         if (App::getInstance()->env() === Env::DEV) {
             return $continue();
         }
@@ -125,13 +129,13 @@ class Api {
             $isHttpFailure = _::contains($result->getErrorCodes(), 'invalid-json');
             $isSuccess = $result->isSuccess() || $isHttpFailure;
             if (!$isSuccess) {
-                // TODO log recaptcha error to sentry
+                $logFailure();
                 CHTTP::SetStatus('403 Forbidden');
                 die('Неверная капча');
             }
             return $continue();
         } catch (\Exception $e) {
-            // TODO log to sentry
+            $logFailure();
             return $continue();
         }
     }

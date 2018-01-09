@@ -17,12 +17,8 @@ if (App::useBitrixAsset()) {
         $asset->addCss($path);
     }
     $asset->addString(v::render('partials/sentry_js', $sentry));
-    foreach ($assets['scripts'] as $x) {
-        if (is_array($x)) {
-            $asset->addJs($x['path'], v::get($x, 'additional', false));
-        } else {
-            $asset->addJs($x);
-        }
+    foreach ($assets['scripts'] as $s) {
+        $asset->addJs($s['path'], v::get($s, 'additional', false));
     }
 }
 ?>

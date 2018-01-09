@@ -137,7 +137,9 @@ class App extends \Core\App {
                 'css/main.css'
             ])
         );
-        $scripts = array_merge(
+        $scripts = array_map(function ($path) {
+            return ['path' => $path];
+        }, array_merge(
             [
                 '//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js',
             ],
@@ -161,18 +163,18 @@ class App extends \Core\App {
                 'js/vendor/intercooler.js',
                 'js/script.js',
                 'js/main.js',
-            ]),
+            ])
+        ));
+        $additional = [
             [
-                [
-                    'path' => 'https://www.google.com/recaptcha/api.js?onload=initRecaptcha&render=explicit',
-                    // make sure recaptcha loads after onload callback is defined
-                    'additional' => true
-                ]
+                'path' => 'https://www.google.com/recaptcha/api.js?onload=initRecaptcha&render=explicit',
+                // make sure recaptcha loads after onload callback is defined
+                'additional' => true
             ]
-        );
+        ];
         return [
             'styles' => $styles,
-            'scripts' => $scripts
+            'scripts' => array_merge($scripts, $additional)
         ];
     }
 

@@ -168,8 +168,8 @@ extract(App::getInstance()->layoutContext(), EXTR_SKIP);
     <? if ($sentry['enabled']): ?>
         <?= v::render('partials/sentry_js', $sentry) ?>
     <? endif ?>
-    <? foreach (App::assets()['scripts'] as $path): ?>
-        <script type="text/javascript" src="<?= $path ?>"></script>
+    <? foreach (App::assets()['scripts'] as $s): ?>
+        <script type="text/javascript" src="<?= $s['path'] ?>"></script>
     <? endforeach ?>
 <? endif ?>
 </body>

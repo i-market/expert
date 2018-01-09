@@ -28,7 +28,7 @@ header('Content-type: image/svg+xml');
     </defs>
     <g>
         <rect x="1" y="1" width="48" height="64" class="cls-1"/>
-        <text x="25" y="57" class="cls-2"><tspan class="cls-3"><?= mb_strtoupper($_REQUEST['extension']) ?></tspan></text>
+        <text x="25" y="57" class="cls-2"><tspan class="cls-3"><?= htmlspecialchars(mb_strtoupper($_REQUEST['extension']), ENT_QUOTES) ?></tspan></text>
         <rect x="7" y="21" width="36" height="2" class="cls-4"/>
         <rect x="11" y="11" width="28" height="4" class="cls-4"/>
         <rect x="7" y="29" width="36" height="2" class="cls-4"/>

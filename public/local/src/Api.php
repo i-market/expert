@@ -59,6 +59,7 @@ class Api {
         foreach (['HAS_UNDERGROUND_FLOORS', 'FOR_LEGAL_CASE', 'NEEDS_VISIT'] as $k) {
             $params = _::update($params, $k, 'boolval');
         }
+        $params = _::update($params, 'EMAIL', 'trim');
         $params = array_merge([
             'DOCUMENTS' => []
         ], $params);

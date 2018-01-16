@@ -1,4 +1,4 @@
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raven.js/3.12.1/raven.min.js"></script>
+<script src="https://cdn.ravenjs.com/3.22.1/raven.min.js" crossorigin="anonymous"></script>
 <script type="text/javascript">
     Raven.config('<?= $publicDsn ?>', {
         environment: '<?= $env ?>'

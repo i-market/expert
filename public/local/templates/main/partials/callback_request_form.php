@@ -24,7 +24,7 @@ $macros = new macros($state);
     <h2>Обратный звонок</h2>
     <div class="wrap_input_block">
         <? $macros->showInput('CONTACT_PERSON', 'Контактное лицо', ['required' => true]) ?>
-        <? $macros->showInput('PHONE', 'Номер телефона') ?>
+        <? $macros->showInput('PHONE', 'Номер телефона', ['required' => true]) ?>
     </div>
     <div class="wrap_robot_block">
         <?= v::render('partials/form_loader') ?>

@@ -91,7 +91,10 @@ class App extends \Core\App {
     }
 
     static function requestCallback($params) {
-        $validator = v::key('CONTACT_PERSON', v::stringType()->notEmpty());
+        $validator = v::allOf(
+            v::key('CONTACT_PERSON', v::stringType()->notEmpty()),
+            v::key('PHONE', v::stringType()->notEmpty())
+        );
         $errors = [];
         try {
             $validator->assert($params);
